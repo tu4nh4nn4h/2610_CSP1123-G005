@@ -1,0 +1,101 @@
+body {
+  margin: 0;
+  font-family: 'Times New Roman', Times, serif;
+  background: linear-gradient(to right, #fbc2eb, #a18cd1);
+}
+
+.container {
+  padding: 30px;
+}
+
+.title {
+  text-align: center;
+  font-size: 70px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #222;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.search-bar input {
+  width: 50%;
+  padding: 15px;
+  border-radius: 30px;
+  border: none;
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.search-bar button {
+  margin-left: 10px;
+  padding: 12px 16px;
+  border-radius: 50%;
+  border: none;
+  background: black;
+  color: white;
+  cursor: pointer;
+}
+
+/* GRID */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* ✨ CARD IMPROVEMENT */
+.event-card {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 2px solid black; /* stronger border */
+  border-radius: 15px;
+  padding: 15px;
+  gap: 15px;
+
+  /* depth */
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+
+  /* smooth hover */
+  transition: all 0.3s ease;
+}
+
+/* ✨ HOVER EFFECT (makes it feel alive) */
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+
+/* IMAGE */
+.event-image {
+  width: 100px;
+  height: 100px;
+  background: #ccc;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* TEXT */
+.event-info {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.event-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111;
+}
+
+.event-desc {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #555;
+}

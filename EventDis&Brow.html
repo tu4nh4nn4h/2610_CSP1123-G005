@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+  <title>UniSphere</title>
+  <link rel="stylesheet" href="EventDis&Brow.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <h1 class="title">UniSphere</h1>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search for event">
+      <button id="searchBtn">🔍</button>
+    </div>
+
+    <div class="event-grid">
+
+  <!-- Card 1 -->
+  <div class="event-card">
+    <div class="event-image"></div>
+    <div class="event-info">
+      <h3 class="event-title">Hackathon 2026</h3>
+      <p class="event-desc">Join us for 24 hours of coding.</p></div>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="event-card">
+    <div class="event-image"></div>
+    <div class="event-info">
+      <h3 class="event-title">Food Festival</h3>
+      <p class="event-desc">Explore amazing food from different cultures.</p></div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="event-card">
+    <div class="event-image"></div>
+    <div class="event-info">
+      <h3 class="event-title">MMU Sports Mania</h3>
+      <p class="event-desc">Fun outdoor games and competitions.</p></div>
+  </div>  <!-- card 3-->
+
+    </div> <!--event-grid-->
+</div> <!-- container -->
+</div> <!-- container -->
+
+<script> 
+const searchInput = document.querySelector(".search-bar input"); // JavaScript can "listen" to what user types in the search bar (filtering)  
+const cards = document.querySelectorAll(".event-card");
+
+searchInput.addEventListener("keyup", function () { // run the function when user types in the search bar
+  const searchValue = searchInput.value.toLowerCase(); // text that user has typed in the search bar, make it case insensitive
+
+  cards.forEach(card => { // go through each card
+    const title = card.querySelector(".event-title").textContent.toLowerCase(); // make the case become insensitive
+    const desc = card.querySelector(".event-desc").textContent.toLowerCase();
+
+    if (searchValue === "") { // all cards are shown when the search bar is empty
+      card.style.display = "flex"; // show all 
+    } else if (title.includes(searchValue) || desc.includes(searchValue)) { // if the title or description of the card includes the text that user has typed in the search bar, show the card
+      card.style.display = "flex"; // show the card
+    } else {
+      card.style.display = "none";
+    }
+  });
+});
+</script>
+
+</body>
+</html>
