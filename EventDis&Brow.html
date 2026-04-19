@@ -54,8 +54,8 @@ searchInput.addEventListener("keyup", function () { // run the function when use
   const searchValue = searchInput.value.toLowerCase(); // text that user has typed in the search bar, make it case insensitive
 
   cards.forEach(card => { // go through each card
-    const title = card.querySelector(".event-title").textContent.toLowerCase(); // make the case become insensitive
-    const desc = card.querySelector(".event-desc").textContent.toLowerCase();
+    const title = card.querySelector(".event-title").textContent.toLowerCase(); // find title card, make the case become insensitive
+    const desc = card.querySelector(".event-desc").textContent.toLowerCase(); // find desc card, make the case become insensitive
 
     if (searchValue === "") { // all cards are shown when the search bar is empty
       card.style.display = "flex"; // show all 
