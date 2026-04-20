@@ -48,6 +48,8 @@
                  text-align: center;
                  margin-bottom: 20px;
              }
+
+
         </style>
         <div class="header">
          <h1>UniSphere</h1>
@@ -62,7 +64,27 @@
             <label for="password">Password:</label><br>
             <input type="password" id="password" name="password"><br>
             <input type="submit" value="Log In">
-            <p style="text-align: center;">Don't have an account? <a href="register.html">Register here</a></p>
+            <p style="text-align: center;">Don't have an account?<a href="register.html">Register here</a></p>
+                <!-- <div class="popup" onclick="showPopup()">Register here
+                    <span class="popuptext" id="myPopup">Popup text here</span>
+                </div>
+                <script>
+                    function showPopup() {
+                        var popup = document.getElementById("myPopup");
+                        popup.style.display = "block";
+                        popup.classList.toggle("show");
+                    }
+                </script>
+            </p>
+            <div id="popup" class="popup">
+                <div class="popup-content">
+                    <h2>Sign Up as:</h2>
+                    <button onclick="document.location.href='register.html'">Student</button>
+                    <button onclick="document.location.href='register_organizer.html'">Event Organizer</button>
+                </div>
+                
+            </div> -->
+
             
         </div>
      </body>
