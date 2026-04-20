@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Register - UniSphere</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: linear-gradient(to right, #fbc2eb, #a18cd1);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+            .registration-form {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                width: 400px;
+                margin-left: 70px;
+                
+            }
+            .registration-form label {
+                display: block;
+                margin-top: 10px;
+            }
+            .registration-form input[type="text"],
+            .registration-form input[type="email"],
+            .registration-form input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+
+            }
+            .registration-form input[type="submit"] {
+                margin-top: 15px;
+                padding: 10px;
+                width: 100%;
+                background-color: #bb00ff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .registration-form input[type="submit"]:hover {
+                background-color: #0056b3;
+            }
+            .header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+        </style>
+        <div class="header">
+            <h1>Create Your Account</h1>
+            <h2>Join the community and start exploring!</h2>
+        </div>
+    </head>
+    <body>
+        <div class="registration-form">
+            <label for="Name">Full Name:</label>
+            <input type="text" id="Name" name="Name"><br>
+            <label for="Email">Student Email:</label>
+            <input type="email" id="Email" name="Email"><br>
+            <label for="Username">Username: </label>
+            <input type="text" id="Username" name="Username"><br>
+            <label for="Student_id">Student ID:</label>
+            <input type="text" id="Student_id" name="Student_id"><br>
+            <label for="Password">Password: </label>
+            <input type="password" id="Password" name="Password"><br>
+            <Label for="confirmPassword">Confirm Password: </Label>
+            <input type="password" id="confirmPassword" name="confirmPassword"><br>
+            <input type="submit" value="Register">
+        </div>
+    </body>
+</html>
