@@ -1,6 +1,6 @@
 -- SQLite
 CREATE TABLE users (
-    user_id INT PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
@@ -9,15 +9,15 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_details (
-    user_id INT PRIMARY KEY ,
+    user_id INTEGER PRIMARY KEY ,
     student_id VARCHAR(10) NOT NULL UNIQUE,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
 CREATE TABLE organizer_details (
-    user_id INT PRIMARY KEY,
+    user_id INTEGER PRIMARY KEY,
     student_id VARCHAR(10) NOT NULL UNIQUE,
-    phone_number INT NOT NULL,
+    phone_number INTEGEREGER NOT NULL,
     club_body TEXT NOT NULL,
     position TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
