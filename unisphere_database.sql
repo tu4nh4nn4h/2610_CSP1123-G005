@@ -19,8 +19,9 @@ CREATE TABLE organizer_details (
     student_id VARCHAR(10) NOT NULL UNIQUE,
     phone_number INT NOT NULL,
     club_body TEXT NOT NULL,
-    position TEXT NOT NULL
+    position TEXT NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
+
 
 
