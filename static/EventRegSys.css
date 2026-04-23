@@ -90,3 +90,14 @@ h2 {
 .browse:hover {
   color: #fff;
 }
+
+.page-title {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
