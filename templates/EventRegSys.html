@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Event Page</title>
-  <link rel="stylesheet" href="eventregsys.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
 </head>
 
 <body>
@@ -33,7 +33,7 @@
   </div>
 
   <!-- JS -->
-  <script src="events.js"></script>
+  <script src="{{ url_for('static', filename='events.js') }}"></script>
 
   <script>
     function openForm() {
