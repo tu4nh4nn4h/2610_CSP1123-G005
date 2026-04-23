@@ -10,20 +10,17 @@ CREATE TABLE users_general (
 
 CREATE TABLE user_details (
     student_id VARCHAR(10) PRIMARY KEY,
+    bio TEXT,
+    birthday DATE,
+    faculty TEXT,
+    year_of_study INTEGER,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
 CREATE TABLE organizer_details (
     student_id VARCHAR(10) PRIMARY KEY,
     club_body TEXT NOT NULL,
-    position/title TEXT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-);
-
-CREATE TABLE organizer_details (
-    student_id VARCHAR(10) PRIMARY KEY,
-    club_body TEXT NOT NULL,
-    position/title TEXT NOT NULL,
+    position_title TEXT NOT NULL,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
