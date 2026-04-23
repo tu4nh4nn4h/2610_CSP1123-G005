@@ -77,6 +77,10 @@ def home():
 def register():
     return render_template('eventregsys.html')
 
+@app.route('/form')
+def form():
+    return render_template('form.html')
+
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
     app.run(debug=True)
