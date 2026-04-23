@@ -59,19 +59,23 @@
     </head>
     <body>
         <div class="registration-form">
-            <label for="Name">Full Name:</label>
-            <input type="text" id="Name" name="Name"><br>
-            <label for="Email">Student Email:</label>
-            <input type="email" id="Email" name="Email"><br>
-            <label for="Username">Username: </label>
-            <input type="text" id="Username" name="Username"><br>
-            <label for="Student_id">Student ID:</label>
-            <input type="text" id="Student_id" name="Student_id"><br>
-            <label for="Password">Password: </label>
-            <input type="password" id="Password" name="Password"><br>
-            <Label for="confirmPassword">Confirm Password: </Label>
-            <input type="password" id="confirmPassword" name="confirmPassword"><br>
-            <input type="submit" value="Register">
+            <form action="/register" method="post">
+                <label for="Name">Full Name:</label>
+                <input type="text" id="Name" name="Name"><br>
+                <form action="/verify-otp" method="post">
+                    <label for="Email">Student Email:</label>
+                    <input type="email" id="Email" name="Email"><br>
+                </form>
+                <label for="Username">Username: </label>
+                <input type="text" id="Username" name="Username"><br>
+                <label for="Student_id">Student ID:</label>
+                <input type="text" id="Student_id" name="Student_id"><br>
+                <label for="Password">Password: </label>
+                <input type="password" id="Password" name="Password"><br>
+                <Label for="confirmPassword">Confirm Password: </Label>
+                <input type="password" id="confirmPassword" name="confirmPassword"><br>
+                <input type="submit" value="Register">
+            </form>
         </div>
     </body>
 </html>
