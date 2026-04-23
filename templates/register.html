@@ -34,7 +34,8 @@
                 border-radius: 4px;
 
             }
-            .registration-form input[type="submit"] {
+            .button {
+                 margin-top: 15px;
                 margin-top: 15px;
                 padding: 10px;
                 width: 100%;
@@ -44,7 +45,7 @@
                 border-radius: 4px;
                 cursor: pointer;
             }
-            .registration-form input[type="submit"]:hover {
+            .button:hover {
                 background-color: #0056b3;
             }
             .header {
@@ -59,23 +60,90 @@
     </head>
     <body>
         <div class="registration-form">
-            <form action="/register" method="post">
+            <div id="registerForm">
                 <label for="Name">Full Name:</label>
                 <input type="text" id="Name" name="Name"><br>
-                <form action="/verify-otp" method="post">
-                    <label for="Email">Student Email:</label>
-                    <input type="email" id="Email" name="Email"><br>
-                </form>
+
+                <label for="Email">Student Email:</label>
+                <input type="email" id="Email" name="Email"><br>
+                
                 <label for="Username">Username: </label>
                 <input type="text" id="Username" name="Username"><br>
+
                 <label for="Student_id">Student ID:</label>
                 <input type="text" id="Student_id" name="Student_id"><br>
+
                 <label for="Password">Password: </label>
                 <input type="password" id="Password" name="Password"><br>
+
                 <Label for="confirmPassword">Confirm Password: </Label>
                 <input type="password" id="confirmPassword" name="confirmPassword"><br>
-                <input type="submit" value="Register">
-            </form>
+
+                <button onclick="register()" class="button">Register</button>
+            </div>
+            <div id="otpForm" style="display:none;">
+                <h3 style="text-align: center;">Verify Your Email</h3>
+                <input type="text" id="otp" placeholder="Enter OTP"><br>
+                <button onclick="verifyOTP()">Verify OTP</button>
+                <button onclick="resendOTP()">Resend OTP</button>
+            
+            </div>
+            <script>
+            let userEmail = "";
+
+            function register() {
+                userEmail = document.getElementById("email").value;
+
+                fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById("name").value,
+                        email: userEmail,
+                        username: document.getElementById("username").value,
+                        student_id: document.getElementById("student_id").value,
+                        password: document.getElementById("password").value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert("OTP sent! Check terminal for now");
+
+                    document.getElementById("registerForm").classList.add("hidden");
+                    document.getElementById("otpForm").classList.remove("hidden");
+                });
+            }
+
+            function verifyOTP() {
+                let otp = document.getElementById("otp").value;
+
+                fetch('/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ otp: otp })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "verified") {
+                        alert("Account verified!");
+                    } else {
+                        alert("Invalid OTP");
+                    }
+                });
+            }
+
+            function resendOTP() {
+                fetch('/resend', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: userEmail })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert("New OTP sent!");
+                });
+            }
+            </script>
         </div>
     </body>
 </html>
