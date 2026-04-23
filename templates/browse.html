@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browse Events</title>
+  <link rel="stylesheet" href="EventRegSys.css">
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1 class="page-title">Browse Events</h1>
+
+    <div class="event-grid"></div>
+
+  </div>
+
+  <!-- JS -->
+  <script src="events.js"></script>
+
+  <script>
+    const container = document.querySelector(".event-grid");
+
+    events.forEach(event => {
+      container.innerHTML += `
+        <div class="event-card">
+          <div class="event-image"></div>
+
+          <h2>${event.title}</h2>
+          <p class="desc">${event.desc}</p>
+
+          <div class="details">
+            <p><strong>Date:</strong> ${event.date}</p>
+            <p><strong>Time:</strong> ${event.time}</p>
+            <p><strong>Venue:</strong> ${event.venue}</p>
+          </div>
+
+          <button class="register-btn">Register</button>
+        </div>
+      `;
+    });
+  </script>
+
+</body>
+</html>

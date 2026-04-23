@@ -13,22 +13,41 @@
 
       <div class="event-image"></div>
 
-      <h2>Event Title</h2>
-      <p class="desc">Event description</p>
+      <h2></h2>
+      <p class="desc"></p>
 
       <div class="details">
-        <p><strong>Date:</strong> 20 May 2026</p>
-        <p><strong>Time:</strong> 10:00 AM</p>
-        <p><strong>Venue:</strong> Main Hall</p>
+        <p><strong>Date:</strong> <span id="date"></span></p>
+        <p><strong>Time:</strong> <span id="time"></span></p>
+        <p><strong>Venue:</strong> <span id="venue"></span></p>
       </div>
 
-      <button class="register-btn">Register</button>
+      <button class="register-btn" onclick="openForm()">Register</button>
 
     </div>
 
-    <p class="browse">browse more →</p>
+    <p class="browse" onclick="window.location.href='browse.html'">
+      browse more →
+    </p>
 
   </div>
+
+  <!-- JS -->
+  <script src="events.js"></script>
+
+  <script>
+    function openForm() {
+      alert("Register button clicked!");
+    }
+
+    const event = events[0];
+
+    document.querySelector("h2").innerText = event.title;
+    document.querySelector(".desc").innerText = event.desc;
+    document.getElementById("date").innerText = event.date;
+    document.getElementById("time").innerText = event.time;
+    document.getElementById("venue").innerText = event.venue;
+  </script>
 
 </body>
 </html>
