@@ -25,22 +25,11 @@ const events = [
 ];
 
 function registerEvent(eventName) {
+  // store selected event temporarily
+  localStorage.setItem("selectedEvent", eventName);
 
-  // ⭐ THIS is the confirmation part
-  let confirmRegister = confirm("Confirm registration for " + eventName + "?");
-
-  if (confirmRegister) {
-    let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-
-    registrations.push({ event: eventName });
-
-    localStorage.setItem("registrations", JSON.stringify(registrations));
-
-    alert("Registered successfully!");
-
-    window.location.href = "registered.html";
-  }
-
+  // go to registration form page
+  window.location.href = "form.html";
 }
 
 function loadRegistrations() {
@@ -59,6 +48,26 @@ function loadRegistrations() {
 
   document.getElementById("list").innerHTML = output;
 }
+
+function submitRegistration() {
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let eventName = localStorage.getItem("selectedEvent");
+
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+
+  registrations.push({
+    event: eventName,
+    name: name,
+    email: email
+  });
+
+  localStorage.setItem("registrations", JSON.stringify(registrations));
+
+  alert("Registration successful!");
+
+  window.location.href = "registered.html";
+} 
 
 function cancelRegistration(index) {
   let confirmCancel = confirm("Are you sure you want to cancel?");

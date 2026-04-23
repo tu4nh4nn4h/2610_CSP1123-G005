@@ -101,3 +101,12 @@ h2 {
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
+
+.form-card {
+  width: 400px;
+  margin: auto;
+  margin-top: 50px;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+}
