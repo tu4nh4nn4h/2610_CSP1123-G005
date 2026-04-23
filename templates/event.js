@@ -51,33 +51,65 @@ function loadRegistrations() {
 
 function submitRegistration() {
   let name = document.getElementById("name").value;
-  let email = document.getElementById("email").value;
+  let studentId = document.getElementById("studentId").value;
+  let studentEmail = document.getElementById("studentEmail").value;
+  let personalEmail = document.getElementById("personalEmail").value;
+  let phone = document.getElementById("phone").value;
+  let faculty = document.getElementById("faculty").value;
+
   let eventName = localStorage.getItem("selectedEvent");
 
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
 
   registrations.push({
     event: eventName,
-    name: name,
-    email: email
+    name,
+    studentId,
+    studentEmail,
+    personalEmail,
+    phone,
+    faculty
   });
 
   localStorage.setItem("registrations", JSON.stringify(registrations));
 
-  alert("Registration successful!");
+  alert("Registered successfully!");
 
-  window.location.href = "registered.html";
-} 
+  window.location.href = "eventregsys.html";
+}
 
-function cancelRegistration(index) {
-  let confirmCancel = confirm("Are you sure you want to cancel?");
+function updateButton() {
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+  let eventName = events[0].title;
 
-  if (confirmCancel) {
-let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-    registrations.splice(index, 1);
+  let isRegistered = registrations.some(r => r.event === eventName);
 
-    localStorage.setItem("registrations", JSON.stringify(registrations));
+  const btn = document.querySelector(".register-btn");
 
-    loadRegistrations();
+  if (isRegistered) {
+    btn.innerText = "Cancel Registration";
+    btn.style.background = "red";
+    btn.onclick = cancelRegistration;
   }
+}
+
+updateButton();
+
+function cancelRegistration() {
+  let confirmCancel = confirm("Are you sure you want to cancel the registration?");
+
+  if (!confirmCancel) {
+    return; // do nothing (NO)
+  }
+
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+  let eventName = events[0].title;
+
+  registrations = registrations.filter(r => r.event !== eventName);
+
+  localStorage.setItem("registrations", JSON.stringify(registrations));
+
+  alert("Registration cancelled");
+
+  location.reload();
 }

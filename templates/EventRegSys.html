@@ -22,9 +22,7 @@
         <p><strong>Venue:</strong> <span id="venue"></span></p>
       </div>
 
-      <button class="register-btn" onclick="openForm()">Register</button>
-
-    </div>
+<button class="register-btn" onclick="registerEventPage()">Register</button>    </div>
 
     <p class="browse" onclick="window.location.href='browse.html'">
       browse more →
@@ -34,20 +32,6 @@
 
   <!-- JS -->
 <script src="event.js"></script>
-
-  <script>
-    function openForm() {
-      alert("Register button clicked!");
-    }
-
-    const event = events[0];
-
-    document.querySelector("h2").innerText = event.title;
-    document.querySelector(".desc").innerText = event.desc;
-    document.getElementById("date").innerText = event.date;
-    document.getElementById("time").innerText = event.time;
-    document.getElementById("venue").innerText = event.venue;
-  </script>
 
 </body>
 </html>
