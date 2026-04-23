@@ -64,8 +64,7 @@ function cancelRegistration(index) {
   let confirmCancel = confirm("Are you sure you want to cancel?");
 
   if (confirmCancel) {
-    let registrations = JSON.parse(localStorage.getItem("registrations"));
-
+let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
     registrations.splice(index, 1);
 
     localStorage.setItem("registrations", JSON.stringify(registrations));
