@@ -16,7 +16,7 @@
   </div>
 
   <!-- JS -->
-  <script src="events.js"></script>
+  <script src="event.js"></script>
 
   <script>
     const container = document.querySelector(".event-grid");
@@ -35,7 +35,9 @@
             <p><strong>Venue:</strong> ${event.venue}</p>
           </div>
 
-          <button class="register-btn">Register</button>
+          <button class="register-btn" onclick="registerEvent('${event.title}')">
+  Register
+</button>
         </div>
       `;
     });
