@@ -24,6 +24,14 @@ const events = [
   }
 ];
 
+function registerEventPage() {
+  const event = events[0]; // current page event
+
+  localStorage.setItem("selectedEvent", event.title);
+
+  window.location.href = "/form";
+}
+
 function registerEvent(eventName) {
   // store selected event temporarily
   localStorage.setItem("selectedEvent", eventName);
@@ -75,21 +83,26 @@ function submitRegistration() {
 
   alert("Registered successfully!");
 
-  window.location.href = "eventregsys.html";
-}
+window.location.href = "/register";}
 
 function updateButton() {
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-  let eventName = events[0].title;
+  let eventName = localStorage.getItem("selectedEvent") || events[0].title;
 
   let isRegistered = registrations.some(r => r.event === eventName);
 
   const btn = document.querySelector(".register-btn");
 
+  if (!btn) return;
+
   if (isRegistered) {
     btn.innerText = "Cancel Registration";
     btn.style.background = "red";
     btn.onclick = cancelRegistration;
+  } else {
+    btn.innerText = "Register";
+    btn.style.background = "";
+    btn.onclick = registerEventPage;
   }
 }
 
@@ -103,8 +116,7 @@ function cancelRegistration() {
   }
 
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-  let eventName = events[0].title;
-
+   let eventName = localStorage.getItem("selectedEvent");
   registrations = registrations.filter(r => r.event !== eventName);
 
   localStorage.setItem("registrations", JSON.stringify(registrations));
@@ -112,4 +124,6 @@ function cancelRegistration() {
   alert("Registration cancelled");
 
   location.reload();
+
+  window.onload = updateButton;
 }
