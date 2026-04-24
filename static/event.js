@@ -102,7 +102,7 @@ function closePopup() {
 
   alert("Registered successfully!");
 
-window.location.href = "/register";}
+window.location.href = "/register";
 
 function updateButton() {
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
