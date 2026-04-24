@@ -1,5 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
-from flask import request, session
+from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
@@ -21,7 +20,7 @@ def change_password():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT password FROM users_general WHERE student_id = %s", (user_id,))
+    cursor.execute("SELECT password FROM users_general WHERE student_id = ?", (user_id,))
     result = cursor.fetchone()
 
     if result:
@@ -30,7 +29,7 @@ def change_password():
             return "Current password is incorrect"
         if new != confirm:
             return "New password and confirm password do not match"
-        cursor.execute("UPDATE users_general SET password = %s WHERE student_id = %s", (generate_password_hash(new), user_id))
+        cursor.execute("UPDATE users_general SET password = ? WHERE student_id = ?", (generate_password_hash(new), user_id))
         conn.commit()
         conn.close()
         return "Password updated successfully"
