@@ -36,6 +36,7 @@ def change_password():
         return "Password updated successfully"
     else:
         return "User not found"
+    
 
 
 @app.route('/change_email', methods=['POST'])
