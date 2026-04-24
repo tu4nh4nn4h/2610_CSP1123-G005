@@ -113,7 +113,7 @@ def setup_database():
 
 @app.route('/')
 def home():
-    return "Welcome! Go to /register or /signin to continue."
+    return render_template('home.html')
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():

@@ -4,6 +4,7 @@ CREATE TABLE users_general (
     name TEXT NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
+    email_personal TEXT,
     password VARCHAR(50) NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
 );
