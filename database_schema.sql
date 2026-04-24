@@ -48,7 +48,3 @@ CREATE TABLE IF NOT EXISTS event_tag_map (
     FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id),
     PRIMARY KEY(event_id, tag_id)
 );
-
-SELECT * FROM users_general;
-SELECT * FROM user_details;
-SELECT * FROM organizer_details;
