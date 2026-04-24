@@ -151,9 +151,12 @@ def register_organizer():
 def eventregister():
     return render_template('eventregsys.html')
 
-@app.route('/form')
+@app.route('/form', methods=['GET', 'POST'])
 def form():
-    return render_template('form.html')
+    if request.method == 'POST':
+        # Handle form submission logic here
+        pass
+    return render_template('form.html') # show the form
 
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
