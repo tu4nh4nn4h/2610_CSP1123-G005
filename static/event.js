@@ -22,12 +22,14 @@ const events = [
   }
 ];
 
+
 // ================= REGISTER PAGE =================
 function registerEventPage() {
   const event = events[0];
   localStorage.setItem("selectedEvent", event.title);
   window.location.href = "/form";
 }
+
 
 // ================= SUBMIT FORM =================
 function submitRegistration() {
@@ -43,71 +45,34 @@ function submitRegistration() {
   let eventName = localStorage.getItem("selectedEvent");
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
 
-  registrations.push({ event: eventName, name });
+  registrations.push({
+    event: eventName,
+    name: name,
+    studentId: studentId,
+    studentEmail: studentEmail
+  });
 
   localStorage.setItem("registrations", JSON.stringify(registrations));
 
-  // ✅ SHOW SUCCESS POPUP
   document.getElementById("successModal").classList.remove("hidden");
-
-  updateButton();
 }
 
-// ================= BUTTON STATE =================
-function updateButton() {
-  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-  let eventName = localStorage.getItem("selectedEvent");
 
-  const btn = document.getElementById("registerBtn");
-  if (!btn) return;
-
-  let isRegistered = registrations.some(r => r.event === eventName);
-
-  if (isRegistered) {
-    btn.textContent = "Cancel Registration";
-    btn.style.background = "red";
-  } else {
-    btn.textContent = "Register";
-    btn.style.background = "";
-  }
-}
-
-// ================= CANCEL POPUP =================
-function showCancelPopup() {
-  document.getElementById("cancelModal").classList.remove("hidden");
-}
-
-function closeCancel() {
-  const modal = document.getElementById("cancelModal");
-  modal.classList.add("hidden");
-}
-
-function confirmCancel() {
-  let eventName = localStorage.getItem("selectedEvent");
-
-  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-  registrations = registrations.filter(r => r.event !== eventName);
-
-  localStorage.setItem("registrations", JSON.stringify(registrations));
-
-  closeCancel();
-
-  alert("Your registration has been removed");
-
-  // 🔥 go back to event page
-  window.location.href = "/eventregister";
-}
+// ================= BACK BUTTON =================
 function backToEvent() {
   document.getElementById("successModal").classList.add("hidden");
   window.location.href = "/eventregister";
 }
 
-// ================= MAIN BUTTON CONTROL =================
-document.addEventListener("DOMContentLoaded", function () {
 
-  document.getElementById("regForm").addEventListener("submit", function(e) {
+// ================= FORM HANDLER =================
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("regForm");
+
+  if (!form) return;
+
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
     submitRegistration();
   });
-
 });
