@@ -75,11 +75,13 @@
      <body>
         <div class="login-form">
             <h2 style="text-align: center;">Welcome Back!</h2>
-            <label for ="username">Username:</label><br>
-            <input type="text" id="username" name="username"><br>
-            <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password"><br>
-            <input type="submit" value="Log In">
+            <form action="/login" method="post">
+                <label for ="username">Username:</label><br>
+                <input type="text" id="username" name="username"><br>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password"><br>
+                <input type="submit" value="Log In">
+            </form>
             <p style="text-align: center;">Don't have an account?<a href="#" onclick="showPopup()">Register here</a></p>
             <div id="popup" class="popup">
                 <div class="popup-content">
