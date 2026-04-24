@@ -25,10 +25,11 @@ const events = [
 ];
 
 function registerEventPage() {
-  const event = events[0]; // current page event
+  const event = events[0];
 
   localStorage.setItem("selectedEvent", event.title);
 
+  // IMPORTANT: use Flask route, NOT form.html
   window.location.href = "/form";
 }
 
