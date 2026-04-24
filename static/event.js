@@ -78,7 +78,8 @@ function showCancelPopup() {
 }
 
 function closeCancel() {
-  document.getElementById("cancelModal").classList.add("hidden");
+  const modal = document.getElementById("cancelModal");
+  modal.classList.add("hidden");
 }
 
 function confirmCancel() {
@@ -93,9 +94,9 @@ function confirmCancel() {
 
   alert("Your registration has been removed");
 
-  updateButton();
+  // 🔥 go back to event page
+  window.location.href = "/eventregister";
 }
-
 function backToEvent() {
   document.getElementById("successModal").classList.add("hidden");
   window.location.href = "/eventregister";
@@ -107,18 +108,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!btn) return;
 
-  btn.addEventListener("click", function () {
-    let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-    let eventName = localStorage.getItem("selectedEvent");
+btn.addEventListener("click", function () {
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+  let eventName = localStorage.getItem("selectedEvent");
 
-    let isRegistered = registrations.some(r => r.event === eventName);
+  let isRegistered = registrations.some(r => r.event === eventName);
 
-    if (!isRegistered) {
-      submitRegistration();
-    } else {
-      showCancelPopup();
+  if (!isRegistered) {
+
+    // 🔥 CHECK FORM FIRST
+    const name = document.getElementById("name").value;
+    const studentId = document.getElementById("studentId").value;
+    const studentEmail = document.getElementById("studentEmail").value;
+
+    if (!name || !studentId || !studentEmail) {
+      alert("Please fill in all required details first!");
+      return;
     }
-  });
 
-  updateButton();
+    submitRegistration();
+
+  } else {
+    showCancelPopup();
+  }
+});
 });
