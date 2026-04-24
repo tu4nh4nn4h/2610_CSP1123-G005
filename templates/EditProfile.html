@@ -154,13 +154,13 @@
                         <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
 
                         <h3>Change Password</h3>
-                        <form>
+                        <form action="/change_password" method="post">
                             <label for="current-password">Current Password:</label><br>
-                            <input type="password" id="current-password" name="current-password" required><br>
+                            <input type="password" id="current-password" name="current_password" required><br>
                             <label for="new-password">New Password:</label><br>
-                            <input type="password" id="new-password" name="new-password" required><br>
+                            <input type="password" id="new-password" name="new_password" required><br>
                             <label for="confirm-password">Confirm Password:</label><br>
-                            <input type="password" id="confirm-password" name="confirm-password" required><br>
+                            <input type="password" id="confirm-password" name="confirm_password" required><br>
                             <input type="submit" value="Update Password">
                         </form>
                         <script>
@@ -178,11 +178,11 @@
                     <div class="popup-content">
                         <span class="close-btn" onclick="closePopup('emailPopup')">&times;</span>
                         <h3>Change Email</h3>
-                        <form>
+                        <form action="/change_email" method="post">
                             <label for="current-email">Current Email:</label><br>
-                            <input type="email" id="current-email" name="current-email" required><br>
+                            <input type="email" id="current-email" name="current_email" required><br>
                             <label for="new-email">New Email:</label><br>
-                            <input type="email" id="new-email" name="new-email" required><br>
+                            <input type="email" id="new-email" name="new_email" required><br>
                             <input type="submit" value="Update Email">
                         </form>
                         <script>

@@ -1,6 +1,47 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template
+from flask import request, session
 import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
+app.secret_key = "your_secret_key"
+
+def get_db_connection():
+    conn = sqlite3.connect('users.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    # Implementation for changing password
+    current = request.form['current_password']
+    new = request.form['new_password']
+    confirm = request.form['confirm_password']
+
+    user_id = session.get('user_id')  # Assuming user ID is stored in session
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT password FROM users_general WHERE student_id = %s", (user_id,))
+    result = cursor.fetchone()
+
+    if result:
+        db_password = result[0]
+        if not check_password_hash(db_password, current):
+            return "Current password is incorrect"
+        if new != confirm:
+            return "New password and confirm password do not match"
+        cursor.execute("UPDATE users_general SET password = %s WHERE student_id = %s", (generate_password_hash(new), user_id))
+        conn.commit()
+        conn.close()
+        return "Password updated successfully"
+    else:
+        return "User not found"
+
+
+@app.route('/change_email', methods=['POST'])
+def change_email():
+    # Implementation for changing email
+    pass
 
 def get_database_connection():
     connection = sqlite3.connect('database.db')  # your database file
@@ -69,12 +110,46 @@ def setup_database():
     conn.commit()
     conn.close()
 
-@app.route('/')
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        # Handle sign-in logic here
+        pass
+    return render_template('signin.html')
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['Name']
+        email = request.form['Email']
+        username = request.form['Username']
+        student_id = request.form['Student_id']
+        password = request.form['Password']
+        password_confirm = request.form['confirmPassword']
+        # Handle registration logic here
+        pass
+    return render_template('register.html')
+@app.route('/register_organizer', methods=['GET', 'POST'])
+def register_organizer():
+    if request.method == 'POST':
+        name = request.form['Name']
+        email = request.form['Email']
+        username = request.form['Username']
+        student_id = request.form['Student_id']
+        password = request.form['Password']
+        password_confirm = request.form['confirmPassword']
+        club_body = request.form['Club_body']
+        position_title = request.form['Position_title']
+        # Handle organizer registration logic here
+        pass
+    return render_template('register_organizer.html')
+
 def home():
     return render_template('eventdisbrow.html')
 
-@app.route('/register')
-def register():
+@app.route('/eventregister')
+def eventregister():
     return render_template('eventregsys.html')
 
 @app.route('/form', methods=['GET', 'POST'])
