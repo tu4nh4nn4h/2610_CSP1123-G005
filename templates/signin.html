@@ -87,8 +87,10 @@
                 <div class="popup-content">
                     <span style="float: right; cursor: pointer;" onclick="hidePopup()">&times;</span>
                     <h2>Sign Up as:</h2>
-                    <button onclick="location.href='register.html'">Student</button>
-                    <button onclick="location.href='register_organizer.html'">Event Organizer</button>
+                    <a href="{{ url_for('register') }}">User</a>
+                    <a href="{{ url_for('register_organizer') }}">Event Organizer</a>
+                    <!-- <a href="{{ url_for('register') }}"><button>Student</button></a>
+                    <a href="{{ url_for('register_organizer') }}"><button>Event Organizer</button></a> -->
                 </div>
                 <script>
                     function showPopup() {
