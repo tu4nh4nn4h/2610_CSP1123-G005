@@ -121,15 +121,29 @@ def signin():
 @app.route('/register')
 def register():
     if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        username = request.form['username']
-        student_id = request.form['student_id']
-        password = request.form['password']
-        password_confirm = request.form['password_confirm']
+        name = request.form['Name']
+        email = request.form['Email']
+        username = request.form['Username']
+        student_id = request.form['Student_id']
+        password = request.form['Password']
+        password_confirm = request.form['confirmPassword']
         # Handle registration logic here
         pass
     return render_template('register.html')
+@app.route('/register_organizer')
+def register_organizer():
+    if request.method == 'POST':
+        name = request.form['Name']
+        email = request.form['Email']
+        username = request.form['Username']
+        student_id = request.form['Student_id']
+        password = request.form['Password']
+        password_confirm = request.form['confirmPassword']
+        club_body = request.form['Club_body']
+        position_title = request.form['Position_title']
+        # Handle organizer registration logic here
+        pass
+    return render_template('register_organizer.html')
 
 def home():
     return render_template('eventdisbrow.html')
