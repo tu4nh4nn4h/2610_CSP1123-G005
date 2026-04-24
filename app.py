@@ -110,7 +110,7 @@ def setup_database():
     conn.commit()
     conn.close()
 
-@app.route('/signin')
+@app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
         username = request.form['username']
@@ -118,7 +118,7 @@ def signin():
         # Handle sign-in logic here
         pass
     return render_template('signin.html')
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         name = request.form['Name']
@@ -130,7 +130,7 @@ def register():
         # Handle registration logic here
         pass
     return render_template('register.html')
-@app.route('/register_organizer')
+@app.route('/register_organizer', methods=['GET', 'POST'])
 def register_organizer():
     if request.method == 'POST':
         name = request.form['Name']
