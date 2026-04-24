@@ -1,62 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Event Registration Form</title>
-  <link rel="stylesheet" type="css" href="{{ url_for('static', filename='eventregsys.css') }}">
-</head>
+<title>Event Registration Form</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}"></head> <body>
+<div class="container">
 
-<body>
+  <div class="form-card">
 
-  <div class="container">
+    <div class="header">
+      <h2>Event Registration</h2>
+      <p>Please fill in your details carefully</p>
+    </div>
 
-    <div class="form-card">
+    <form onsubmit="submitRegistration(); return false;">
 
-      <h2 id="eventTitle">Event Registration</h2>
-
-      <form onsubmit="submitRegistration(); return false;">
-
+      <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="name" placeholder="Enter your full name" required>
+      </div>
 
+      <div class="form-group">
         <label>Student ID</label>
         <input type="text" id="studentId" placeholder="e.g. 12345678" required>
+      </div>
 
-        <label>Student Email</label>
-        <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Student Email</label>
+          <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
+        </div>
 
-        <label>Personal Email</label>
-        <input type="email" id="personalEmail" placeholder="your personal email (optional)">
+        <div class="form-group">
+          <label>Personal Email</label>
+          <input type="email" id="personalEmail" placeholder="optional">
+        </div>
+      </div>
 
-        <label>Phone Number</label>
-        <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
+        </div>
 
-        <label>Faculty</label>
-        <select id="faculty" required>
-          <option value="">-- Select Faculty --</option>
-          <option value="FCI">FCI</option>
-          <option value="FAIE">FAIE</option>
-          <option value="FOM">FOM</option>
-          <option value="FAC">FAC</option>
-          <option value="FCM">FCM</option>
-          <option value="FCA">FCA</option>
-        </select>
+        <div class="form-group">
+          <label>Faculty</label>
+          <select id="faculty" required>
+            <option value="">Select faculty</option>
+            <option value="FCI">FCI</option>
+            <option value="FAIE">FAIE</option>
+            <option value="FOM">FOM</option>
+            <option value="FAC">FAC</option>
+            <option value="FCM">FCM</option>
+            <option value="FCA">FCA</option>
+          </select>
+        </div>
+      </div>
 
-        <button type="submit">Submit Registration</button>
+      <button type="submit">Submit Registration</button>
 
-      </form>
-
-    </div>
-    <!-- Success Popup -->
-<div id="successPopup" class="popup hidden">
-  <div class="popup-content">
-    <h3>🎉 Registration Successful!</h3>
-    <p>Your event registration has been submitted.</p>
-    <button onclick="closePopup()">OK</button>
+    </form>
   </div>
+
 </div>
-
-  </div>
-
-  <script src="event.js"></script>
-</body>
-</html>
