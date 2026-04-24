@@ -23,7 +23,7 @@ const events = [
 ];
 
 
-// ================= REGISTER PAGE =================
+// ================= NAVIGATE TO FORM =================
 function registerEventPage() {
   const event = events[0];
   localStorage.setItem("selectedEvent", event.title);
@@ -36,9 +36,12 @@ function submitRegistration() {
   const name = document.getElementById("name").value;
   const studentId = document.getElementById("studentId").value;
   const studentEmail = document.getElementById("studentEmail").value;
+  const personalEmail = document.getElementById("personalEmail").value;
+  const phone = document.getElementById("phone").value;
+  const faculty = document.getElementById("faculty").value;
 
-  if (!name || !studentId || !studentEmail) {
-    alert("Please fill in required fields!");
+  if (!name || !studentId || !studentEmail || !phone || !faculty) {
+    alert("Please fill in all required fields!");
     return;
   }
 
@@ -47,9 +50,12 @@ function submitRegistration() {
 
   registrations.push({
     event: eventName,
-    name: name,
-    studentId: studentId,
-    studentEmail: studentEmail
+    name,
+    studentId,
+    studentEmail,
+    personalEmail,
+    phone,
+    faculty
   });
 
   localStorage.setItem("registrations", JSON.stringify(registrations));
@@ -58,18 +64,16 @@ function submitRegistration() {
 }
 
 
-// ================= BACK BUTTON =================
+// ================= BACK TO EVENT PAGE =================
 function backToEvent() {
   document.getElementById("successModal").classList.add("hidden");
   window.location.href = "/eventregister";
 }
 
 
-// ================= FORM HANDLER =================
+// ================= FORM LISTENER =================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("regForm");
-
-  if (!form) return;
 
   form.addEventListener("submit", function (e) {
     e.preventDefault();

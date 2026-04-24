@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Event Registration Form</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}"></head> <body>
+  <title>Event Registration Form</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+</head>
+
+<body>
+
 <div class="container">
 
   <div class="form-card">
@@ -55,24 +59,23 @@
           </select>
         </div>
       </div>
-<!-- success popup -->
-<button type="submit">Register</button>    </form>
+
+      <button type="submit">Register</button>
+
+    </form>
   </div>
+
+</div>
+
+<!-- SUCCESS POPUP ONLY -->
 <div id="successModal" class="modal hidden">
   <div class="modal-content">
     <p>Registration successful!</p>
     <button onclick="backToEvent()">Back to event</button>
   </div>
 </div>
-<!-- cancel confirmation popup -->
-<div id="cancelModal" class="modal hidden"> 
-  <div class="modal-content">
-    <p>Are you sure you want to cancel your registration?</p>
 
-    <button onclick="confirmCancel()">Yes</button>
-    <button onclick="closeCancel()" class="noBtn">No</button>
-  </div>
-</div>
-</div>
 <script src="{{ url_for('static', filename='event.js') }}"></script>
+
 </body>
+</html>
