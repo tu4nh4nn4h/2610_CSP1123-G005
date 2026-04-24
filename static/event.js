@@ -96,6 +96,11 @@ function confirmCancel() {
   updateButton();
 }
 
+function backToEvent() {
+  document.getElementById("successModal").classList.add("hidden");
+  window.location.href = "/eventregister";
+}
+
 // ================= MAIN BUTTON CONTROL =================
 document.addEventListener("DOMContentLoaded", function () {
   const btn = document.getElementById("registerBtn");
