@@ -128,3 +128,17 @@ function cancelRegistration() {
 
   window.onload = updateButton;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("registerBtn");
+
+  if (btn) {
+    btn.addEventListener("click", function () {
+      const event = events[0];
+
+      localStorage.setItem("selectedEvent", event.title);
+
+      window.location.href = "/form";  // FLASK ROUTE ONLY
+    });
+  }
+});
