@@ -59,16 +59,38 @@ function loadRegistrations() {
 }
 
 function submitRegistration() {
-  // you can still collect data here if needed
   const name = document.getElementById("name").value;
+  const studentId = document.getElementById("studentId").value;
+  const studentEmail = document.getElementById("studentEmail").value;
+  const personalEmail = document.getElementById("personalEmail").value;
+  const phone = document.getElementById("phone").value;
+  const faculty = document.getElementById("faculty").value;
 
-  if (!name) {
+  if (!name || !studentId || !studentEmail) {
     alert("Please fill in required fields!");
     return;
   }
 
-  // show popup
+  let eventName = localStorage.getItem("selectedEvent");
+
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+
+  registrations.push({
+    event: eventName,
+    name,
+    studentId,
+    studentEmail,
+    personalEmail,
+    phone,
+    faculty
+  });
+
+  localStorage.setItem("registrations", JSON.stringify(registrations));
+
+  // ✅ SHOW SUCCESS POPUP (instead of alert)
   document.getElementById("successPopup").classList.remove("hidden");
+
+  updateButton();
 }
 
 function closePopup() {
@@ -103,60 +125,58 @@ function closePopup() {
   alert("Registered successfully!");
 
 window.location.href = "/register";
-
 function updateButton() {
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
   let eventName = localStorage.getItem("selectedEvent") || events[0].title;
 
-  let isRegistered = registrations.some(r => r.event === eventName);
-
   const btn = document.querySelector(".register-btn");
-
   if (!btn) return;
+
+  let isRegistered = registrations.some(r => r.event === eventName);
 
   if (isRegistered) {
     btn.innerText = "Cancel Registration";
     btn.style.background = "red";
-    btn.onclick = cancelRegistration;
+
+    btn.onclick = function () {
+      showCancelPopup(eventName);
+    };
+
   } else {
     btn.innerText = "Register";
     btn.style.background = "";
+
     btn.onclick = registerEventPage;
   }
 }
 
-updateButton();
+function cancelRegistration(eventName) {
+  showCancelPopup(eventName);
+}
 
-function cancelRegistration() {
-  let confirmCancel = confirm("Are you sure you want to cancel the registration?");
+function showCancelPopup(eventName) {
+  const popup = document.getElementById("cancelPopup");
+  popup.classList.remove("hidden");
 
-  if (!confirmCancel) {
-    return; // do nothing (NO)
-  }
+  popup.dataset.event = eventName;
+}
+
+function closeCancelPopup() {
+  document.getElementById("cancelPopup").classList.add("hidden");
+}
+
+function confirmCancel() {
+  let eventName = document.getElementById("cancelPopup").dataset.event;
 
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-   let eventName = localStorage.getItem("selectedEvent");
+
   registrations = registrations.filter(r => r.event !== eventName);
 
   localStorage.setItem("registrations", JSON.stringify(registrations));
 
-  alert("Registration cancelled");
+  closeCancelPopup();
 
-  location.reload();
+  alert("Your registration has been removed");
 
-  window.onload = updateButton;
+  updateButton();
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  const btn = document.getElementById("registerBtn");
-
-  if (btn) {
-    btn.addEventListener("click", function () {
-      const event = events[0];
-
-      localStorage.setItem("selectedEvent", event.title);
-
-      window.location.href = "/form";  // FLASK ROUTE ONLY
-    });
-  }
-});

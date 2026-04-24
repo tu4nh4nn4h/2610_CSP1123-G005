@@ -12,7 +12,7 @@
       <p>Please fill in your details carefully</p>
     </div>
 
-    <form onsubmit="submitRegistration(); return false;">
+    <form id="regForm">
 
       <div class="form-group">
         <label>Full Name</label>
@@ -55,10 +55,23 @@
           </select>
         </div>
       </div>
-
-      <button type="submit">Submit Registration</button>
-
+<!-- success popup -->
+<button type="submit" id="registerBtn">Register</button>
     </form>
   </div>
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <p>Registration successful!</p>
+    <button onclick="backToEvent()">Back to event</button>
+  </div>
+</div>
+<!-- cancel confirmation popup -->
+<div id="cancelModal" class="modal">
+  <div class="modal-content">
+    <p>Are you sure you want to cancel your registration?</p>
 
+    <button onclick="confirmCancel()">Yes</button>
+    <button onclick="closeCancel()" class="noBtn">No</button>
+  </div>
+</div>
 </div>
