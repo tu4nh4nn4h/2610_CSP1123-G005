@@ -129,7 +129,7 @@ def signin():
         conn.close()
         if user:
             session['user'] = username  # Assuming the first column is user ID
-            return redirect(url_for('EventDisBrow'))
+            return redirect(url_for('eventbrowsing'))
         else:
             return "Invalid username or password"
         # Handle sign-in logic here
