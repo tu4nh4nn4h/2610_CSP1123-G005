@@ -2,7 +2,7 @@
 <html>
 <head>
   <title>Event Registration Form</title>
-  <link rel="stylesheet" href="eventregsys.css">
+  <link rel="stylesheet" type="css" href="{{ url_for('static', filename='eventregsys.css') }}">
 </head>
 
 <body>
@@ -46,6 +46,14 @@
       </form>
 
     </div>
+    <!-- Success Popup -->
+<div id="successPopup" class="popup hidden">
+  <div class="popup-content">
+    <h3>🎉 Registration Successful!</h3>
+    <p>Your event registration has been submitted.</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
 
   </div>
 

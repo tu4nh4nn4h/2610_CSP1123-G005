@@ -59,6 +59,24 @@ function loadRegistrations() {
 }
 
 function submitRegistration() {
+  // you can still collect data here if needed
+  const name = document.getElementById("name").value;
+
+  if (!name) {
+    alert("Please fill in required fields!");
+    return;
+  }
+
+  // show popup
+  document.getElementById("successPopup").classList.remove("hidden");
+}
+
+function closePopup() {
+  document.getElementById("successPopup").classList.add("hidden");
+
+  // optional: reset form after closing
+  document.querySelector("form").reset();
+}
   let name = document.getElementById("name").value;
   let studentId = document.getElementById("studentId").value;
   let studentEmail = document.getElementById("studentEmail").value;
@@ -84,7 +102,7 @@ function submitRegistration() {
 
   alert("Registered successfully!");
 
-window.location.href = "/register";}
+window.location.href = "/register";
 
 function updateButton() {
   let registrations = JSON.parse(localStorage.getItem("registrations")) || [];

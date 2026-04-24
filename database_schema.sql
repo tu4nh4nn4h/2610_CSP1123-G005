@@ -49,15 +49,6 @@ CREATE TABLE event_tag_map (
     PRIMARY KEY(event_id, tag_id)
 );
 
-INSERT INTO users_general (student_id, name, username, email, password, role)
-VALUES ('S001', 'Ali', 'ali123', 'ali@email.com', 'pass123', 'user');
-
-INSERT INTO user_details (student_id, bio, birthday, faculty, year_of_study)
-VALUES ('S001', 'I love coding', '2003-05-01', 'Science', 2);
-
-INSERT INTO organizer_details (student_id, club_body, position_title)
-VALUES ('S002', 'Drama Club', 'President');
-
 SELECT * FROM users_general;
 SELECT * FROM user_details;
 SELECT * FROM organizer_details;
