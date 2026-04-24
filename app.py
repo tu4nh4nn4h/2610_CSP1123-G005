@@ -137,11 +137,12 @@ def register():
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
                            (student_id, name, username, email, generate_password_hash(password), 'user'))
             conn.commit()
-        except:
+        except sqlite3.IntegrityError:
             return "username or email already exists"
         finally:
             conn.close()
-            return redirect(url_for('signin'))
+
+        return redirect(url_for('signin'))
         
     return render_template('register.html')
 
@@ -160,6 +161,18 @@ def register_organizer():
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         pass
+        try:
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), 'organizer'))
+            cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)",
+                           (student_id, club_body, position_title))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            return "username or email already exists"
+        finally:
+            conn.close()
+            
+        return redirect(url_for('signin'))
     return render_template('register_organizer.html')
 
 @app.route('/change_password', methods=['POST'])
