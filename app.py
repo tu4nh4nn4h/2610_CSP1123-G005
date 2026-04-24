@@ -121,6 +121,17 @@ def signin():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            session['user'] = username  # Assuming the first column is user ID
+            return redirect(url_for('EventDisBrow'))
+        else:
+            return "Invalid username or password"
         # Handle sign-in logic here
         pass
      
@@ -136,7 +147,19 @@ def register():
         password = request.form['Password']
         password_confirm = request.form['confirmPassword']
         # Handle registration logic here
-        pass
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), 'user'))
+            conn.commit()
+        except:
+            return "username or email already exists"
+        finally:
+            conn.close()
+            return redirect(url_for('signin'))
+        
     return render_template('register.html')
 
 @app.route('/register_organizer', methods=['GET', 'POST'])
