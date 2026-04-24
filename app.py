@@ -177,8 +177,16 @@ def register_organizer():
         pass
     return render_template('register_organizer.html')
 
+@app.route('/eventbrowsing')
+def eventbrowsing():
+    return render_template('eventdisbrow.html')
+
 @app.route('/eventregister')
 def eventregister():
+    return render_template('eventregsys.html')
+
+@app.route('/event')
+def event_page():
     return render_template('eventregsys.html')
 
 @app.route('/form', methods=['GET', 'POST'])
