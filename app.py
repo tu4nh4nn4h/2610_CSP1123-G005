@@ -9,34 +9,6 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/change_password', methods=['POST'])
-def change_password():
-    # Implementation for changing password
-    current = request.form['current_password']
-    new = request.form['new_password']
-    confirm = request.form['confirm_password']
-
-    user_id = session.get('user_id')  # Assuming user ID is stored in session
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT password FROM users_general WHERE student_id = ?", (user_id,))
-    result = cursor.fetchone()
-
-    if result:
-        db_password = result[0]
-        if not check_password_hash(db_password, current):
-            return "Current password is incorrect"
-        if new != confirm:
-            return "New password and confirm password do not match"
-        cursor.execute("UPDATE users_general SET password = ? WHERE student_id = ?", (generate_password_hash(new), user_id))
-        conn.commit()
-        conn.close()
-        return "Password updated successfully"
-    else:
-        return "User not found"
-    
-
 
 @app.route('/change_email', methods=['POST'])
 def change_email():
@@ -129,7 +101,7 @@ def signin():
         conn.close()
         if user:
             session['user'] = username  # Assuming the first column is user ID
-            return redirect(url_for('EventDisBrow'))
+            return redirect(url_for('eventbrowsing'))
         else:
             return "Invalid username or password"
         # Handle sign-in logic here
@@ -174,8 +146,38 @@ def register_organizer():
         club_body = request.form['Club_body']
         position_title = request.form['Position_title']
         # Handle organizer registration logic here
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
         pass
     return render_template('register_organizer.html')
+
+@app.route('/change_password', methods=['POST'])
+def change_password():
+    # Implementation for changing password
+    current = request.form['current_password']
+    new = request.form['new_password']
+    confirm = request.form['confirm_password']
+
+    user_id = session.get('username')  # Assuming username is stored in session
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT password FROM users_general WHERE username = ?", (user_id,))
+    result = cursor.fetchone()
+
+    if result:
+        db_password = result[0]
+        if not check_password_hash(db_password, current):
+            return "Current password is incorrect"
+        if new != confirm:
+            return "New password and confirm password do not match"
+        cursor.execute("UPDATE users_general SET password = ? WHERE username = ?", (generate_password_hash(new), user_id))
+        conn.commit()
+        conn.close()
+        return "Password updated successfully"
+    else:
+        return "User not found"
+    return render_template('EditProfile.html')
 
 @app.route('/eventbrowsing')
 def eventbrowsing():
