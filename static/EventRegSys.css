@@ -115,7 +115,12 @@ h2 {
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #4f46e5, #06b6d4);
+  background: linear-gradient(
+    135deg,
+    #e6b2b8,   /* soft pink */
+    #b57edc,   /* light purple */
+    #7b2cbf    /* deep purple */
+  );
   height: 100vh;
   display: flex;
   justify-content: center;
