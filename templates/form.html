@@ -11,21 +11,39 @@
 
     <div class="form-card">
 
-      <h2 id="eventTitle"></h2>
+      <h2 id="eventTitle">Event Registration</h2>
 
-      <input type="text" id="name" placeholder="Full Name" required>
+      <form onsubmit="submitRegistration(); return false;">
 
-      <input type="text" id="studentId" placeholder="Student ID" required>
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="Enter your full name" required>
 
-      <input type="email" id="studentEmail" placeholder="Student Email" required>
+        <label>Student ID</label>
+        <input type="text" id="studentId" placeholder="e.g. 12345678" required>
 
-      <input type="email" id="personalEmail" placeholder="Personal Email" required>
+        <label>Student Email</label>
+        <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
 
-      <input type="text" id="phone" placeholder="Phone Number" required>
+        <label>Personal Email</label>
+        <input type="email" id="personalEmail" placeholder="your personal email (optional)">
 
-      <input type="text" id="faculty" placeholder="Faculty / Course" required>
+        <label>Phone Number</label>
+        <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
 
-      <button onclick="submitRegistration()">Submit</button>
+        <label>Faculty</label>
+        <select id="faculty" required>
+          <option value="">-- Select Faculty --</option>
+          <option value="FCI">FCI</option>
+          <option value="FAIE">FAIE</option>
+          <option value="FOM">FOM</option>
+          <option value="FAC">FAC</option>
+          <option value="FCM">FCM</option>
+          <option value="FCA">FCA</option>
+        </select>
+
+        <button type="submit">Submit Registration</button>
+
+      </form>
 
     </div>
 
