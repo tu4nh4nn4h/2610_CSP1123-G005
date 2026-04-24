@@ -104,32 +104,10 @@ function backToEvent() {
 
 // ================= MAIN BUTTON CONTROL =================
 document.addEventListener("DOMContentLoaded", function () {
-  const btn = document.getElementById("registerBtn");
 
-  if (!btn) return;
-
-btn.addEventListener("click", function () {
-  let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
-  let eventName = localStorage.getItem("selectedEvent");
-
-  let isRegistered = registrations.some(r => r.event === eventName);
-
-  if (!isRegistered) {
-
-    // 🔥 CHECK FORM FIRST
-    const name = document.getElementById("name").value;
-    const studentId = document.getElementById("studentId").value;
-    const studentEmail = document.getElementById("studentEmail").value;
-
-    if (!name || !studentId || !studentEmail) {
-      alert("Please fill in all required details first!");
-      return;
-    }
-
+  document.getElementById("regForm").addEventListener("submit", function(e) {
+    e.preventDefault();
     submitRegistration();
+  });
 
-  } else {
-    showCancelPopup();
-  }
-});
 });
