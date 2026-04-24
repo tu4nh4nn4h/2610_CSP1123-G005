@@ -110,6 +110,10 @@ def setup_database():
     conn.commit()
     conn.close()
 
+@app.route('/')
+def home():
+    return "Welcome! Go to /register or /signin to continue."
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
