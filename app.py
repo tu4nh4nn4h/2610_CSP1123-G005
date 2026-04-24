@@ -118,6 +118,7 @@ def signin():
         # Handle sign-in logic here
         pass
     return render_template('signin.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -130,6 +131,7 @@ def register():
         # Handle registration logic here
         pass
     return render_template('register.html')
+
 @app.route('/register_organizer', methods=['GET', 'POST'])
 def register_organizer():
     if request.method == 'POST':
@@ -144,9 +146,6 @@ def register_organizer():
         # Handle organizer registration logic here
         pass
     return render_template('register_organizer.html')
-
-def home():
-    return render_template('eventdisbrow.html')
 
 @app.route('/eventregister')
 def eventregister():
