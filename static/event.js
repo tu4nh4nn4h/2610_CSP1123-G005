@@ -31,13 +31,11 @@ function registerEventPage() {
 }
 
 
-// ================= SUBMIT FORM =================
 function submitRegistration() {
-  const name = document.getElementById("name").value;
-  const studentId = document.getElementById("studentId").value;
-  const studentEmail = document.getElementById("studentEmail").value;
-  const personalEmail = document.getElementById("personalEmail").value;
-  const phone = document.getElementById("phone").value;
+  const name = document.getElementById("name").value.trim();
+  const studentId = document.getElementById("studentId").value.trim();
+  const studentEmail = document.getElementById("studentEmail").value.trim();
+  const phone = document.getElementById("phone").value.trim();
   const faculty = document.getElementById("faculty").value;
 
   if (!name || !studentId || !studentEmail || !phone || !faculty) {
@@ -53,7 +51,6 @@ function submitRegistration() {
     name,
     studentId,
     studentEmail,
-    personalEmail,
     phone,
     faculty
   });
