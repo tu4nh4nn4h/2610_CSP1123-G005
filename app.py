@@ -159,6 +159,10 @@ def register_organizer():
 def eventregister():
     return render_template('eventregsys.html')
 
+@app.route('/event')
+def event_page():
+    return render_template('eventregsys.html')
+
 @app.route('/form', methods=['GET', 'POST'])
 def form():
     if request.method == 'POST':
