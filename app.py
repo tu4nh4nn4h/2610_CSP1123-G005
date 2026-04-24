@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import sqlite3
 app = Flask(__name__)
 
@@ -77,9 +77,12 @@ def home():
 def register():
     return render_template('eventregsys.html')
 
-@app.route('/form')
+@app.route('/form', methods=['GET', 'POST'])
 def form():
-    return render_template('form.html')
+    if request.method == 'POST':
+        # Handle form submission logic here
+        pass
+    return render_template('form.html') # show the form
 
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
