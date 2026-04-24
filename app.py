@@ -114,6 +114,8 @@ def setup_database():
 @app.route('/')
 def home():
     return render_template('home.html')
+    
+
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -122,6 +124,7 @@ def signin():
         password = request.form['password']
         # Handle sign-in logic here
         pass
+     
     return render_template('signin.html')
 
 @app.route('/register', methods=['GET', 'POST'])
