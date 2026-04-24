@@ -49,6 +49,13 @@ CREATE TABLE IF NOT EXISTS event_tag_map (
     PRIMARY KEY(event_id, tag_id)
 );
 
-SELECT * FROM users_general;
-SELECT * FROM user_details;
-SELECT * FROM organizer_details;
+CREATE TABLE IF NOT EXISTS event_registrations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    student_id VARCHAR(10) NOT NULL,
+    student_email TEXT NOT NULL,
+    personal_email TEXT,
+    phone_number TEXT NOT NULL,
+    faculty TEXT NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+);
