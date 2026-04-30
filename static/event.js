@@ -72,38 +72,37 @@ function backToEvent() {
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("regForm");
 
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    submitRegistration();
-  });
+  function handleSubmit(event) {
+    event.preventDefault();
+
+    const data = {
+      name: document.getElementById("name").value,
+      studentId: document.getElementById("studentId").value,
+      studentEmail: document.getElementById("studentEmail").value,
+      personalEmail: document.getElementById("personalEmail").value,
+      phone: document.getElementById("phone").value,
+      faculty: document.getElementById("faculty").value
+    };
+
+    fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+      alert("Registered successfully!");
+      document.getElementById("regForm").reset();
+    })
+    .catch(error => {
+      alert("Error occurred!");
+      console.error(error);
+    });
+  }
+
+  if (form) {
+    form.addEventListener("submit", handleSubmit);
+  }
 });
-
-function handleSubmit(event) {
-  event.preventDefault();
-
-  const data = {
-    name: document.getElementById("name").value,
-    studentId: document.getElementById("studentId").value,
-    studentEmail: document.getElementById("studentEmail").value,
-    personalEmail: document.getElementById("personalEmail").value,
-    phone: document.getElementById("phone").value,
-    faculty: document.getElementById("faculty").value
-  };
-
-  fetch("/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  })
-  .then(response => response.json())
-  .then(result => {
-    alert("Registered successfully!");
-    document.getElementById("regForm").reset();
-  })
-  .catch(error => {
-    alert("Error occurred!");
-    console.error(error);
-  });
-}
