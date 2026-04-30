@@ -16,8 +16,7 @@
       <p>Please fill in your details carefully</p>
     </div>
 
-    <form id="regForm" novalidate>
-
+<form id="regForm" onsubmit="handleSubmit(event)">
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="name" placeholder="Enter your full name" required>
@@ -67,13 +66,6 @@
 
 </div>
 
-<!-- SUCCESS POPUP ONLY -->
-<div id="successModal" class="modal hidden">
-  <div class="modal-content">
-    <p>Registration successful!</p>
-    <button onclick="backToEvent()">Back to event</button>
-  </div>
-</div>
 
 <script src="{{ url_for('static', filename='event.js') }}"></script>
 

@@ -77,3 +77,33 @@ document.addEventListener("DOMContentLoaded", function () {
     submitRegistration();
   });
 });
+
+function handleSubmit(event) {
+  event.preventDefault();
+
+  const data = {
+    name: document.getElementById("name").value,
+    studentId: document.getElementById("studentId").value,
+    studentEmail: document.getElementById("studentEmail").value,
+    personalEmail: document.getElementById("personalEmail").value,
+    phone: document.getElementById("phone").value,
+    faculty: document.getElementById("faculty").value
+  };
+
+  fetch("/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    alert("Registered successfully!");
+    document.getElementById("regForm").reset();
+  })
+  .catch(error => {
+    alert("Error occurred!");
+    console.error(error);
+  });
+}
