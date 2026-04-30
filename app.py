@@ -107,16 +107,17 @@ def signin():
 
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, password))
+        cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
         conn.close()
         if user:
-            session['user'] = username  # Assuming the first column is user ID
-            return redirect(url_for('eventbrowsing'))
+            stored_password = user[4]
+              
+            if check_password_hash(stored_password, password):
+                session['user'] = username  # Assuming the first column is user ID
+                return redirect(url_for('eventbrowsing'))
         else:
             return "Invalid username or password"
-        # Handle sign-in logic here
-        pass
      
     return render_template('signin.html')
 
@@ -129,7 +130,10 @@ def register():
         student_id = request.form['Student_id']
         password = request.form['Password']
         password_confirm = request.form['confirmPassword']
-        # Handle registration logic here
+
+        if password != password_confirm:
+            return "Passwords do not match"
+        
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
 
@@ -137,6 +141,7 @@ def register():
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
                            (student_id, name, username, email, generate_password_hash(password), 'user'))
             conn.commit()
+
         except sqlite3.IntegrityError:
             return "username or email already exists"
         finally:
@@ -205,7 +210,7 @@ def change_password():
 
 @app.route('/eventbrowsing')
 def eventbrowsing():
-    return render_template('eventdisbrow.html')
+    return render_template('EventDisBrow.html')
 
 @app.route('/eventregister')
 def eventregister():
