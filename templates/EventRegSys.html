@@ -7,38 +7,120 @@
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="event-card">
+  <!-- EVENT 1 -->
+  <div class="event-card">
 
-      <div class="event-image"></div>
+    <div class="event-image"></div>
 
-      <h2>MMU Career Talk 2026</h2>
+    <h2>MMU Career Talk 2026</h2>
 
-      <p class="desc">
-        The MMU Career Talk 2026 is designed to help students explore future career paths, gain insights from industry professionals, and prepare themselves for the evolving job market. 
-        This event provides valuable guidance on employability skills, internship opportunities, and career planning strategies.
-        <br><br>
-        Participants will also receive an e-certificate upon attendance, making it a great addition to your academic portfolio. On top of that, don’t miss out on our exciting lucky draw session with special prizes to be won!
-      </p>
+    <p class="desc">
+      The MMU Career Talk 2026 is designed to help students explore future career paths, gain insights from industry professionals, and prepare themselves for the evolving job market. 
+      This event provides valuable guidance on employability skills, internship opportunities, and career planning strategies.
+      <br><br>
+      Participants will also receive an e-certificate upon attendance, making it a great addition to your academic portfolio. On top of that, don’t miss out on our exciting lucky draw session with special prizes to be won!
+    </p>
 
-      <div class="details">
-        <p><strong>Date:</strong> <span id="date">27th April 2026</span></p>
-        <p><strong>Time:</strong> <span id="time">10:00 AM - 4:00 PM</span></p>
-        <p><strong>Venue:</strong> <span id="venue">CNMX1005</span></p>
-      </div>
-
-      <a href="{{ url_for('form') }}">
-        <button class="register-btn" type="button">
-          Register
-        </button>
-      </a>
-
+    <div class="details">
+      <p><strong>Date:</strong> <span id="date1">27th June 2026</span></p>
+      <p><strong>Time:</strong> <span id="time1">10:00 AM - 4:00 PM</span></p>
+      <p><strong>Venue:</strong> <span id="venue1">CNMX1005</span></p>
     </div>
+
+    <button id="calendarBtn1" onclick="addToCalendar1()" style="display:none;">
+      Add to Google Calendar
+    </button>
+
+    <a href="{{ url_for('form') }}">
+      <button class="register-btn" type="button">Register</button>
+    </a>
 
   </div>
 
-  <script src="event.js"></script>
 
-</body>
-</html>
+  <!-- EVENT 2 -->
+  <div class="event-card">
+
+    <div class="event-image"></div>
+
+    <h2>Tech Innovation Workshop 2026</h2>
+
+    <p class="desc">
+      A hands-on workshop introducing students to AI tools, web development basics, and real-world tech projects.
+    </p>
+
+    <div class="details">
+      <p><strong>Date:</strong> <span id="date2">5th July 2026</span></p>
+      <p><strong>Time:</strong> <span id="time2">9:00 AM - 1:00 PM</span></p>
+      <p><strong>Venue:</strong> <span id="venue2">Engineering Lab 2</span></p>
+    </div>
+
+    <button id="calendarBtn2" onclick="addToCalendar2()" style="display:none;">
+      Add to Google Calendar
+    </button>
+
+    <a href="{{ url_for('form') }}">
+      <button class="register-btn" type="button">Register</button>
+    </a>
+
+  </div>
+
+
+  <!-- EVENT 3 -->
+  <div class="event-card">
+
+    <div class="event-image"></div>
+
+    <h2>Entrepreneurship Bootcamp</h2>
+
+    <p class="desc">
+      Learn how to start your own business, build startup ideas, and pitch like a pro with real entrepreneurs.
+    </p>
+
+    <div class="details">
+      <p><strong>Date:</strong> <span id="date3">12th July 2026</span></p>
+      <p><strong>Time:</strong> <span id="time3">10:00 AM - 3:00 PM</span></p>
+      <p><strong>Venue:</strong> <span id="venue3">Business Faculty Hall</span></p>
+    </div>
+
+    <button id="calendarBtn3" onclick="addToCalendar3()" style="display:none;">
+      Add to Google Calendar
+    </button>
+
+    <a href="{{ url_for('form') }}">
+      <button class="register-btn" type="button">Register</button>
+    </a>
+
+  </div>
+
+
+  <!-- EVENT 4 -->
+  <div class="event-card">
+
+    <div class="event-image"></div>
+
+    <h2>Sports & Wellness Day</h2>
+
+    <p class="desc">
+      A fun-filled day with sports activities, fitness challenges, and wellness workshops to promote healthy living.
+    </p>
+
+    <div class="details">
+      <p><strong>Date:</strong> <span id="date4">20th July 2026</span></p>
+      <p><strong>Time:</strong> <span id="time4">8:00 AM - 5:00 PM</span></p>
+      <p><strong>Venue:</strong> <span id="venue4">MMU Sports Complex</span></p>
+    </div>
+
+    <button id="calendarBtn4" onclick="addToCalendar4()" style="display:none;">
+      Add to Google Calendar
+    </button>
+
+    <a href="{{ url_for('form') }}">
+      <button class="register-btn" type="button">Register</button>
+    </a>
+
+  </div>
+
+</div>
