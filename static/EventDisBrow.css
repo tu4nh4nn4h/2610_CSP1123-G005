@@ -105,3 +105,20 @@ body {
   color: inherit;
   display: block;
 }
+
+.event-link {
+  display: block;
+  width: 100%;
+}
+
+.event-grid a {
+  display: block;
+}
+
+.event-link:hover .event-card {
+  cursor: pointer;
+}
+
+.event-card {
+  cursor: pointer;
+}
