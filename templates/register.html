@@ -80,6 +80,9 @@
                     <Label for="confirmPassword">Confirm Password: </Label>
                     <input type="password" id="confirmPassword" name="confirmPassword"><br>
 
+                    <label for="keyword">Keyword:</label>
+                    <input type="text" id="keyword" name="keyword"><br>
+
                     <button onclick="register()" class="button">Register</button>
                 </form>
             </div>
@@ -104,7 +107,8 @@
                         email: userEmail,
                         username: document.getElementById("Username").value,
                         student_id: document.getElementById("Student_id").value,
-                        password: document.getElementById("Password").value
+                        password: document.getElementById("Password").value,
+                        keyword: document.getElementById("keyword").value
                     })
                 })
                 .then(res => res.json())

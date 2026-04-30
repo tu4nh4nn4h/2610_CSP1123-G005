@@ -1,3 +1,5 @@
+from ast import keyword
+
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -31,6 +33,7 @@ def setup_database():
                         username VARCHAR(50) NOT NULL UNIQUE,
                         email TEXT NOT NULL UNIQUE,
                         password VARCHAR(50) NOT NULL,
+                        keyword TEXT,
                         role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
                      )''')
 
@@ -121,6 +124,32 @@ def signin():
      
     return render_template('signin.html')
 
+@app.route('/verify_keyword', methods=['POST'])
+def verify_keyword():
+    username = request.form['username']
+    keyword = request.form['keyword']
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_general WHERE username = ? AND keyword = ?", (username, keyword))
+    user = cursor.fetchone()
+    conn.close()
+
+    if user:
+        # Here you would typically check the keyword against a stored value
+        # For now, we'll just simulate a successful verification
+        session['reset_user'] = username  # Store the username in session for password reset
+        return redirect(url_for('reset_password'))
+    else:
+        return "Invalid username or keyword"
+    
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if 'reset_user' not in session:
+        return redirect(url_for('login'))
+    
+    return render_template('ResetPassword.html')
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -130,6 +159,7 @@ def register():
         student_id = request.form['Student_id']
         password = request.form['Password']
         password_confirm = request.form['confirmPassword']
+        keyword = request.form['keyword']
 
         if password != password_confirm:
             return "Passwords do not match"
@@ -138,8 +168,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
-                           (student_id, name, username, email, generate_password_hash(password), 'user'))
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
             conn.commit()
 
         except sqlite3.IntegrityError:
@@ -167,8 +197,8 @@ def register_organizer():
         cursor = conn.cursor()
         pass
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, role) VALUES (?, ?, ?, ?, ?, ?)",
-                           (student_id, name, username, email, generate_password_hash(password), 'organizer'))
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), keyword, 'organizer'))
             cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)",
                            (student_id, club_body, position_title))
             conn.commit()
