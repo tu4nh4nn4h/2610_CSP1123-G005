@@ -1,13 +1,10 @@
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
-<<<<<<< HEAD
 from itsdangerous import URLSafeTimedSerializer
 import smtplib
 from email.mime.text import MIMEText
 
-=======
->>>>>>> a200e48d4b3fe2542334820df6b5f6557bef9bdf
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -127,7 +124,6 @@ def signin():
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
         conn.close()
-<<<<<<< HEAD
         if user:
             stored_password = user[4]  # Assuming password is the 5th column
             is_verified = user[7]  # Assuming is_verified is the 8th column
@@ -145,15 +141,6 @@ def signin():
         
         
      
-=======
-
-        if user and check_password_hash(user["password"], password):
-            session['user'] = username
-            return redirect(url_for('eventbrowsing'))
-
-        return "Invalid username or password"
-
->>>>>>> a200e48d4b3fe2542334820df6b5f6557bef9bdf
     return render_template('signin.html')
 
 
@@ -222,17 +209,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-<<<<<<< HEAD
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
                            (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
-=======
-            cursor.execute("""
-                INSERT INTO users_general
-                (student_id, name, username, email, password, keyword, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (student_id, name, username, email,
-                  generate_password_hash(password), keyword, 'user'))
->>>>>>> a200e48d4b3fe2542334820df6b5f6557bef9bdf
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
@@ -251,7 +229,6 @@ def register():
 
     return render_template('register.html')
 
-<<<<<<< HEAD
 @app.route('/verify_email/<token>')
 def verify_email(token):
     try:
@@ -264,8 +241,6 @@ def verify_email(token):
         return "Email verified successfully! You can now log in."
     except:
         return "The verification link is invalid or has expired."
-=======
->>>>>>> a200e48d4b3fe2542334820df6b5f6557bef9bdf
 
 @app.route('/register_organizer', methods=['GET', 'POST'])
 def register_organizer():
