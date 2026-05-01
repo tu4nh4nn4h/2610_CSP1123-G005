@@ -105,7 +105,7 @@ def signin():
         user = cursor.fetchone()
         conn.close()
         if user:
-            stored_password = user[4]
+            stored_password = user[4]  # Assuming password is the 5th column
               
             if check_password_hash(stored_password, password):
                 session['user'] = username  # Assuming the first column is user ID
