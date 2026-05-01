@@ -1,3 +1,6 @@
+import email
+from os import name
+
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -218,8 +221,24 @@ def event_page():
 @app.route('/form', methods=['GET', 'POST'])
 def form():
     if request.method == 'POST':
-        # Handle form submission logic here
-        pass
+        name = request.form['Name']
+        student_email = request.form['Student_email']
+        personal_email = request.form['Personal_email']
+        phone_number = request.form['Phone_number']
+        student_id = request.form['Student_id']
+
+        # Handle registration logic here
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("INSERT INTO event_registrations (student_id, name, student_email, personal_email, phone_number) VALUES (?, ?, ?, ?, ?)",
+                           (student_id, name, student_email, personal_email, phone_number))
+            conn.commit()
+        finally:
+            conn.close()
+
+        return redirect(url_for('eventregister'))
     return render_template('form.html') # show the form
 
 if __name__ == "__main__":
