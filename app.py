@@ -1,4 +1,5 @@
 from ast import keyword
+from os import name
 
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
@@ -270,6 +271,29 @@ def form():
 
         return redirect(url_for('eventregister'))
     return render_template('form.html') # show the form
+
+@app.route('/createevent', methods=['GET', 'POST'])
+def create_event():
+    if request.method == 'POST':
+        event_name = request.form['Event_name']
+        event_description = request.form['Event_description']
+        event_date = request.form['Event_date']
+        event_time = request.form['Event_time']
+        event_location = request.form['Event_location']
+
+        # Handle registration logic here
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        try:
+            cursor.execute("INSERT INTO events (event_name, description, date, time, location) VALUES (?, ?, ?, ?, ?)",
+                           (event_name, event_description, event_date, event_time, event_location))
+            conn.commit()
+        finally:
+            conn.close()
+
+        return redirect(url_for('eventbrowsing'))
+    return render_template('create_event.html') # show the form
 
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
