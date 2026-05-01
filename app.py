@@ -313,10 +313,9 @@ def event_detail(event_id):
 
     return render_template('eventregsys.html', event=event, event_id=event_id)
 
-@app.route('/form')
+@app.route('/form', methods=['GET', 'POST'])
 def form():
     event_id = request.args.get('event_id')
-    return render_template('form.html', event_id=event_id)
     if request.method == 'POST':
         name = request.form['Name']
         student_email = request.form['Student_email']
@@ -336,7 +335,8 @@ def form():
             conn.close()
 
         return redirect(url_for('eventregister'))
-    return render_template('form.html') # show the form
+
+    return render_template('form.html', event_id=event_id)
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
