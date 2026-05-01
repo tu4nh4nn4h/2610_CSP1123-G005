@@ -140,8 +140,24 @@ def verify_keyword():
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if 'reset_user' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
     
+    NewPassword = request.form['NewPassword']
+    ConfirmPassword = request.form['ConfirmNewPassword']
+
+    if NewPassword != ConfirmPassword:
+        return "Passwords do not match"
+    
+    username = session['reset_user']
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE users_general SET password = ? WHERE username = ?", (generate_password_hash(NewPassword), username))
+    
+    conn.commit()
+    conn.close()
+    session.pop('reset_user', None)  # Clear the reset user from session
+    return redirect (url_for('signin'))
     return render_template('ResetPassword.html')
 
 @app.route('/register', methods=['GET', 'POST'])
