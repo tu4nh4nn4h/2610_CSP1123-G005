@@ -289,10 +289,6 @@ def event_detail(event_id):
 
 @app.route('/form')
 def form():
-<<<<<<< HEAD
-    event_id = request.args.get('event_id')
-    return render_template('form.html', event_id=event_id)
-=======
     if request.method == 'POST':
         name = request.form['Name']
         student_email = request.form['Student_email']
@@ -313,7 +309,6 @@ def form():
 
         return redirect(url_for('eventregister'))
     return render_template('form.html') # show the form
->>>>>>> e50c6ac567e70c483d0b5aa39bd4ab8caa4e7b76
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
@@ -345,7 +340,7 @@ if __name__ == "__main__":
 
 @app.route('/event/<int:event_id>')
 def event_detail(event_id):
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
