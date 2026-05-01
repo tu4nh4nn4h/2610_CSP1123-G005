@@ -4,8 +4,35 @@ from os import name
 from flask import Flask, render_template, redirect, url_for, request, session
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import URLSafeTimedSerializer
+import smtplib
+from email.mime.text import MIMEText
+
+
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
+s = URLSafeTimedSerializer("your-secret-key")
+
+EMAIL_ADDRESS = 'zuhairanafey@gmail.com'
+EMAIL_PASSWORD = 'zoqv itsk nuaf xuhm'  # Use an app-specific password for Gmail
+def send_verification_email(to_email, token):
+    verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
+
+    msg = MIMEText(f"Please click the link to verify your email:\n{verify_url}")
+    msg['Subject'] = 'Email Verification'
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = to_email
+
+    try: 
+
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Use your email provider's SMTP server and port
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.send_message(msg)
+    except Exception as e:
+        print(f"Error sending email: {e}")
+    finally:
+        if server:
+            server.quit()
 
 def get_db_connection():                     # helper function to get a database connection
     conn = sqlite3.connect('database.db')    # your database file
@@ -107,12 +134,20 @@ def signin():
         conn.close()
         if user:
             stored_password = user[4]  # Assuming password is the 5th column
+            is_verified = user[7]  # Assuming is_verified is the 8th column
               
             if check_password_hash(stored_password, password):
+                if is_verified == 0:
+                    return "Please verify your email before logging in."
+                
                 session['user'] = username  # Assuming the first column is user ID
                 return redirect(url_for('eventbrowsing'))
+            else:
+                return "Invalid username or password"
         else:
             return "Invalid username or password"
+        
+        
      
     return render_template('signin.html')
 
@@ -179,9 +214,15 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
                            (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
             conn.commit()
+
+            token = s.dumps(email, salt='email-confirm')
+
+            send_verification_email(email, token)  # Implement this function to send the email
+
+
 
         except sqlite3.IntegrityError:
             return "username or email already exists"
@@ -191,6 +232,19 @@ def register():
         return redirect(url_for('signin'))
         
     return render_template('register.html')
+
+@app.route('/verify_email/<token>')
+def verify_email(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=3600)  # Token expires in 1 hour
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
+        return "Email verified successfully! You can now log in."
+    except:
+        return "The verification link is invalid or has expired."
 
 @app.route('/register_organizer', methods=['GET', 'POST'])
 def register_organizer():
