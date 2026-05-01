@@ -9,6 +9,11 @@ function goBackEvent() {
   window.location.href = `/event/${eventId}`;
 }
 
+function closeModal() {
+  const modal = document.getElementById("successModal");
+  if (modal) modal.classList.add("hidden");
+}
+
 // ================= FORM LISTENER =================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("regForm");
@@ -17,6 +22,9 @@ document.addEventListener("DOMContentLoaded", function () {
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
+    console.log("BEFORE MODAL");
+document.getElementById("successModal").classList.remove("hidden");
+console.log("AFTER MODAL");
     const eventId = parseInt(localStorage.getItem("eventId")) || 1;
 
     const data = {
@@ -47,10 +55,69 @@ document.addEventListener("DOMContentLoaded", function () {
       const modal = document.getElementById("successModal");
       if (modal) modal.classList.remove("hidden");
 
-      // DELAY REDIRECT
+      const checkbox = document.getElementById("addToCalendar");
+
+      const events = {
+        1: {
+          title: "Tech Talk 2026",
+          desc: "Learn about AI trends",
+          location: "Main Hall",
+          start: "20260520T100000",
+          end: "20260520T120000"
+        },
+        2: {
+          title: "Sports Day",
+          desc: "Annual university sports event",
+          location: "Stadium",
+          start: "20260525T080000",
+          end: "20260525T120000"
+        },
+        3: {
+          title: "Hackathon 2026",
+          desc: "Build innovative projects",
+          location: "Lab 1",
+          start: "20260601T090000",
+          end: "20260601T180000"
+        },
+        4: {
+          title: "MMU Fun Run 2026",
+          desc: "Run for fun and fitness",
+          location: "Campus Park",
+          start: "20260610T070000",
+          end: "20260610T100000"
+        }
+      };
+
+      // ICS DOWNLOAD
+      if (checkbox && checkbox.checked && events[eventId]) {
+        const e = events[eventId];
+
+        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${e.title}
+DESCRIPTION:${e.desc}
+LOCATION:${e.location}
+DTSTART:${e.start}
+DTEND:${e.end}
+END:VEVENT
+END:VCALENDAR`;
+
+        const blob = new Blob([icsContent], { type: "text/calendar" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${e.title}.ics`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      // redirect
       setTimeout(() => {
         window.location.href = `/event/${eventId}`;
-      }, 2000);
+      }, 1500);
     })
     .catch(err => console.error("Registration error:", err));
   });
