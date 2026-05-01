@@ -4,17 +4,29 @@ function registerEventPage(eventId) {
   window.location.href = "/form";
 }
 
+function goBackEvent() {
+  const eventId = localStorage.getItem("eventId") || 1;
+  window.location.href = `/event/${eventId}`;
+}
+
+function closeModal() {
+  const modal = document.getElementById("successModal");
+  if (modal) modal.classList.add("hidden");
+}
 
 // ================= FORM LISTENER =================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("regForm");
-
   if (!form) return;
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    // ================= GET FORM DATA =================
+    console.log("BEFORE MODAL");
+document.getElementById("successModal").classList.remove("hidden");
+console.log("AFTER MODAL");
+    const eventId = parseInt(localStorage.getItem("eventId")) || 1;
+
     const data = {
       name: document.getElementById("name").value.trim(),
       studentId: document.getElementById("studentId").value.trim(),
@@ -24,25 +36,26 @@ document.addEventListener("DOMContentLoaded", function () {
       faculty: document.getElementById("faculty").value
     };
 
-    // basic validation
     if (!data.name || !data.studentId || !data.studentEmail || !data.phone || !data.faculty) {
       return;
     }
 
-    // ================= SEND TO BACKEND =================
     fetch("/register", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     })
-    .then(response => response.json())
-    .then(result => {
+    .then(res => {
+      if (!res.ok) throw new Error("Server error");
+      return res.json();
+    })
+    .then(() => {
 
-      // ================= OUTLOOK CALENDAR =================
+      // SHOW MODAL
+      const modal = document.getElementById("successModal");
+      if (modal) modal.classList.remove("hidden");
+
       const checkbox = document.getElementById("addToCalendar");
-      let eventId = parseInt(localStorage.getItem("eventId")) || 1;
 
       const events = {
         1: {
@@ -75,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
 
-      // ✅ Generate .ics for Outlook
+      // ICS DOWNLOAD
       if (checkbox && checkbox.checked && events[eventId]) {
         const e = events[eventId];
 
@@ -91,7 +104,7 @@ END:VEVENT
 END:VCALENDAR`;
 
         const blob = new Blob([icsContent], { type: "text/calendar" });
-        const url = window.URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
         const a = document.createElement("a");
         a.href = url;
@@ -101,21 +114,11 @@ END:VCALENDAR`;
         document.body.removeChild(a);
       }
 
-      // ================= SUCCESS FLOW =================
-      form.reset();
-
-      // optional: show modal if you want
-      document.getElementById("successModal").classList.remove("hidden");
-
-      // redirect after short delay
+      // redirect
       setTimeout(() => {
         window.location.href = `/event/${eventId}`;
-      }, 800);
-
+      }, 1500);
     })
-    .catch(error => {
-      console.error(error);
-    });
-
+    .catch(err => console.error("Registration error:", err));
   });
 });
