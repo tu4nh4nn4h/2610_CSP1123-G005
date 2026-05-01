@@ -284,3 +284,60 @@ body {
   text-align: center;
   width: 300px;
 }
+
+.navbar {
+  position: fixed;       /* stays at the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+  transition: top 0.3s;
+  z-index: 1000;
+}
+
+/* Logo styling */
+.logo a {
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+/* Nav links container */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+/* Individual link styling */
+.nav-links li a,
+.profile a {
+  color: black;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 5px 10px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Hover effect for links */
+.nav-links li a:hover,
+.profile a:hover {
+  background-color: #f0f0f0;
+  border-radius: 4px;
+}
+
+/* Profile link on the far right */
+.profile {
+  margin-left: auto;
+}
+
+/* Optional: navbar appears when hovering near the top */
+body {
+    padding-top: 60px; /* prevent content from hiding behind navbar */
+}
