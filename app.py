@@ -6,24 +6,14 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 
-def get_db_connection():
-    conn = sqlite3.connect('users.db')
-    conn.row_factory = sqlite3.Row
+def get_db_connection():                     # helper function to get a database connection
+    conn = sqlite3.connect('database.db')    # your database file
+    conn.row_factory = sqlite3.Row           # access columns by name
+    conn.execute("PRAGMA foreign_keys = 1")  # enable foreign keys connection between tables
     return conn
 
-
-@app.route('/change_email', methods=['POST'])
-def change_email():
-    # Implementation for changing email
-    pass
-
-def get_database_connection():
-    connection = sqlite3.connect('database.db')  # your database file
-    connection.row_factory = sqlite3.Row       # access columns by name
-    return connection
-
 def setup_database():
-    conn = get_database_connection()
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # users_general table 
@@ -82,6 +72,7 @@ def setup_database():
                         PRIMARY KEY(event_id, tag_id)
                      )''')
     
+    # event_registrations table
     cursor.execute('''CREATE TABLE IF NOT EXISTS event_registrations (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
@@ -96,19 +87,19 @@ def setup_database():
     conn.commit()
     conn.close()
 
+# Route for home page
 @app.route('/')
 def home():
     return render_template('home.html')
-    
 
-
+# Route for user login
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        conn = sqlite3.connect('database.db')
+        conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
@@ -124,12 +115,13 @@ def signin():
      
     return render_template('signin.html')
 
+
 @app.route('/verify_keyword', methods=['POST'])
 def verify_keyword():
     username = request.form['username']
     keyword = request.form['keyword']
 
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users_general WHERE username = ? AND keyword = ?", (username, keyword))
     user = cursor.fetchone()
@@ -142,7 +134,8 @@ def verify_keyword():
         return redirect(url_for('reset_password'))
     else:
         return "Invalid username or keyword"
-    
+
+# Route for password reset
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if 'reset_user' not in session:
@@ -164,7 +157,7 @@ def register():
         if password != password_confirm:
             return "Passwords do not match"
         
-        conn = sqlite3.connect('database.db')
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         try:
@@ -193,16 +186,16 @@ def register_organizer():
         club_body = request.form['Club_body']
         position_title = request.form['Position_title']
         # Handle organizer registration logic here
-        conn = sqlite3.connect('database.db')
+        conn = get_db_connection()
         cursor = conn.cursor()
-        pass
+
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role) VALUES (?, ?, ?, ?, ?, ?, ?)",
                            (student_id, name, username, email, generate_password_hash(password), keyword, 'organizer'))
             cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)",
                            (student_id, club_body, position_title))
             conn.commit()
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError: #catch errors if the username/email already exists.
             return "username or email already exists"
         finally:
             conn.close()
@@ -219,7 +212,7 @@ def change_password():
 
     user_id = session.get('username')  # Assuming username is stored in session
 
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT password FROM users_general WHERE username = ?", (user_id,))
     result = cursor.fetchone()
@@ -237,6 +230,11 @@ def change_password():
     else:
         return "User not found"
     return render_template('EditProfile.html')
+
+@app.route('/change_email', methods=['POST'])
+def change_email():
+    # Implementation for changing email
+    pass
 
 @app.route('/eventbrowsing')
 def eventbrowsing():
@@ -260,7 +258,7 @@ def form():
         student_id = request.form['Student_id']
 
         # Handle registration logic here
-        conn = sqlite3.connect('database.db')
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         try:
