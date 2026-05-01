@@ -1,39 +1,52 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Event Page</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
-</head>
+  <head>
+    <title>Event Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+  </head>
 
-<body>
+  <body>
 
-<div class="container">
+    <nav class="navbar">
+      <div class="logo">
+        <a href="#">UniSphere</a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+            <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+      </ul>
+      <div class="profile">
+        <a href="#profile">Profile</a>
+      </div>
+    </nav>
 
-  {% if event %}
-<div class="event-card">
+    <div class="container">
 
-  <h2>{{ event.name }}</h2>
+      {% if event %}
+    <div class="event-card">
 
-  <p class="desc">
-    {{ event.desc }}
-  </p>
+      <h2>{{ event.name }}</h2>
 
-  <div class="details">
-    <p><strong>Date:</strong> {{ event.date }}</p>
-    <p><strong>Time:</strong> {{ event.time }}</p>
-    <p><strong>Venue:</strong> {{ event.venue }}</p>
-  </div>
+      <p class="desc">
+        {{ event.desc }}
+      </p>
 
-  <a href="{{ url_for('form', event_id=event_id) }}">
-    <button class="register-btn">Register</button>
-  </a>
+      <div class="details">
+        <p><strong>Date:</strong> {{ event.date }}</p>
+        <p><strong>Time:</strong> {{ event.time }}</p>
+        <p><strong>Venue:</strong> {{ event.venue }}</p>
+      </div>
 
-</div>
-{% else %}
-<p>Event not found.</p>
-{% endif %}
+      <a href="{{ url_for('form', event_id=event_id) }}">
+        <button class="register-btn">Register</button>
+      </a>
 
-</div>
+    </div>
+    {% else %}
+    <p>Event not found.</p>
+    {% endif %}
 
-</body>
+    </div>
+
+  </body>
 </html>

@@ -1,77 +1,90 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Event Browsing</title>
+  <head>
+    <title>Event Browsing</title>
 
-  <!-- LINK YOUR CSS HERE -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
-</head>
+    <!-- LINK YOUR CSS HERE -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
+  </head>
 
-<body>
+  <body>
 
-<div class="container">
-
-  <h1 class="title">Browse Events</h1>
-
-  <div class="event-grid">
-
-    <!-- Card 1 -->
-    <a href="{{ url_for('event_detail', event_id=1) }}" 
-   onclick="localStorage.setItem('eventId', 1)" 
-   class="event-link">
-      <div class="event-card">
-        <div class="event-image"></div>
-        <div class="event-info">
-          <h3 class="event-title">Hackathon 2026</h3>
-          <p class="event-desc">Push your limits. Build something real.</p>
-        </div>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="#">UniSphere</a>
       </div>
-    </a>
-
-    <!-- Card 2 -->
-    <a href="{{ url_for('event_detail', event_id=2) }}" 
-   onclick="localStorage.setItem('eventId', 2)" 
-   class="event-link">
-      <div class="event-card">
-        <div class="event-image"></div>
-        <div class="event-info">
-          <h3 class="event-title">Food Festival 2026</h3>
-          <p class="event-desc">Explore amazing food from different cultures.</p>
-        </div>
+      <ul class="nav-links">
+        <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+        <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+      </ul>
+      <div class="profile">
+        <a href="#profile">Profile</a>
       </div>
-    </a>
+    </nav>
 
-    <!-- Card 3 -->
-    <a href="{{ url_for('event_detail', event_id=3) }}" 
-   onclick="localStorage.setItem('eventId', 3)" 
-   class="event-link">
-      <div class="event-card">
-        <div class="event-image"></div>
-        <div class="event-info">
-          <h3 class="event-title">MMU Fun Run 2026</h3>
-          <p class="event-desc">Step out, get active, and enjoy a refreshing run filled with good vibes and fun.</p>
-        </div>
+    <div class="container">
+
+      <h1 class="title">Browse Events</h1>
+
+      <div class="event-grid">
+
+        <!-- Card 1 -->
+        <a href="{{ url_for('event_detail', event_id=1) }}" 
+      onclick="localStorage.setItem('eventId', 1)" 
+      class="event-link">
+          <div class="event-card">
+            <div class="event-image"></div>
+            <div class="event-info">
+              <h3 class="event-title">Hackathon 2026</h3>
+              <p class="event-desc">Push your limits. Build something real.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 2 -->
+        <a href="{{ url_for('event_detail', event_id=2) }}" 
+      onclick="localStorage.setItem('eventId', 2)" 
+      class="event-link">
+          <div class="event-card">
+            <div class="event-image"></div>
+            <div class="event-info">
+              <h3 class="event-title">Food Festival 2026</h3>
+              <p class="event-desc">Explore amazing food from different cultures.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 3 -->
+        <a href="{{ url_for('event_detail', event_id=3) }}" 
+      onclick="localStorage.setItem('eventId', 3)" 
+      class="event-link">
+          <div class="event-card">
+            <div class="event-image"></div>
+            <div class="event-info">
+              <h3 class="event-title">MMU Fun Run 2026</h3>
+              <p class="event-desc">Step out, get active, and enjoy a refreshing run filled with good vibes and fun.</p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card 4 -->
+        <a href="{{ url_for('event_detail', event_id=4) }}" 
+      onclick="localStorage.setItem('eventId', 4)" 
+      class="event-link">
+          <div class="event-card">
+            <div class="event-image"></div>
+            <div class="event-info">
+              <h3 class="event-title">MMU Career Talk 2026</h3>
+              <p class="event-desc">
+                Explore career opportunities, industry sharing, e-certificates & lucky draw.
+              </p>
+            </div>
+          </div>
+        </a>
+
       </div>
-    </a>
 
-    <!-- Card 4 -->
-    <a href="{{ url_for('event_detail', event_id=4) }}" 
-   onclick="localStorage.setItem('eventId', 4)" 
-   class="event-link">
-      <div class="event-card">
-        <div class="event-image"></div>
-        <div class="event-info">
-          <h3 class="event-title">MMU Career Talk 2026</h3>
-          <p class="event-desc">
-            Explore career opportunities, industry sharing, e-certificates & lucky draw.
-          </p>
-        </div>
-      </div>
-    </a>
+    </div>
 
-  </div>
-
-</div>
-
-</body>
+  </body>
 </html>

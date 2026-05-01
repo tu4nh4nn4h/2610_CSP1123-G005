@@ -1,4 +1,5 @@
 from ast import keyword
+from datetime import date
 from os import name
 
 from flask import Flask, render_template, redirect, url_for, request, session
@@ -140,8 +141,25 @@ def verify_keyword():
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if 'reset_user' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
     
+    if request.method == 'POST':
+        NewPassword = request.form.get('NewPassword')
+        ConfirmPassword = request.form.get('ConfirmNewPassword')
+
+        if NewPassword != ConfirmPassword:
+            return "Passwords do not match"
+    
+        username = session['reset_user']
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+        "UPDATE users_general SET password = ? WHERE username = ?", (generate_password_hash(NewPassword), username))
+    
+        conn.commit()
+        conn.close()
+        session.pop('reset_user', None)  # Clear the reset user from session
+        return redirect(url_for('signin'))
     return render_template('ResetPassword.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -252,43 +270,56 @@ def event_page():
 @app.route('/event/<int:event_id>')
 def event_detail(event_id):
 
-    events = {
-        1: {
-            "name": "Hackathon 2026",
-            "desc": "Step into the ultimate innovation challenge where creativity meets technology. Team up with friends, solve real-world problems, and bring your ideas to life in just hours. Whether you're a coding pro or a beginner, this is your chance to learn, compete, and win exciting prizes while pushing your limits.",
-            "date": "20 May 2026",
-            "time": "10:00 AM - 6:00 PM",
-            "venue": "Dewan Tun Canselor, MMU Cyberjaya"
-        },
-        2: {
-            "name": "Food Festival 2026",
-            "desc": "Get ready to indulge in a vibrant celebration of flavors from around the world. From local street food to trendy bites, explore a variety of delicious treats while enjoying music, games, and a lively atmosphere. Bring your friends and experience a day full of fun, food, and unforgettable moments.",
-            "date": "25 May 2026",
-            "time": "10:00 AM - 10:00 PM",
-            "venue": "Central Plaza, MMU Cyberjaya"
-        },
-        3: {
-            "name": "MMU Fun Run 2026",
-            "desc": "Lace up your shoes and join an energetic run filled with excitement, music, and great vibes. Whether you're running to win or just for fun, enjoy a refreshing experience with friends while staying active. Celebrate fitness, laughter, and community in an event that’s all about good energy and great memories.",
-            "date": "30 May 2026",
-            "time": "8:00 AM - 5:00 PM",
-            "venue": "Stadium MMU Cyberjaya"
-        },
-        4: {
-            "name": "MMU Career Talk 2026",
-            "desc": "Discover real insights from industry professionals and uncover the opportunities waiting beyond campus life. Gain practical advice, explore career pathways, and connect with experts who can shape your future. Don’t miss this chance to get inspired, build confidence, and take the first step toward your dream career.",
-            "date": "27 June 2026",
-            "time": "10:00 AM - 4:00 PM",
-            "venue": "CNMX1005 CLC, MMU Cyberjaya"
-        }
-    }
+    # events = {
+    #     1: {
+    #         "name": "Hackathon 2026",
+    #         "desc": "Step into the ultimate innovation challenge where creativity meets technology. Team up with friends, solve real-world problems, and bring your ideas to life in just hours. Whether you're a coding pro or a beginner, this is your chance to learn, compete, and win exciting prizes while pushing your limits.",
+    #         "date": "20 May 2026",
+    #         "time": "10:00 AM - 6:00 PM",
+    #         "venue": "Dewan Tun Canselor, MMU Cyberjaya"
+    #     },
+    #     2: {
+    #         "name": "Food Festival 2026",
+    #         "desc": "Get ready to indulge in a vibrant celebration of flavors from around the world. From local street food to trendy bites, explore a variety of delicious treats while enjoying music, games, and a lively atmosphere. Bring your friends and experience a day full of fun, food, and unforgettable moments.",
+    #         "date": "25 May 2026",
+    #         "time": "10:00 AM - 10:00 PM",
+    #         "venue": "Central Plaza, MMU Cyberjaya"
+    #     },
+    #     3: {
+    #         "name": "MMU Fun Run 2026",
+    #         "desc": "Lace up your shoes and join an energetic run filled with excitement, music, and great vibes. Whether you're running to win or just for fun, enjoy a refreshing experience with friends while staying active. Celebrate fitness, laughter, and community in an event that’s all about good energy and great memories.",
+    #         "date": "30 May 2026",
+    #         "time": "8:00 AM - 5:00 PM",
+    #         "venue": "Stadium MMU Cyberjaya"
+    #     },
+    #     4: {
+    #         "name": "MMU Career Talk 2026",
+    #         "desc": "Discover real insights from industry professionals and uncover the opportunities waiting beyond campus life. Gain practical advice, explore career pathways, and connect with experts who can shape your future. Don’t miss this chance to get inspired, build confidence, and take the first step toward your dream career.",
+    #         "date": "27 June 2026",
+    #         "time": "10:00 AM - 4:00 PM",
+    #         "venue": "CNMX1005 CLC, MMU Cyberjaya"
+    #     }
+    # }
 
-    event = events.get(event_id)
+    # event = events.get(event_id)
+    # return render_template('eventregsys.html', event=event)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    event = cursor.fetchone()
+
+    conn.close()
 
     return render_template('eventregsys.html', event=event, event_id=event_id)
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
+<<<<<<< HEAD
+=======
+    event_id = request.args.get('event_id')
+    return render_template('form.html', event_id=event_id)
+>>>>>>> 7af0a8a47ee0ca9ad3fb3545b32afc6c08f03bda
     if request.method == 'POST':
         name = request.form['Name']
         student_email = request.form['Student_email']
@@ -308,9 +339,13 @@ def form():
             conn.close()
 
         return redirect(url_for('eventregister'))
+<<<<<<< HEAD
 
     event_id = request.args.get('event_id')
     return render_template('form.html', event_id=event_id)
+=======
+    return render_template('form.html') # show the form
+>>>>>>> 7af0a8a47ee0ca9ad3fb3545b32afc6c08f03bda
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
@@ -338,16 +373,3 @@ def create_event():
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
     app.run(debug=True)
-
-
-@app.route('/event/<int:event_id>')
-def event_detail(event_id):
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
-    event = cursor.fetchone()
-
-    conn.close()
-
-    return render_template('eventregsys.html', event=event)

@@ -1,221 +1,218 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Event Registration Form</title>
+  <head>
+    <title>Event Registration Form</title>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
 
-  <!-- POPUP CSS (INLINE) -->
- <style>
-/* BACKDROP */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+    <!-- POPUP CSS (INLINE) -->
+    <style>
+    /* BACKDROP */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
 
-/* hide */
-.hidden {
-  display: none;
-}
+    /* hide */
+    .hidden {
+      display: none;
+    }
 
-/* MODAL BOX */
-.modal-box {
-  width: 360px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px 24px;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-  animation: pop 0.25s ease;
-}
+    /* MODAL BOX */
+    .modal-box {
+      width: 360px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      animation: pop 0.25s ease;
+    }
 
-/* animation */
-@keyframes pop {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+    /* animation */
+    @keyframes pop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
-/* CLOSE BUTTON */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #999;
-}
+    /* CLOSE BUTTON */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #999;
+    }
 
-/* ICON */
-.icon-circle {
-  width: 70px;
-  height: 70px;
-  margin: 10px auto 15px;
-  border-radius: 50%;
-  border: 3px solid #22c55e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: #22c55e;
-  font-weight: bold;
-}
+    /* ICON */
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      margin: 10px auto 15px;
+      border-radius: 50%;
+      border: 3px solid #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #22c55e;
+      font-weight: bold;
+    }
 
-/* TEXT */
-.modal-box h2 {
-  margin: 0;
-  font-size: 22px;
-}
+    /* TEXT */
+    .modal-box h2 {
+      margin: 0;
+      font-size: 22px;
+    }
 
-.modal-box p {
-  color: #666;
-  margin: 8px 0 20px;
-}
+    .modal-box p {
+      color: #666;
+      margin: 8px 0 20px;
+    }
 
-/* PURPLE BUTTON */
-.modal-btn {
-  background: #7c3aed;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    /* PURPLE BUTTON */
+    .modal-btn {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
 .modal-btn:hover {
   background: #6d28d9;
 }
-
-.header p {
-  margin-bottom: 20px; /* space below "please fill in..." */
-}
-
-.checkbox-group {
-  margin: 15px 0; /* space above & below checkbox */
-}
 </style>
 </head>
 
-<body>
+  <body>
+
+    <nav class="navbar">
+      <div class="logo">
+        <a href="#">UniSphere</a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#browse">Browse Event</a></li>
+        <li><a href="#explore">Explore</a></li>
+        <li><a href="#create">Create Event - Be an Organizer</a></li>
+      </ul>
+      <div class="profile">
+        <a href="#profile">Profile</a>
+      </div>
+    </nav>
 
 
-<div class="container">
+    <div class="container">
 
-  <div class="form-card">
+      <div class="form-card">
 
-    <div class="header">
-      <h2>Event Registration</h2>
-      <p>Please fill in your details carefully</p>
-    </div>
+        <div class="header">
+          <h2>Event Registration</h2>
+          <p>Please fill in your details carefully</p>
+        </div>
 
     <form id="regForm" onsubmit="handleSubmit(event)">
       
-  <!-- ✅ ADD HERE -->
-  <div class="checkbox-group">
-    <label>
-      <input type="checkbox" id="addToCalendar">
-      Add this event to my Google Calendar
-    </label>
-  </div>
-
-</form>
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="name" placeholder="Enter your full name" required>
       </div>
 
-      <div class="form-group">
-        <label>Student ID</label>
-        <input type="text" id="studentId" placeholder="e.g. 252FC" required>
+          <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" id="studentId" placeholder="e.g. 252FC" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Student Email</label>
+              <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
+            </div>
+
+            <div class="form-group">
+              <label>Personal Email</label>
+              <input type="email" id="personalEmail" placeholder="optional">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
+            </div>
+
+            <div class="form-group">
+              <label>Faculty</label>
+              <select id="faculty" required>
+                <option value="">Select faculty</option>
+                <option value="FCI">FCI</option>
+                <option value="FAIE">FAIE</option>
+                <option value="FOM">FOM</option>
+                <option value="FAC">FAC</option>
+                <option value="FCM">FCM</option>
+                <option value="FCA">FCA</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit">Register</button>
+
+        </form>
       </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Student Email</label>
-          <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
-        </div>
-
-        <div class="form-group">
-          <label>Personal Email</label>
-          <input type="email" id="personalEmail" placeholder="optional">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
-        </div>
-
-        <div class="form-group">
-          <label>Faculty</label>
-          <select id="faculty" required>
-            <option value="">Select faculty</option>
-            <option value="FCI">FCI</option>
-            <option value="FAIE">FAIE</option>
-            <option value="FOM">FOM</option>
-            <option value="FAC">FAC</option>
-            <option value="FCM">FCM</option>
-            <option value="FCA">FCA</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="submit">Register</button>
-
-    </form>
-  </div>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div id="successModal" class="modal hidden">
-
-  <div class="modal-box">
-
-    <div class="close-btn" onclick="closeModal()">×</div>
-
-    <div class="icon-circle">
-      ✓
     </div>
 
-    <h2>Successful</h2>
-    <p>You have registered.</p>
+    <!-- SUCCESS MODAL -->
+    <div id="successModal" class="modal hidden">
 
-    <button class="modal-btn" onclick="goBackEvent()">
-      Back to Event Page
-    </button>
+      <div class="modal-box">
 
-  </div>
+        <div class="close-btn" onclick="closeModal()">×</div>
 
-</div>
+        <div class="icon-circle">
+          ✓
+        </div>
 
-<!-- JS -->
-<script>
-function handleSubmit(event) {
-  event.preventDefault();
+        <h2>Successful</h2>
+        <p>You have registered.</p>
 
-  // show modal instead of popup
-  document.getElementById("successModal").classList.remove("hidden");
-}
+        <button class="modal-btn" onclick="goBackEvent()">
+          Back to Event Page
+        </button>
 
-function closeModal() {
-  document.getElementById("successModal").classList.add("hidden");
-}
+      </div>
 
-function goBackEvent() {
-  let eventId = localStorage.getItem("eventId") || 1;
-  window.location.href = `/event/${eventId}`;
-}
-</script>
+    </div>
 
-<script src="{{ url_for('static', filename='event.js') }}"></script>
+    <!-- JS -->
+    <script>
+    function handleSubmit(event) {
+      event.preventDefault();
 
-</body>
+      // show modal instead of popup
+      document.getElementById("successModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("successModal").classList.add("hidden");
+    }
+
+    function goBackEvent() {
+      let eventId = localStorage.getItem("eventId") || 1;
+      window.location.href = `/event/${eventId}`;
+    }
+    </script>
+
+    <script src="{{ url_for('static', filename='event.js') }}"></script>
+
+  </body>
 </html>

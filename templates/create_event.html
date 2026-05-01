@@ -7,6 +7,19 @@
 
     <body>
 
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#">UniSphere</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+                <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+            </ul>
+            <div class="profile">
+                <a href="#profile">Profile</a>
+            </div>
+        </nav>
+
         <div class="container">
 
             <div class="form-card">
