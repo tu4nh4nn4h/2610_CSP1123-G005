@@ -4,17 +4,21 @@ function registerEventPage(eventId) {
   window.location.href = "/form";
 }
 
+function goBackEvent() {
+  const eventId = localStorage.getItem("eventId") || 1;
+  window.location.href = `/event/${eventId}`;
+}
 
 // ================= FORM LISTENER =================
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("regForm");
-
   if (!form) return;
 
   form.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    // ================= GET FORM DATA =================
+    const eventId = parseInt(localStorage.getItem("eventId")) || 1;
+
     const data = {
       name: document.getElementById("name").value.trim(),
       studentId: document.getElementById("studentId").value.trim(),
@@ -24,69 +28,30 @@ document.addEventListener("DOMContentLoaded", function () {
       faculty: document.getElementById("faculty").value
     };
 
-    // basic validation
     if (!data.name || !data.studentId || !data.studentEmail || !data.phone || !data.faculty) {
       return;
     }
 
-    // ================= SEND TO BACKEND =================
     fetch("/register", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     })
-    .then(response => {
-      if (!response.ok) throw new Error("Server error");
-      return response.json();
+    .then(res => {
+      if (!res.ok) throw new Error("Server error");
+      return res.json();
     })
-    .then(result => {
-      const checkbox = document.getElementById("addToCalendar");
-      let eventId = 1;
+    .then(() => {
 
-      if (checkbox && checkbox.checked) {
-        const icsContent = `BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:Test Event
-DESCRIPTION:Testing calendar
-LOCATION:Test Location
-DTSTART:20260520T100000
-DTEND:20260520T120000
-END:VEVENT
-END:VCALENDAR`;
+      // SHOW MODAL
+      const modal = document.getElementById("successModal");
+      if (modal) modal.classList.remove("hidden");
 
-        const blob = new Blob([icsContent], { type: "text/calendar" });
-        const url = window.URL.createObjectURL(blob);
-
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "Test Event.ics";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
-
-      console.log("CALENDAR TRIGGERED");
-
-      // ================= SUCCESS FLOW =================
-      form.reset();
-
-      // optional: show modal if you want
-      const successModal = document.getElementById("successModal");
-      if (successModal) {
-        successModal.classList.remove("hidden");
-      }
-
-      // redirect after short delay
+      // DELAY REDIRECT
       setTimeout(() => {
         window.location.href = `/event/${eventId}`;
-      }, 800);
+      }, 2000);
     })
-    .catch(error => {
-      console.error(error);
-    });
-
+    .catch(err => console.error("Registration error:", err));
   });
 });
