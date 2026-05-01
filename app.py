@@ -44,7 +44,8 @@ def setup_database():
     cursor = conn.cursor()
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS users_general (
-                        student_id TEXT PRIMARY KEY,
+                        student_email TEXT PRIMARY KEY,
+                        student_id TEXT NOT NULL UNIQUE,
                         name TEXT NOT NULL,
                         username TEXT NOT NULL UNIQUE,
                         email TEXT NOT NULL UNIQUE,
@@ -54,19 +55,19 @@ def setup_database():
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
-                        student_id TEXT PRIMARY KEY,
+                        student_email TEXT PRIMARY KEY,
                         bio TEXT,
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                        FOREIGN KEY (student_email) REFERENCES users_general(student_email)
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
-                        student_id TEXT PRIMARY KEY,
+                        student_email TEXT PRIMARY KEY,
                         club_body TEXT NOT NULL,
                         position_title TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                        FOREIGN KEY (student_email) REFERENCES users_general(student_email)
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
@@ -76,8 +77,8 @@ def setup_database():
                         date TEXT NOT NULL,
                         time TEXT NOT NULL,
                         location TEXT NOT NULL,
-                        student_id TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+                        student_email TEXT NOT NULL,
+                        FOREIGN KEY (student_email) REFERENCES organizer_details(student_email)
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
@@ -101,7 +102,7 @@ def setup_database():
                         personal_email TEXT,
                         phone_number TEXT NOT NULL,
                         faculty TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                        FOREIGN KEY (student_email) REFERENCES users_general(student_email)
                     )''')
 
     conn.commit()
@@ -195,7 +196,7 @@ def reset_password():
 def register():
     if request.method == 'POST':
         name = request.form['Name']
-        email = request.form['Email']
+        student_email = request.form['Email']
         username = request.form['Username']
         student_id = request.form['Student_id']
         password = request.form['Password']
@@ -209,13 +210,13 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
-                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
+            cursor.execute("INSERT INTO users_general (student_email, name, username, student_id, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)",
+                           (student_email, name, username, student_id, generate_password_hash(password), keyword, 'user'))
             conn.commit()
 
-            token = s.dumps(email, salt='email-confirm')
+            token = s.dumps(student_email, salt='email-confirm')
 
-            send_verification_email(email, token)  # Implement this function to send the email
+            send_verification_email(student_email, token)  # Implement this function to send the email
 
 
 
@@ -235,7 +236,7 @@ def verify_email(token):
         email = s.loads(token, salt='email-confirm', max_age=3600)  # Token expires in 1 hour
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
+        cursor.execute("UPDATE users_general SET is_verified = 1 WHERE student_email = ?", (email,))
         conn.commit()
         conn.close()
         return "Email verified successfully! You can now log in."
@@ -246,7 +247,7 @@ def verify_email(token):
 def register_organizer():
     if request.method == 'POST':
         name = request.form['Name']
-        email = request.form['Email']
+        student_email = request.form['Email']
         username = request.form['Username']
         student_id = request.form['Student_id']
         password = request.form['Password']
@@ -264,16 +265,15 @@ def register_organizer():
         try:
             cursor.execute("""
                 INSERT INTO users_general
-                (student_id, name, username, email, password, keyword, role)
+                (student_email, name, username, student_id, password, keyword, role)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (student_id, name, username, email,
-                  generate_password_hash(password), keyword, 'organizer'))
+            """, (student_email, name, username, student_id, generate_password_hash(password), keyword, 'organizer'))
 
             cursor.execute("""
                 INSERT INTO organizer_details
-                (student_id, club_body, position_title)
+                (student_email, club_body, position_title)
                 VALUES (?, ?, ?)
-            """, (student_id, club_body, position_title))
+            """, (student_email, club_body, position_title))
 
             conn.commit()
 
@@ -375,7 +375,7 @@ def form():
 
     if request.method == 'POST':
         name = request.form['Name']
-        student_email = request.form['Student_email']
+        student_email = request.form['Email']
         personal_email = request.form['Personal_email']
         phone_number = request.form['Phone_number']
         student_id = request.form['Student_id']
@@ -386,9 +386,9 @@ def form():
 
         cursor.execute("""
             INSERT INTO event_registrations
-            (name, student_id, student_email, personal_email, phone_number, faculty)
+            (name, student_email, personal_email, student_id, phone_number, faculty)
             VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, student_id, student_email, personal_email, phone_number, faculty))
+        """, (name, student_email, personal_email, student_id, phone_number, faculty))
 
         conn.commit()
         conn.close()
@@ -407,25 +407,12 @@ def create_event():
         event_time = request.form['Event_time']
         event_location = request.form['Event_location']
 
-        username = session.get('user')
-
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
-        user = cursor.fetchone()
-
-        if not user:
-            return "User not found"
-
-        student_id = user["student_id"]
-
         cursor.execute("""
-            INSERT INTO events
-            (event_name, description, date, time, location, student_id)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (event_name, event_description, event_date,
-              event_time, event_location, student_id))
+            INSERT INTO events (event_name, description, date, time, location) VALUES (?, ?, ?, ?, ?)""", 
+            (event_name, event_description, event_date, event_time, event_location))
 
         conn.commit()
         conn.close()

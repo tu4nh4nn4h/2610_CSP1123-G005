@@ -1,29 +1,29 @@
 -- SQLite
 CREATE TABLE IF NOT EXISTS users_general (
-    student_id VARCHAR(10) PRIMARY KEY,
+    student_email TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     username VARCHAR(50) NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
+    student_id VARCHAR(10) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
     keyword TEXT NOT NULL,
     role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
 );
 
 CREATE TABLE IF NOT EXISTS user_details (
-    student_id VARCHAR(10) PRIMARY KEY,
+    student_email TEXT PRIMARY KEY,
     bio TEXT,
     email_personal TEXT,
     birthday DATE,
     faculty TEXT,
     year_of_study INTEGER,
-    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+    FOREIGN KEY (student_email) REFERENCES users_general(student_email)
 );
 
 CREATE TABLE IF NOT EXISTS organizer_details (
-    student_id VARCHAR(10) PRIMARY KEY,
+    student_email TEXT PRIMARY KEY,
     club_body TEXT NOT NULL,
     position_title TEXT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+    FOREIGN KEY (student_email) REFERENCES users_general(student_email)
 );
 
 CREATE TABLE IF NOT EXISTS events (
@@ -33,8 +33,8 @@ CREATE TABLE IF NOT EXISTS events (
     date DATE NOT NULL,
     time TIME NOT NULL,
     location TEXT NOT NULL,
-    student_id VARCHAR(10) NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+    student_email TEXT NOT NULL,
+    FOREIGN KEY (student_email) REFERENCES organizer_details(student_email)
 );
 
 CREATE TABLE IF NOT EXISTS event_tags (
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     personal_email TEXT,
     phone_number TEXT NOT NULL,
     faculty TEXT NOT NULL,
-    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+    FOREIGN KEY (student_email) REFERENCES users_general(student_email)
 );
 
 SELECT * FROM users_general;
