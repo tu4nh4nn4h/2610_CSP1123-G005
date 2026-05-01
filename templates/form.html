@@ -1,204 +1,275 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Event Registration Form</title>
+  <head>
+    <title>Event Registration Form</title>
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
 
-  <!-- POPUP CSS (INLINE) -->
- <style>
-/* BACKDROP */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
+    <!-- POPUP CSS (INLINE) -->
+    <style>
+    /* BACKDROP */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
 
-/* hide */
-.hidden {
-  display: none;
-}
+    /* hide */
+    .hidden {
+      display: none;
+    }
 
-/* MODAL BOX */
-.modal-box {
-  width: 360px;
-  background: #fff;
-  border-radius: 16px;
-  padding: 28px 24px;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-  animation: pop 0.25s ease;
-}
+    /* MODAL BOX */
+    .modal-box {
+      width: 360px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+      animation: pop 0.25s ease;
+    }
 
-/* animation */
-@keyframes pop {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
+    /* animation */
+    @keyframes pop {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
 
-/* CLOSE BUTTON */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #999;
-}
+    /* CLOSE BUTTON */
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #999;
+    }
 
-/* ICON */
-.icon-circle {
-  width: 70px;
-  height: 70px;
-  margin: 10px auto 15px;
-  border-radius: 50%;
-  border: 3px solid #22c55e;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  color: #22c55e;
-  font-weight: bold;
-}
+    /* ICON */
+    .icon-circle {
+      width: 70px;
+      height: 70px;
+      margin: 10px auto 15px;
+      border-radius: 50%;
+      border: 3px solid #22c55e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #22c55e;
+      font-weight: bold;
+    }
 
-/* TEXT */
-.modal-box h2 {
-  margin: 0;
-  font-size: 22px;
-}
+    /* TEXT */
+    .modal-box h2 {
+      margin: 0;
+      font-size: 22px;
+    }
 
-.modal-box p {
-  color: #666;
-  margin: 8px 0 20px;
-}
+    .modal-box p {
+      color: #666;
+      margin: 8px 0 20px;
+    }
 
-/* PURPLE BUTTON */
-.modal-btn {
-  background: #7c3aed;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
+    /* PURPLE BUTTON */
+    .modal-btn {
+      background: #7c3aed;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
 
-.modal-btn:hover {
-  background: #6d28d9;
-}
-</style>
-</head>
+    .modal-btn:hover {
+      background: #6d28d9;
+    }
+    
+    .navbar {
+      position: fixed;       /* stays at the top */
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
+      transition: top 0.3s;
+      z-index: 1000;
+    }
 
-<body>
+    /* Logo styling */
+    .logo a {
+      font-size: 24px;
+      font-weight: bold;
+      color: black;
+      text-decoration: none;
+    }
+
+    /* Nav links container */
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    /* Individual link styling */
+    .nav-links li a,
+    .profile a {
+      color: black;
+      text-decoration: none;
+      font-size: 16px;
+      padding: 5px 10px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Hover effect for links */
+    .nav-links li a:hover,
+    .profile a:hover {
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+
+    /* Profile link on the far right */
+    .profile {
+      margin-left: auto;
+    }
+
+    /* Optional: navbar appears when hovering near the top */
+    body {
+      padding-top: 60px; /* prevent content from hiding behind navbar */
+    }
+    </style>
+  </head>
+
+  <body>
+
+    <nav class="navbar">
+      <div class="logo">
+        <a href="#">UniSphere</a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#browse">Browse Event</a></li>
+        <li><a href="#explore">Explore</a></li>
+        <li><a href="#create">Create Event - Be an Organizer</a></li>
+      </ul>
+      <div class="profile">
+        <a href="#profile">Profile</a>
+      </div>
+    </nav>
 
 
-<div class="container">
+    <div class="container">
 
-  <div class="form-card">
+      <div class="form-card">
 
-    <div class="header">
-      <h2>Event Registration</h2>
-      <p>Please fill in your details carefully</p>
+        <div class="header">
+          <h2>Event Registration</h2>
+          <p>Please fill in your details carefully</p>
+        </div>
+
+        <form id="regForm" onsubmit="handleSubmit(event)">
+          
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="name" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="form-group">
+            <label>Student ID</label>
+            <input type="text" id="studentId" placeholder="e.g. 252FC" required>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Student Email</label>
+              <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
+            </div>
+
+            <div class="form-group">
+              <label>Personal Email</label>
+              <input type="email" id="personalEmail" placeholder="optional">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
+            </div>
+
+            <div class="form-group">
+              <label>Faculty</label>
+              <select id="faculty" required>
+                <option value="">Select faculty</option>
+                <option value="FCI">FCI</option>
+                <option value="FAIE">FAIE</option>
+                <option value="FOM">FOM</option>
+                <option value="FAC">FAC</option>
+                <option value="FCM">FCM</option>
+                <option value="FCA">FCA</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit">Register</button>
+
+        </form>
+      </div>
     </div>
 
-    <form id="regForm" onsubmit="handleSubmit(event)">
-      
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Enter your full name" required>
-      </div>
+    <!-- SUCCESS MODAL -->
+    <div id="successModal" class="modal hidden">
 
-      <div class="form-group">
-        <label>Student ID</label>
-        <input type="text" id="studentId" placeholder="e.g. 252FC" required>
-      </div>
+      <div class="modal-box">
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Student Email</label>
-          <input type="email" id="studentEmail" placeholder="name@student.mmu.edu.my" required>
+        <div class="close-btn" onclick="closeModal()">×</div>
+
+        <div class="icon-circle">
+          ✓
         </div>
 
-        <div class="form-group">
-          <label>Personal Email</label>
-          <input type="email" id="personalEmail" placeholder="optional">
-        </div>
+        <h2>Successful</h2>
+        <p>You have registered.</p>
+
+        <button class="modal-btn" onclick="goBackEvent()">
+          Back to Event Page
+        </button>
+
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>Phone Number</label>
-          <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
-        </div>
-
-        <div class="form-group">
-          <label>Faculty</label>
-          <select id="faculty" required>
-            <option value="">Select faculty</option>
-            <option value="FCI">FCI</option>
-            <option value="FAIE">FAIE</option>
-            <option value="FOM">FOM</option>
-            <option value="FAC">FAC</option>
-            <option value="FCM">FCM</option>
-            <option value="FCA">FCA</option>
-          </select>
-        </div>
-      </div>
-
-      <button type="submit">Register</button>
-
-    </form>
-  </div>
-</div>
-
-<!-- SUCCESS MODAL -->
-<div id="successModal" class="modal hidden">
-
-  <div class="modal-box">
-
-    <div class="close-btn" onclick="closeModal()">×</div>
-
-    <div class="icon-circle">
-      ✓
     </div>
 
-    <h2>Successful</h2>
-    <p>You have registered.</p>
+    <!-- JS -->
+    <script>
+    function handleSubmit(event) {
+      event.preventDefault();
 
-    <button class="modal-btn" onclick="goBackEvent()">
-      Back to Event Page
-    </button>
+      // show modal instead of popup
+      document.getElementById("successModal").classList.remove("hidden");
+    }
 
-  </div>
+    function closeModal() {
+      document.getElementById("successModal").classList.add("hidden");
+    }
 
-</div>
+    function goBackEvent() {
+      let eventId = localStorage.getItem("eventId") || 1;
+      window.location.href = `/event/${eventId}`;
+    }
+    </script>
 
-<!-- JS -->
-<script>
-function handleSubmit(event) {
-  event.preventDefault();
+    <script src="{{ url_for('static', filename='event.js') }}"></script>
 
-  // show modal instead of popup
-  document.getElementById("successModal").classList.remove("hidden");
-}
-
-function closeModal() {
-  document.getElementById("successModal").classList.add("hidden");
-}
-
-function goBackEvent() {
-  let eventId = localStorage.getItem("eventId") || 1;
-  window.location.href = `/event/${eventId}`;
-}
-</script>
-
-<script src="{{ url_for('static', filename='event.js') }}"></script>
-
-</body>
+  </body>
 </html>

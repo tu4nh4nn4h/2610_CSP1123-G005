@@ -142,21 +142,23 @@ def reset_password():
     if 'reset_user' not in session:
         return redirect(url_for('signin'))
     
-    NewPassword = request.form['NewPassword']
-    ConfirmPassword = request.form['ConfirmNewPassword']
+    if request.method == 'POST':
+        NewPassword = request.form.get('NewPassword')
+        ConfirmPassword = request.form.get('ConfirmNewPassword')
 
-    if NewPassword != ConfirmPassword:
-        return "Passwords do not match"
+        if NewPassword != ConfirmPassword:
+            return "Passwords do not match"
     
-    username = session['reset_user']
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
+        username = session['reset_user']
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
         "UPDATE users_general SET password = ? WHERE username = ?", (generate_password_hash(NewPassword), username))
     
-    conn.commit()
-    conn.close()
-    session.pop('reset_user', None)  # Clear the reset user from session
+        conn.commit()
+        conn.close()
+        session.pop('reset_user', None)  # Clear the reset user from session
+        return redirect(url_for('signin'))
     return render_template('ResetPassword.html')
 
 @app.route('/register', methods=['GET', 'POST'])
