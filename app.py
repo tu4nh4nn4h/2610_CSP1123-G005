@@ -149,7 +149,7 @@ def reset_password():
         return "Passwords do not match"
     
     username = session['reset_user']
-    conn = sqlite3.connect('database.db')
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute(
         "UPDATE users_general SET password = ? WHERE username = ?", (generate_password_hash(NewPassword), username))
@@ -157,7 +157,6 @@ def reset_password():
     conn.commit()
     conn.close()
     session.pop('reset_user', None)  # Clear the reset user from session
-    return redirect (url_for('signin'))
     return render_template('ResetPassword.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -305,10 +304,8 @@ def event_detail(event_id):
 
 @app.route('/form')
 def form():
-<<<<<<< HEAD
     event_id = request.args.get('event_id')
     return render_template('form.html', event_id=event_id)
-=======
     if request.method == 'POST':
         name = request.form['Name']
         student_email = request.form['Student_email']
@@ -329,7 +326,6 @@ def form():
 
         return redirect(url_for('eventregister'))
     return render_template('form.html') # show the form
->>>>>>> e50c6ac567e70c483d0b5aa39bd4ab8caa4e7b76
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
