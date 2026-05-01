@@ -37,56 +37,23 @@ document.addEventListener("DOMContentLoaded", function () {
       },
       body: JSON.stringify(data)
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) throw new Error("Server error");
+      return response.json();
+    })
     .then(result => {
-
-      // ================= OUTLOOK CALENDAR =================
       const checkbox = document.getElementById("addToCalendar");
-      let eventId = parseInt(localStorage.getItem("eventId")) || 1;
+      let eventId = 1;
 
-      const events = {
-        1: {
-          title: "Tech Talk 2026",
-          desc: "Learn about AI trends",
-          location: "Main Hall",
-          start: "20260520T100000",
-          end: "20260520T120000"
-        },
-        2: {
-          title: "Sports Day",
-          desc: "Annual university sports event",
-          location: "Stadium",
-          start: "20260525T080000",
-          end: "20260525T120000"
-        },
-        3: {
-          title: "Hackathon 2026",
-          desc: "Build innovative projects",
-          location: "Lab 1",
-          start: "20260601T090000",
-          end: "20260601T180000"
-        },
-        4: {
-          title: "MMU Fun Run 2026",
-          desc: "Run for fun and fitness",
-          location: "Campus Park",
-          start: "20260610T070000",
-          end: "20260610T100000"
-        }
-      };
-
-      // ✅ Generate .ics for Outlook
-      if (checkbox && checkbox.checked && events[eventId]) {
-        const e = events[eventId];
-
+      if (checkbox && checkbox.checked) {
         const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
-SUMMARY:${e.title}
-DESCRIPTION:${e.desc}
-LOCATION:${e.location}
-DTSTART:${e.start}
-DTEND:${e.end}
+SUMMARY:Test Event
+DESCRIPTION:Testing calendar
+LOCATION:Test Location
+DTSTART:20260520T100000
+DTEND:20260520T120000
 END:VEVENT
 END:VCALENDAR`;
 
@@ -95,23 +62,27 @@ END:VCALENDAR`;
 
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${e.title}.ics`;
+        a.download = "Test Event.ics";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
       }
 
+      console.log("CALENDAR TRIGGERED");
+
       // ================= SUCCESS FLOW =================
       form.reset();
 
       // optional: show modal if you want
-      document.getElementById("successModal").classList.remove("hidden");
+      const successModal = document.getElementById("successModal");
+      if (successModal) {
+        successModal.classList.remove("hidden");
+      }
 
       // redirect after short delay
       setTimeout(() => {
         window.location.href = `/event/${eventId}`;
       }, 800);
-
     })
     .catch(error => {
       console.error(error);
