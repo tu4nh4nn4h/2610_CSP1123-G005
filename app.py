@@ -211,8 +211,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_email, name, username, student_id, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)",
-                           (student_email, name, username, student_id, generate_password_hash(password), keyword, 'user'))
+            cursor.execute("INSERT INTO users_general (student_email, name, username, student_id, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                           (student_email, name, username, student_id, generate_password_hash(password), keyword, 'user', 0))
             conn.commit()
 
             token = s.dumps(student_email, salt='email-confirm')
@@ -266,9 +266,9 @@ def register_organizer():
         try:
             cursor.execute("""
                 INSERT INTO users_general
-                (student_email, name, username, student_id, password, keyword, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (student_email, name, username, student_id, generate_password_hash(password), keyword, 'organizer'))
+                (student_email, name, username, student_id, password, keyword, role, is_verified)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (student_email, name, username, student_id, generate_password_hash(password), keyword, 'organizer', 0))
 
             cursor.execute("""
                 INSERT INTO organizer_details
