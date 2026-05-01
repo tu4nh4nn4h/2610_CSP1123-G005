@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users_general (
     email TEXT NOT NULL UNIQUE,
     email_personal TEXT,
     password VARCHAR(50) NOT NULL,
+    keyword TEXT,
     role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
 );
 
