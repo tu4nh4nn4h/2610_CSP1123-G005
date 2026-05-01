@@ -12,9 +12,8 @@
                 <a href="#">UniSphere</a>
             </div>
             <ul class="nav-links">
-                <li><a href="#browse">Browse Event</a></li>
-                <li><a href="#explore">Explore</a></li>
-                <li><a href="#create">Create Event - Be an Organizer</a></li>
+                <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+                <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
             </ul>
             <div class="profile">
                 <a href="#profile">Profile</a>
@@ -57,6 +56,13 @@
                         <label>Event Location</label>
                         <select id="faculty" required>
                             <option value="">Select location</option>
+                            <option value="Central Plaza">Central Plaza</option>
+                            <option value="MMU Stadium">MMU Stadium</option>
+                            <option value="Surau Al-Hidayah">Surau Al-Hidayah</option>
+                            <option value="Tun Dr. Hasmah Mohd Ali Digital Library">Tun Dr. Hasmah Mohd Ali Digital Library</option>
+                            <option value="Dewan Tun Canselor">Dewan Tun Canselor</option>
+                            <option value="Annex Hall">Annex Hall</option>
+                            <option value="CLC">CLC</option>
                             <option value="FCI">FCI</option>
                             <option value="FAIE">FAIE</option>
                             <option value="FOM">FOM</option>
