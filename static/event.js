@@ -88,11 +88,11 @@ console.log("AFTER MODAL");
         }
       };
 
-      // ICS DOWNLOAD
-      if (checkbox && checkbox.checked && events[eventId]) {
-        const e = events[eventId];
+   // ICS DOWNLOAD
+if (checkbox && checkbox.checked && events[eventId]) {
+  const e = events[eventId];
 
-        const icsContent = `BEGIN:VCALENDAR
+  const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 SUMMARY:${e.title}
@@ -103,22 +103,23 @@ DTEND:${e.end}
 END:VEVENT
 END:VCALENDAR`;
 
-        const blob = new Blob([icsContent], { type: "text/calendar" });
-        const url = URL.createObjectURL(blob);
+  const blob = new Blob([icsContent], { type: "text/calendar" });
+  const url = URL.createObjectURL(blob);
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${e.title}.ics`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-      }
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `${e.title}.ics`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 
-      // redirect
-      setTimeout(() => {
-        window.location.href = `/event/${eventId}`;
-      }, 1500);
-    })
-    .catch(err => console.error("Registration error:", err));
+  URL.revokeObjectURL(url); // 🔥 important cleanup
+}
+
+// delay redirect MORE (give download time)
+setTimeout(() => {
+  window.location.href = `/event/${eventId}`;
+}, 3000);
+    });
   });
 });
