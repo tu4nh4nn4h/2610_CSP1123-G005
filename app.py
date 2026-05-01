@@ -250,13 +250,62 @@ def eventregister():
 def event_page():
     return render_template('eventregsys.html')
 
-@app.route('/form', methods=['GET', 'POST'])
+@app.route('/event/<int:event_id>')
+def event_detail(event_id):
+
+    events = {
+        1: {
+            "name": "Hackathon 2026",
+            "desc": "Step into the ultimate innovation challenge where creativity meets technology. Team up with friends, solve real-world problems, and bring your ideas to life in just hours. Whether you're a coding pro or a beginner, this is your chance to learn, compete, and win exciting prizes while pushing your limits.",
+            "date": "20 May 2026",
+            "time": "10:00 AM - 6:00 PM",
+            "venue": "Dewan Tun Canselor, MMU Cyberjaya"
+        },
+        2: {
+            "name": "Food Festival 2026",
+            "desc": "Get ready to indulge in a vibrant celebration of flavors from around the world. From local street food to trendy bites, explore a variety of delicious treats while enjoying music, games, and a lively atmosphere. Bring your friends and experience a day full of fun, food, and unforgettable moments.",
+            "date": "25 May 2026",
+            "time": "10:00 AM - 10:00 PM",
+            "venue": "Central Plaza, MMU Cyberjaya"
+        },
+        3: {
+            "name": "MMU Fun Run 2026",
+            "desc": "Lace up your shoes and join an energetic run filled with excitement, music, and great vibes. Whether you're running to win or just for fun, enjoy a refreshing experience with friends while staying active. Celebrate fitness, laughter, and community in an event that’s all about good energy and great memories.",
+            "date": "30 May 2026",
+            "time": "8:00 AM - 5:00 PM",
+            "venue": "Stadium MMU Cyberjaya"
+        },
+        4: {
+            "name": "MMU Career Talk 2026",
+            "desc": "Discover real insights from industry professionals and uncover the opportunities waiting beyond campus life. Gain practical advice, explore career pathways, and connect with experts who can shape your future. Don’t miss this chance to get inspired, build confidence, and take the first step toward your dream career.",
+            "date": "27 June 2026",
+            "time": "10:00 AM - 4:00 PM",
+            "venue": "CNMX1005 CLC, MMU Cyberjaya"
+        }
+    }
+
+    event = events.get(event_id)
+
+    return render_template('eventregsys.html', event=event, event_id=event_id)
+
+@app.route('/form')
 def form():
-    if request.method == 'POST':
-        # Handle form submission logic here
-        pass
-    return render_template('form.html') # show the form
+    event_id = request.args.get('event_id')
+    return render_template('form.html', event_id=event_id)
 
 if __name__ == "__main__":
     setup_database()  # Ensure database is set up before running the app
     app.run(debug=True)
+
+
+@app.route('/event/<int:event_id>')
+def event_detail(event_id):
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    event = cursor.fetchone()
+
+    conn.close()
+
+    return render_template('eventregsys.html', event=event)

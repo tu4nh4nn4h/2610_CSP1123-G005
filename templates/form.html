@@ -2,10 +2,101 @@
 <html>
 <head>
   <title>Event Registration Form</title>
+
   <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+
+  <!-- POPUP CSS (INLINE) -->
+ <style>
+/* BACKDROP */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* hide */
+.hidden {
+  display: none;
+}
+
+/* MODAL BOX */
+.modal-box {
+  width: 360px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+  animation: pop 0.25s ease;
+}
+
+/* animation */
+@keyframes pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* CLOSE BUTTON */
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #999;
+}
+
+/* ICON */
+.icon-circle {
+  width: 70px;
+  height: 70px;
+  margin: 10px auto 15px;
+  border-radius: 50%;
+  border: 3px solid #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #22c55e;
+  font-weight: bold;
+}
+
+/* TEXT */
+.modal-box h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.modal-box p {
+  color: #666;
+  margin: 8px 0 20px;
+}
+
+/* PURPLE BUTTON */
+.modal-btn {
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.modal-btn:hover {
+  background: #6d28d9;
+}
+</style>
 </head>
 
 <body>
+
 
 <div class="container">
 
@@ -16,7 +107,8 @@
       <p>Please fill in your details carefully</p>
     </div>
 
-<form id="regForm" onsubmit="handleSubmit(event)">
+    <form id="regForm" onsubmit="handleSubmit(event)">
+      
       <div class="form-group">
         <label>Full Name</label>
         <input type="text" id="name" placeholder="Enter your full name" required>
@@ -63,9 +155,48 @@
 
     </form>
   </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <div class="close-btn" onclick="closeModal()">×</div>
+
+    <div class="icon-circle">
+      ✓
+    </div>
+
+    <h2>Successful</h2>
+    <p>You have registered.</p>
+
+    <button class="modal-btn" onclick="goBackEvent()">
+      Back to Event Page
+    </button>
+
+  </div>
 
 </div>
 
+<!-- JS -->
+<script>
+function handleSubmit(event) {
+  event.preventDefault();
+
+  // show modal instead of popup
+  document.getElementById("successModal").classList.remove("hidden");
+}
+
+function closeModal() {
+  document.getElementById("successModal").classList.add("hidden");
+}
+
+function goBackEvent() {
+  let eventId = localStorage.getItem("eventId") || 1;
+  window.location.href = `/event/${eventId}`;
+}
+</script>
 
 <script src="{{ url_for('static', filename='event.js') }}"></script>
 

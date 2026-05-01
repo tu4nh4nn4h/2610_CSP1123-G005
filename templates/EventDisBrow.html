@@ -1,49 +1,77 @@
-<div class="event-grid">
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Event Browsing</title>
 
-  <!-- Card 1 -->
-  <a href="{{ url_for('eventregister') }}" class="event-link">
-    <div class="event-card">
-      <div class="event-image"></div>
-      <div class="event-info">
-        <h3 class="event-title">Hackathon 2026</h3>
-        <p class="event-desc">Join us for 24 hours of coding.</p>
-      </div>
-    </div>
-  </a>
+  <!-- LINK YOUR CSS HERE -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
+</head>
 
-  <!-- Card 2 -->
-  <a href="{{ url_for('eventregister') }}" class="event-link">
-    <div class="event-card">
-      <div class="event-image"></div>
-      <div class="event-info">
-        <h3 class="event-title">Food Festival</h3>
-        <p class="event-desc">Explore amazing food from different cultures.</p>
-      </div>
-    </div>
-  </a>
+<body>
 
-  <!-- Card 3 -->
-  <a href="{{ url_for('eventregister') }}" class="event-link">
-    <div class="event-card">
-      <div class="event-image"></div>
-      <div class="event-info">
-        <h3 class="event-title">MMU Sports Mania</h3>
-        <p class="event-desc">Fun outdoor games and competitions.</p>
-      </div>
-    </div>
-  </a>
+<div class="container">
 
-  <!-- Card 4 -->
-  <a href="{{ url_for('eventregister') }}" class="event-link">
-    <div class="event-card">
-      <div class="event-image"></div>
-      <div class="event-info">
-        <h3 class="event-title">MMU Career Talk 2026</h3>
-        <p class="event-desc">
-          Explore career opportunities, industry sharing, e-certificates & lucky draw.
-        </p>
+  <h1 class="title">Browse Events</h1>
+
+  <div class="event-grid">
+
+    <!-- Card 1 -->
+    <a href="{{ url_for('event_detail', event_id=1) }}" 
+   onclick="localStorage.setItem('eventId', 1)" 
+   class="event-link">
+      <div class="event-card">
+        <div class="event-image"></div>
+        <div class="event-info">
+          <h3 class="event-title">Hackathon 2026</h3>
+          <p class="event-desc">Push your limits. Build something real.</p>
+        </div>
       </div>
-    </div>
-  </a>
+    </a>
+
+    <!-- Card 2 -->
+    <a href="{{ url_for('event_detail', event_id=2) }}" 
+   onclick="localStorage.setItem('eventId', 2)" 
+   class="event-link">
+      <div class="event-card">
+        <div class="event-image"></div>
+        <div class="event-info">
+          <h3 class="event-title">Food Festival 2026</h3>
+          <p class="event-desc">Explore amazing food from different cultures.</p>
+        </div>
+      </div>
+    </a>
+
+    <!-- Card 3 -->
+    <a href="{{ url_for('event_detail', event_id=3) }}" 
+   onclick="localStorage.setItem('eventId', 3)" 
+   class="event-link">
+      <div class="event-card">
+        <div class="event-image"></div>
+        <div class="event-info">
+          <h3 class="event-title">MMU Fun Run 2026</h3>
+          <p class="event-desc">Step out, get active, and enjoy a refreshing run filled with good vibes and fun.</p>
+        </div>
+      </div>
+    </a>
+
+    <!-- Card 4 -->
+    <a href="{{ url_for('event_detail', event_id=4) }}" 
+   onclick="localStorage.setItem('eventId', 4)" 
+   class="event-link">
+      <div class="event-card">
+        <div class="event-image"></div>
+        <div class="event-info">
+          <h3 class="event-title">MMU Career Talk 2026</h3>
+          <p class="event-desc">
+            Explore career opportunities, industry sharing, e-certificates & lucky draw.
+          </p>
+        </div>
+      </div>
+    </a>
+
+  </div>
 
 </div>
+
+</body>
+</html>
