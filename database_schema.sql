@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS users_general (
     student_id VARCHAR(10) NOT NULL UNIQUE,
     password VARCHAR(50) NOT NULL,
     keyword TEXT NOT NULL,
-    role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
+    role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
+    is_verified INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS user_details (
