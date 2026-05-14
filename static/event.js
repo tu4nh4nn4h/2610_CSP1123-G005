@@ -40,6 +40,44 @@ console.log("AFTER MODAL");
       return;
     }
 
+    const events = {
+      1: {
+        title: "Tech Talk 2026",
+        desc: "Learn about AI trends",
+        location: "Main Hall",
+        start: "20260520T100000",
+        end: "20260520T120000"
+      },
+      2: {
+        title: "Sports Day",
+        desc: "Annual university sports event",
+        location: "Stadium",
+        start: "20260525T080000",
+        end: "20260525T120000"
+      },
+      3: {
+        title: "Hackathon 2026",
+        desc: "Build innovative projects",
+        location: "Lab 1",
+        start: "20260601T090000",
+        end: "20260601T180000"
+      },
+      4: {
+        title: "MMU Fun Run 2026",
+        desc: "Run for fun and fitness",
+        location: "Campus Park",
+        start: "20260610T070000",
+        end: "20260610T100000"
+      }
+    };
+
+    const checkbox = document.getElementById("addToCalendar");
+
+    if (!checkbox.checked) {
+      alert("Please check the box to sync this event with your calendar to ensure you don't miss it!");
+      return;
+    }
+
     fetch("/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,49 +88,15 @@ console.log("AFTER MODAL");
       return res.json();
     })
     .then(() => {
-
       // SHOW MODAL
       const modal = document.getElementById("successModal");
       if (modal) modal.classList.remove("hidden");
 
-      const checkbox = document.getElementById("addToCalendar");
+      // ICS DOWNLOAD
+      if (checkbox && checkbox.checked && events[eventId]) {
+        const e = events[eventId];
 
-      const events = {
-        1: {
-          title: "Tech Talk 2026",
-          desc: "Learn about AI trends",
-          location: "Main Hall",
-          start: "20260520T100000",
-          end: "20260520T120000"
-        },
-        2: {
-          title: "Sports Day",
-          desc: "Annual university sports event",
-          location: "Stadium",
-          start: "20260525T080000",
-          end: "20260525T120000"
-        },
-        3: {
-          title: "Hackathon 2026",
-          desc: "Build innovative projects",
-          location: "Lab 1",
-          start: "20260601T090000",
-          end: "20260601T180000"
-        },
-        4: {
-          title: "MMU Fun Run 2026",
-          desc: "Run for fun and fitness",
-          location: "Campus Park",
-          start: "20260610T070000",
-          end: "20260610T100000"
-        }
-      };
-
-   // ICS DOWNLOAD
-if (checkbox && checkbox.checked && events[eventId]) {
-  const e = events[eventId];
-
-  const icsContent = `BEGIN:VCALENDAR
+        const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 SUMMARY:${e.title}
@@ -103,23 +107,23 @@ DTEND:${e.end}
 END:VEVENT
 END:VCALENDAR`;
 
-  const blob = new Blob([icsContent], { type: "text/calendar" });
-  const url = URL.createObjectURL(blob);
+        const blob = new Blob([icsContent], { type: "text/calendar" });
+        const url = URL.createObjectURL(blob);
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `${e.title}.ics`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${e.title}.ics`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
-  URL.revokeObjectURL(url); // 🔥 important cleanup
-}
+        URL.revokeObjectURL(url);
+      }
 
-// delay redirect MORE (give download time)
-setTimeout(() => {
-  window.location.href = `/event/${eventId}`;
-}, 3000);
+      // delay redirect to give download time
+      setTimeout(() => {
+        window.location.href = `/event/${eventId}`;
+      }, 3000);
     });
   });
 });
