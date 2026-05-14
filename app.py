@@ -38,7 +38,7 @@ def get_db_connection():
 def setup_database():
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Users Table
+
     cursor.execute('''CREATE TABLE IF NOT EXISTS users_general (
                         student_email TEXT PRIMARY KEY,
                         student_id TEXT NOT NULL UNIQUE,
@@ -50,7 +50,7 @@ def setup_database():
                         role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
                         is_verified INTEGER DEFAULT 0
                      )''')
-    # Event Registration Table
+
     cursor.execute('''CREATE TABLE IF NOT EXISTS event_registrations (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
@@ -60,7 +60,7 @@ def setup_database():
                         phone_number TEXT NOT NULL,
                         faculty TEXT NOT NULL
                     )''')
-    # Events Table (PENTING: Supaya create_event tidak error)
+    
     cursor.execute('''CREATE TABLE IF NOT EXISTS events (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         event_name TEXT NOT NULL,
@@ -117,7 +117,7 @@ def register_event():
     data = request.get_json()
     
 
-    print(f"Data diterima dari JS: {data}")
+    print(f"data received from JS: {data}")
 
     conn = get_db_connection()
     try:
@@ -137,7 +137,7 @@ def register_event():
         conn.commit()
         return jsonify({"status": "success"}), 200
     except Exception as e:
-        print(f"RALAT DATABASE: {e}") # Tengok terminal VS Code untuk baca error ni
+        print(f"database error: {e}") 
         return jsonify({"status": "error", "message": str(e)}), 500
     finally:
         conn.close()
