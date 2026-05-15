@@ -177,7 +177,7 @@
             color: inherit;        /* Keeps text white/original color */
             display: flex;         /* Maintains your original layout */
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
+            transition: transform 0.2s ease, background 0.3s ease;
         }
 
         .clickable-card:hover {
@@ -205,14 +205,14 @@
         <h1 class="title">User Dashboard</h1>
 
         <div class="grid">
-            <a href="{{ url_for('user_profile') }}">
-                <div class="card profile-card">
-                    <div class="profile-icon"></div>
-                    <div class="profile-content">
-                        <p>Name : </p>
-                        <p>Username : </p>
-                        <p>Contact Details : </p>
-                    </div>
+            <a href="{{ url_for('user_profile') }}" class =" card profile-card clickable-card">
+                <!-- <div class="card profile-card"> -->
+                <div class="profile-icon"></div>
+                <div class="profile-content">
+                    <p>Name : </p>
+                    <p>Username : </p>
+                    <p>Contact Details : </p>
+                    <!-- </div> -->
                 </div>
             </a>
 

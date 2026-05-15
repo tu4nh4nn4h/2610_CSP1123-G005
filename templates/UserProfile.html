@@ -93,7 +93,7 @@
 
             /* Individual link styling */
             .nav-links li a,
-            .profile a {
+            .nav-profile a {
             color: black;
             text-decoration: none;
             font-size: 16px;
@@ -103,13 +103,13 @@
 
             /* Hover effect for links */
             .nav-links li a:hover,
-            .profile a:hover {
+            .nav-profile a:hover {
             background-color: #f0f0f0;
             border-radius: 4px;
             }
 
             /* Profile link on the far right */
-            .profile {
+            .nav-profile {
             margin-left: auto;
             }
 
@@ -130,7 +130,7 @@
                 <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
                 <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
             </ul>
-            <div class="profile">
+            <div class="nav-profile">
                 <a href="#profile">Profile</a>
             </div>
         </nav>
