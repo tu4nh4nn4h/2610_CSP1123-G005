@@ -536,6 +536,10 @@ def create_event():
 def dashboard():
     return render_template('user_dashboard1.html')
 
+@app.route('/UserProfile')
+def user_profile():
+    return render_template('UserProfile.html')
+
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)

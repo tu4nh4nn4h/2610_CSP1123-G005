@@ -172,11 +172,30 @@
             text-transform: uppercase;
         }
 
+        .clickable-card {
+            text-decoration: none; /* Removes underline */
+            color: inherit;        /* Keeps text white/original color */
+            display: flex;         /* Maintains your original layout */
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .clickable-card:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
+        }
+
+        .clickable-card:active {
+            transform: translateY(0); /* "Press" effect when clicked */
+        }
+
         /* Responsive Fix */
         @media (max-width: 900px) {
             .grid { grid-template-columns: 1fr; }
             .title { font-size: 2.5rem; }
         }
+
+        
     </style>
 </head>
 <body>
@@ -186,14 +205,16 @@
         <h1 class="title">User Dashboard</h1>
 
         <div class="grid">
-            <div class="card profile-card">
-                <div class="profile-icon"></div>
-                <div class="profile-content">
-                    <p>Name : </p>
-                    <p>Username : </p>
-                    <p>Contact Details : </p>
+            <a href="{{ url_for('user_profile') }}">
+                <div class="card profile-card">
+                    <div class="profile-icon"></div>
+                    <div class="profile-content">
+                        <p>Name : </p>
+                        <p>Username : </p>
+                        <p>Contact Details : </p>
+                    </div>
                 </div>
-            </div>
+            </a>
 
             <div class="card calendar-card">
                 <div class="date-info">
