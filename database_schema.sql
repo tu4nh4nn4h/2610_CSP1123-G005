@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS events (
     date DATE NOT NULL,
     time TIME NOT NULL,
     location TEXT NOT NULL,
+    participant_limit INTEGER NOT NULL,
+    event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
+    ticket_price REAL,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );
 
@@ -58,11 +61,13 @@ CREATE TABLE IF NOT EXISTS event_tag_map (
 -- 7. Event Registrations
 CREATE TABLE IF NOT EXISTS event_registrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     student_id VARCHAR(10) NOT NULL, -- Now links directly to the PK of users_general
     email TEXT NOT NULL,
     phone_number TEXT NOT NULL,
     faculty TEXT NOT NULL,
+    FOREIGN KEY (event_id) REFERENCES events(event_id),
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 

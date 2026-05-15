@@ -406,26 +406,34 @@ def create_event():
         event_date = request.form['Event_date']
         event_time = request.form['Event_time']
         event_location = request.form['Event_location']
+        participant_limit = request.form['Participant_limit']
+        event_type = request.form['Event_type']
+        ticket_price = request.form['Ticket_price']
 
         username = session.get('user')
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+        cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
 
         if not user:
             return "User not found"
 
         student_id = user["student_id"]
+        role = user["role"]
+
+        if role != "organizer":
+            print ("Only organizers can create events. Register as an organizer to create events.")
+            return redirect(url_for('register_organizer'))
 
         cursor.execute("""
             INSERT INTO events
-            (event_name, description, date, time, location, student_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (event_name, description, date, time, location, participant_limit, event_type, ticket_price)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (event_name, event_description, event_date,
-              event_time, event_location, student_id))
+              event_time, event_location, participant_limit, event_type, ticket_price))
 
         conn.commit()
         conn.close()
