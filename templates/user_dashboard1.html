@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>User Dashboard - UniSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            /* Gradient background matching the image */
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard {
+            width: 95%;
+            max-width: 1400px;
+            padding: 40px;
+            border-radius: 25px;
+            /* Semi-transparent overlay to let the background peak through slightly */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        .welcome {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Two equal columns */
+            gap: 25px;
+        }
+
+        .card {
+            background: rgba(176, 106, 214, 0.4);
+            border-radius: 40px;
+            padding: 30px;
+            min-height: 280px;
+        }
+
+        /* Profile Card Styles */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .profile-icon {
+            width: 120px;
+            height: 120px;
+            border: 4px solid white;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        /* Drawing the head and shoulders in CSS */
+        .profile-icon::before {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .profile-icon::after {
+            content: "";
+            position: absolute;
+            width: 80px;
+            height: 40px;
+            background: white;
+            border-radius: 40px 40px 0 0;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .profile-content p {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        /* Calendar Card Styles */
+        .calendar-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .date-info .day { font-size: 1.2rem; }
+        .date-info .date { font-size: 3rem; font-weight: 700; }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            width: 200px;
+            height: 120px;
+        }
+
+        .calendar-grid div {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        /* Events Card Styles */
+        .event-row {
+            margin-bottom: 20px;
+        }
+
+        .event-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .circles {
+            display: flex;
+            gap: 15px;
+        }
+
+        .circle {
+            width: 70px;
+            height: 70px;
+            background: #7a1fa2; /* Darker purple like image */
+            border-radius: 50%;
+        }
+
+        .scroll-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .scroll-fill {
+            width: 40%;
+            height: 100%;
+            background: #e0f2f1;
+            border-radius: 10px;
+        }
+
+        /* Inbox Card Styles */
+        .inbox-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Fix */
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            .title { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <p class="welcome">Welcome back, user!</p>
+        <h1 class="title">User Dashboard</h1>
+
+        <div class="grid">
+            <div class="card profile-card">
+                <div class="profile-icon"></div>
+                <div class="profile-content">
+                    <p>Name : </p>
+                    <p>Username : </p>
+                    <p>Contact Details : </p>
+                </div>
+            </div>
+
+            <div class="card calendar-card">
+                <div class="date-info">
+                    <p class="day">DAY</p>
+                    <p class="date">DATE</p>
+                </div>
+                <div class="calendar-grid">
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                    <div></div><div></div><div></div><div></div><div></div><div></div>
+                </div>
+            </div>
+
+            <div class="card event-card">
+                <div class="event-row">
+                    <p class="event-label">Upcoming event :</p>
+                    <div class="circles">
+                        <div class="circle" onclick="openCancel(1)"></div>
+                        <div class="circle" onclick="openCancel(2)"></div>
+                    </div>
+                </div>
+                <div class="event-row">
+                    <p class="event-label">Joined event :</p>
+                    <div class="circles">
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                        <div class="circle"></div>
+                    </div>
+                </div>
+                <div class="scroll-bar">
+                    <div class="scroll-fill"></div>
+                </div>
+            </div>
+
+            <div class="card inbox-card">
+                <h2 class="inbox-title">Inbox</h2>
+            </div>
+        </div>
+    </div>
+
+<script>
+function openCancel(eventId) {
+    window.location.href = "/cancel_event/" + eventId;
+}
+</script>
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -50,8 +50,87 @@ def setup_database():
                         email TEXT NOT NULL UNIQUE,
                         password TEXT NOT NULL,
                         keyword TEXT,
-                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-                        is_verified INTEGER DEFAULT 0
+                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
+                        student_id TEXT PRIMARY KEY,
+                        bio TEXT,
+                        birthday DATE,
+                        faculty TEXT,
+                        year_of_study INTEGER,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
+                        student_id TEXT PRIMARY KEY,
+                        club_body TEXT NOT NULL,
+                        position_title TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
+                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        time TEXT NOT NULL,
+                        location TEXT NOT NULL,
+                        student_id TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
+                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tag_name TEXT UNIQUE NOT NULL
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
+                        event_id INTEGER NOT NULL,
+                        tag_id INTEGER NOT NULL,
+                        PRIMARY KEY(event_id, tag_id),
+                        FOREIGN KEY (event_id) REFERENCES events(event_id),
+                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        bio TEXT,
+                        birthday DATE,
+                        faculty TEXT,
+                        year_of_study INTEGER,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        club_body TEXT NOT NULL,
+                        position_title TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
+                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        time TEXT NOT NULL,
+                        location TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
+                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tag_name TEXT UNIQUE NOT NULL
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
+                        event_id INTEGER NOT NULL,
+                        tag_id INTEGER NOT NULL,
+                        PRIMARY KEY(event_id, tag_id),
+                        FOREIGN KEY (event_id) REFERENCES events(event_id),
+                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
@@ -102,8 +181,10 @@ def setup_database():
                         personal_email TEXT,
                         phone_number TEXT NOT NULL,
                         faculty TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id),
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                     )''')
+
 
     conn.commit()
     conn.close()
@@ -114,13 +195,18 @@ def home():
     return render_template('home.html')
 
 
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
+
         conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+        user = cursor.fetchone()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
@@ -372,30 +458,42 @@ def event_detail(event_id):
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
-    event_id = request.args.get('event_id')
-
-    if request.method == 'POST':
-        name = request.form['Name']
-        email = request.form['Email']
-        phone_number = request.form['Phone_number']
-        student_id = request.form['Student_id']
-        faculty = request.form['Faculty']
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT INTO event_registrations
-            (name, student_id, email, phone_number, faculty)
-            VALUES (?, ?, ?, ?, ?)
-        """, (name, student_id, email, phone_number, faculty))
-
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for('eventregister'))
-
+    event_id = request.args.get('event_id', 1)
     return render_template('form.html', event_id=event_id)
+
+@app.route('/register', methods=['POST'])
+def register_event():
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "status": "error",
+            "message": "No JSON data received"
+        }), 400
+
+    print("Data received:", data)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO event_registrations
+        (name, student_id, student_email, personal_email, phone_number, faculty)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        data.get('name'),
+        data.get('studentId'),
+        data.get('studentEmail'),
+        data.get('personalEmail'),
+        data.get('phone'),
+        data.get('faculty')
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('eventregister'))
 
 
 @app.route('/createevent', methods=['GET', 'POST'])
@@ -442,7 +540,55 @@ def create_event():
 
     return render_template('create_event.html')
 
+@app.route('/user_dashboard1')
+def dashboard():
+    return render_template('user_dashboard1.html')
+
+@app.route("/cancel_event/<int:event_id>")
+def cancel_event(event_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT event_id, event_name, description, date, time, location
+        FROM events
+        WHERE event_id = ?
+    """, (event_id,))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        return "Event not found"
+
+    event = {
+        "id": row["event_id"],
+        "name": row["event_name"],
+        "desc": row["description"],
+        "date": row["date"],
+        "time": row["time"],
+        "venue": row["location"]
+    }
+
+    return render_template("cancelreg.html", event=event, event_id=event_id)
+
+@app.route("/cancel_registration/<int:event_id>", methods=["POST"])
+def cancel_registration(event_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # ⚠️ You likely need a proper table for registrations with event_id
+    cursor.execute("""
+        DELETE FROM event_registrations
+        WHERE id = ?
+    """, (event_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("dashboard"))
 
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)
+

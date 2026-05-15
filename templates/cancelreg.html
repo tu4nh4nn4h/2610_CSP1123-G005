@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cancel Registration</title>
+  <form method="POST" action="/cancel_registration/{{ event_id }}">
+
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .info {
+      margin: 8px 0;
+      color: #444;
+    }
+
+    .btn-cancel {
+      margin-top: 20px;
+      background: #e11d48;
+      color: white;
+      border: none;
+      padding: 12px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-cancel:hover {
+      background: #be123c;
+    }
+
+    .btn-back {
+      margin-top: 10px;
+      display: inline-block;
+      color: #555;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+
+    <h2>{{ event.name }}</h2>
+
+    <p class="info"><b>Description:</b> {{ event.desc }}</p>
+    <p class="info"><b>Date:</b> {{ event.date }}</p>
+    <p class="info"><b>Time:</b> {{ event.time }}</p>
+    <p class="info"><b>Venue:</b> {{ event.venue }}</p>
+
+    <form method="POST" action="/cancel_registration/{{ event_id }}">
+      <button class="btn-cancel" type="submit">
+        Cancel Registration
+      </button>
+    </form>
+
+    <br>
+
+    <a class="btn-back" href="/eventbrowsing">
+      ← Back to Dashboard
+    </a>
+
+  </div>
+</div>
+
+</body>
+</html>

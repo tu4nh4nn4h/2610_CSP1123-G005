@@ -3,7 +3,7 @@
   <head>
     <title>Event Browsing</title>
 
-    <!-- LINK YOUR CSS HERE -->
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
   </head>
 
@@ -18,7 +18,7 @@
         <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
       </ul>
       <div class="profile">
-        <a href="#profile">Profile</a>
+        <a href="{{ url_for('dashboard') }}">Profile</a>
       </div>
     </nav>
 
