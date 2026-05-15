@@ -545,6 +545,10 @@ def create_event():
 def dashboard():
     return render_template('user_dashboard1.html')
 
+@app.route('/UserProfile')
+def user_profile():
+    return render_template('UserProfile.html')
+
 @app.route("/cancel_event/<int:event_id>")
 def cancel_event(event_id):
     conn = get_db_connection()
