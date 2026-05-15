@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -44,7 +44,7 @@ def setup_database():
     cursor = conn.cursor()
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS users_general (
-                        student_id TEXT PRIMARY KEY,
+                        student_id varchar(10) PRIMARY KEY,
                         name TEXT NOT NULL,
                         username TEXT NOT NULL UNIQUE,
                         email TEXT NOT NULL UNIQUE,
@@ -93,16 +93,98 @@ def setup_database():
                         FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
                      )''')
 
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        bio TEXT,
+                        birthday DATE,
+                        faculty TEXT,
+                        year_of_study INTEGER,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        club_body TEXT NOT NULL,
+                        position_title TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
+                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        time TEXT NOT NULL,
+                        location TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
+                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tag_name TEXT UNIQUE NOT NULL
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
+                        event_id INTEGER NOT NULL,
+                        tag_id INTEGER NOT NULL,
+                        PRIMARY KEY(event_id, tag_id),
+                        FOREIGN KEY (event_id) REFERENCES events(event_id),
+                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        bio TEXT,
+                        birthday DATE,
+                        faculty TEXT,
+                        year_of_study INTEGER,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
+                        student_id varchar(10) PRIMARY KEY,
+                        club_body TEXT NOT NULL,
+                        position_title TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
+                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        event_name TEXT NOT NULL,
+                        description TEXT NOT NULL,
+                        date TEXT NOT NULL,
+                        time TEXT NOT NULL,
+                        location TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
+                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        tag_name TEXT UNIQUE NOT NULL
+                     )''')
+
+    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
+                        event_id INTEGER NOT NULL,
+                        tag_id INTEGER NOT NULL,
+                        PRIMARY KEY(event_id, tag_id),
+                        FOREIGN KEY (event_id) REFERENCES events(event_id),
+                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
+                     )''')
+
     cursor.execute('''CREATE TABLE IF NOT EXISTS event_registrations (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
-                        student_id TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
                         student_email TEXT NOT NULL,
                         personal_email TEXT,
                         phone_number TEXT NOT NULL,
                         faculty TEXT NOT NULL,
+                        FOREIGN KEY (student_id) REFERENCES users_general(student_id),
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                     )''')
+
 
     conn.commit()
     conn.close()
@@ -113,13 +195,18 @@ def home():
     return render_template('home.html')
 
 
+
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
+
         conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+        user = cursor.fetchone()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
@@ -371,31 +458,42 @@ def event_detail(event_id):
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
-    event_id = request.args.get('event_id')
-
-    if request.method == 'POST':
-        name = request.form['Name']
-        student_email = request.form['Student_email']
-        personal_email = request.form['Personal_email']
-        phone_number = request.form['Phone_number']
-        student_id = request.form['Student_id']
-        faculty = request.form['Faculty']
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            INSERT INTO event_registrations
-            (name, student_id, student_email, personal_email, phone_number, faculty)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, student_id, student_email, personal_email, phone_number, faculty))
-
-        conn.commit()
-        conn.close()
-
-        return redirect(url_for('eventregister'))
-
+    event_id = request.args.get('event_id', 1)
     return render_template('form.html', event_id=event_id)
+
+@app.route('/register', methods=['POST'])
+def register_event():
+
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "status": "error",
+            "message": "No JSON data received"
+        }), 400
+
+    print("Data received:", data)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO event_registrations
+        (name, student_id, student_email, personal_email, phone_number, faculty)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (
+        data.get('name'),
+        data.get('studentId'),
+        data.get('studentEmail'),
+        data.get('personalEmail'),
+        data.get('phone'),
+        data.get('faculty')
+    ))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('eventregister'))
 
 
 @app.route('/createevent', methods=['GET', 'POST'])
@@ -474,6 +572,7 @@ def cancel_event_page(event_id):
 
     event = events.get(event_id)
     return render_template("cancelreg.html", event=event, event_id=event_id)
+
 
 if __name__ == "__main__":
     setup_database()
