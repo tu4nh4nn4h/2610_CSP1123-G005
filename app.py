@@ -117,6 +117,9 @@ def setup_database():
                         date TEXT NOT NULL,
                         time TEXT NOT NULL,
                         location TEXT NOT NULL,
+                        participant_limit INTEGER NOT NULL,
+                        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
+                        ticket_price REAL,
                         student_id varchar(10) NOT NULL,
                         FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
                      )''')
@@ -529,7 +532,7 @@ def create_event():
 
         cursor.execute("""
             INSERT INTO events
-            (event_name, description, date, time, location, participant_limit, event_type, ticket_price)
+            (event_name, event_description, event_date, event_time, event_location, participant_limit, event_type, ticket_price)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (event_name, event_description, event_date,
               event_time, event_location, participant_limit, event_type, ticket_price))
@@ -555,7 +558,7 @@ def cancel_event(event_id):
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT event_id, event_name, description, date, time, location
+        SELECT event_id, event_name, event_description, event_date, event_time, event_location
         FROM events
         WHERE event_id = ?
     """, (event_id,))
@@ -569,10 +572,10 @@ def cancel_event(event_id):
     event = {
         "id": row["event_id"],
         "name": row["event_name"],
-        "desc": row["description"],
-        "date": row["date"],
-        "time": row["time"],
-        "venue": row["location"]
+        "desc": row["event_description"],
+        "date": row["event_date"],
+        "time": row["event_time"],
+        "venue": row["event_location"]
     }
 
     return render_template("cancelreg.html", event=event, event_id=event_id)

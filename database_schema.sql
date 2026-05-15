@@ -33,13 +33,14 @@ CREATE TABLE IF NOT EXISTS organizer_details (
 CREATE TABLE IF NOT EXISTS events (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_name TEXT NOT NULL,
-    description TEXT NOT NULL,
-    date DATE NOT NULL,
-    time TIME NOT NULL,
-    location TEXT NOT NULL,
+    event_description TEXT NOT NULL,
+    event_date DATE NOT NULL,
+    event_time TIME NOT NULL,
+    event_location TEXT NOT NULL,
     participant_limit INTEGER NOT NULL,
     event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
     ticket_price REAL,
+    student_id varchar(10) NOT NULL,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );
 
