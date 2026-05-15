@@ -150,14 +150,6 @@
     body {
       padding-top: 60px; /* prevent content from hiding behind navbar */
     }
-
-    .checkbox-group label {
-  font-size: 14px;
-  color: #444;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
     </style>
   </head>
 
@@ -186,13 +178,8 @@
           <h2>Event Registration</h2>
           <p>Please fill in your details carefully</p>
         </div>
-    <div class="checkbox-group">
-      <label>
-        <input type="checkbox" id="addToCalendar" required> 
-    I understand this event will be added to my Outlook Calendar
-    </label>
-  </div>
-    <form id="regForm">
+
+    <form id="regForm" onsubmit="handleSubmit(event)">
       
       <div class="form-group">
         <label>Full Name</label>
@@ -263,6 +250,25 @@
       </div>
 
     </div>
+
+    <!-- JS -->
+    <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+
+      // show modal instead of popup
+      document.getElementById("successModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("successModal").classList.add("hidden");
+    }
+
+    function goBackEvent() {
+      let eventId = localStorage.getItem("eventId") || 1;
+      window.location.href = `/event/${eventId}`;
+    }
+    </script>
 
     <script src="{{ url_for('static', filename='event.js') }}"></script>
 
