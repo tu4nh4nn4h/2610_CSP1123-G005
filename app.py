@@ -44,17 +44,18 @@ def setup_database():
     cursor = conn.cursor()
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS users_general (
-                        student_id TEXT PRIMARY KEY,
+                        student_id varchar(10) PRIMARY KEY,
                         name TEXT NOT NULL,
                         username TEXT NOT NULL UNIQUE,
                         email TEXT NOT NULL UNIQUE,
                         password TEXT NOT NULL,
                         keyword TEXT,
                         role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
+                        is_verified INTEGER DEFAULT 0
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
-                        student_id TEXT PRIMARY KEY,
+                        student_id varchar(10) PRIMARY KEY,
                         bio TEXT,
                         birthday DATE,
                         faculty TEXT,
@@ -63,7 +64,7 @@ def setup_database():
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
-                        student_id TEXT PRIMARY KEY,
+                        student_id varchar(10) PRIMARY KEY,
                         club_body TEXT NOT NULL,
                         position_title TEXT NOT NULL,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
@@ -76,7 +77,7 @@ def setup_database():
                         date TEXT NOT NULL,
                         time TEXT NOT NULL,
                         location TEXT NOT NULL,
-                        student_id TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
                         FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
                      )''')
 
@@ -96,7 +97,7 @@ def setup_database():
     cursor.execute('''CREATE TABLE IF NOT EXISTS event_registrations (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
-                        student_id TEXT NOT NULL,
+                        student_id varchar(10) NOT NULL,
                         student_email TEXT NOT NULL,
                         personal_email TEXT,
                         phone_number TEXT NOT NULL,
@@ -375,8 +376,7 @@ def form():
 
     if request.method == 'POST':
         name = request.form['Name']
-        student_email = request.form['Student_email']
-        personal_email = request.form['Personal_email']
+        email = request.form['Email']
         phone_number = request.form['Phone_number']
         student_id = request.form['Student_id']
         faculty = request.form['Faculty']
@@ -386,9 +386,9 @@ def form():
 
         cursor.execute("""
             INSERT INTO event_registrations
-            (name, student_id, student_email, personal_email, phone_number, faculty)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (name, student_id, student_email, personal_email, phone_number, faculty))
+            (name, student_id, email, phone_number, faculty)
+            VALUES (?, ?, ?, ?, ?)
+        """, (name, student_id, email, phone_number, faculty))
 
         conn.commit()
         conn.close()
