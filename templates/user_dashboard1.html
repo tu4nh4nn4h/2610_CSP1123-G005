@@ -212,8 +212,8 @@
                 <div class="event-row">
                     <p class="event-label">Upcoming event :</p>
                     <div class="circles">
-                        <div class="circle"></div>
-                        <div class="circle"></div>
+                        <div class="circle" onclick="openCancel(1)"></div>
+                        <div class="circle" onclick="openCancel(2)"></div>
                     </div>
                 </div>
                 <div class="event-row">
@@ -235,6 +235,12 @@
             </div>
         </div>
     </div>
+
+<script>
+function openCancel(eventId) {
+    window.location.href = "/cancel_event/" + eventId;
+}
+</script>
 
 </body>
 </html>
