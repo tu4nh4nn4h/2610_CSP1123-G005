@@ -434,7 +434,12 @@ def create_event():
 
     return render_template('create_event.html')
 
+@app.route('/user_dashboard1')
+def dashboard():
+    return render_template('user_dashboard1.html')
+
 
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)
+
