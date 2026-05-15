@@ -50,7 +50,7 @@ def setup_database():
                         email TEXT NOT NULL UNIQUE,
                         password TEXT NOT NULL,
                         keyword TEXT,
-                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
+                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
