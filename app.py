@@ -114,33 +114,52 @@ def form():
 
 @app.route('/register', methods=['POST'])
 def register_event():
-    data = request.get_json()
-    
 
-    print(f"data received from JS: {data}")
+    data = request.get_json(silent=True)
+
+    if not data:
+        return jsonify({
+            "status": "error",
+            "message": "No JSON data received"
+        }), 400
+
+    print("Data received:", data)
 
     conn = get_db_connection()
+
     try:
-        
         conn.execute("""
-            INSERT INTO event_registrations 
+            INSERT INTO event_registrations
             (name, student_id, student_email, personal_email, phone_number, faculty)
             VALUES (?, ?, ?, ?, ?, ?)
         """, (
-            data.get('name'), 
-            data.get('studentId'), 
-            data.get('studentEmail'), 
-            data.get('personalEmail'), 
-            data.get('phone'), 
+            data.get('name'),
+            data.get('studentId'),
+            data.get('studentEmail'),
+            data.get('personalEmail'),
+            data.get('phone'),
             data.get('faculty')
         ))
+
         conn.commit()
-        return jsonify({"status": "success"}), 200
+
+        return jsonify({
+            "status": "success",
+            "message": "Registration successful"
+        }), 200
+
     except Exception as e:
-        print(f"database error: {e}") 
-        return jsonify({"status": "error", "message": str(e)}), 500
+
+        print("DATABASE ERROR:", e)
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
     finally:
         conn.close()
+        
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
     if request.method == 'POST':

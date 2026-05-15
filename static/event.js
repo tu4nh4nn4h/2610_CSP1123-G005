@@ -1,7 +1,7 @@
 // ================= NAVIGATION =================
 function registerEventPage(eventId) {
     localStorage.setItem("eventId", eventId);
-    window.location.href = "/form";
+    window.location.href = `/form?event_id=${eventId}`;
 }
 
 function goBackEvent() {
@@ -10,8 +10,7 @@ function goBackEvent() {
 }
 
 function closeModal() {
-    const modal = document.getElementById("successModal");
-    if (modal) modal.classList.add("hidden");
+    document.getElementById("successModal").classList.remove("hidden");
 }
 
 // ================= FORM LISTENER =================
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (event) {
         event.preventDefault();
 
-        // 1. Ambil data dari input
+        // 1. gain data from input
         const eventId = localStorage.getItem("eventId") || 1;
         const data = {
             name: document.getElementById("name").value.trim(),
@@ -33,29 +32,34 @@ document.addEventListener("DOMContentLoaded", function () {
             faculty: document.getElementById("faculty").value
         };
 
-        // 2. Semak Checkbox (Wajib untuk Outlook Sync)
+        // 2. click checkbox (mandatory, for outlook sync)
         const checkbox = document.getElementById("addToCalendar");
         if (!checkbox.checked) {
             alert("Sila tanda kotak penyegerakan kalendar untuk meneruskan.");
             return;
         }
 
-        // 3. Simpan data ke Database via Flask
+        // 3. save datas to database via flask
         fetch("/register", { 
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         })
-        .then(res => {
-            if (!res.ok) throw new Error("Gagal menyimpan data");
-            return res.json();
+        .then(async (res) => {
+            const response = await res.json();
+
+            if (!res.ok) {
+                throw new Error(response.message || "Failed to register");
+            }
+
+            return response;
         })
         .then((response) => {
             // 4. Papar Modal Kejayaan
             const modal = document.getElementById("successModal");
             if (modal) modal.classList.remove("hidden");
 
-            // 5. Proses Download Fail .ics (Outlook)
+            // 5. .ics file download process (outlook)
             const events = {
                 1: { title: "Tech Talk 2026", desc: "Learn about AI trends", location: "Main Hall", start: "20260520T100000", end: "20260520T120000" },
                 2: { title: "Sports Day", desc: "Annual university sports event", location: "Stadium", start: "20260525T080000", end: "20260525T120000" },
@@ -88,14 +92,14 @@ END:VCALENDAR`;
                 URL.revokeObjectURL(url);
             }
 
-            // 6. Redirect automatik selepas 3 saat
+            // 6. Redirect automatic after 3 seconds
             setTimeout(() => {
                 goBackEvent();
             }, 3000);
         })
         .catch(err => {
-            console.error("Error:", err);
-            alert("System error. Try again.");
+            console.error("Registration Error:", err);
+            alert(err.message);
         });
     });
 });
