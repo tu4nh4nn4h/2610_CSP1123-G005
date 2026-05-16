@@ -195,10 +195,82 @@
             .title { font-size: 2.5rem; }
         }
 
+        .navbar {
+            position: fixed;       /* stays at the top */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            transition: top 0.3s;
+            z-index: 1000;
+            }
+
+            /* Logo styling */
+        .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+            text-decoration: none;
+            padding-right: 13px;
+            }
+
+            /* Nav links container */
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            }
+
+            /* Individual link styling */
+        .nav-links li a,
+        .nav-profile a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 5px 10px;
+            transition: background-color 0.3s, color 0.3s;
+            }
+
+            /* Hover effect for links */
+        .nav-links li a:hover,
+        .nav-profile a:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            }
+
+            /* Profile link on the far right */
+        .nav-profile {
+            margin-left: auto;
+            }
+
+            /* Optional: navbar appears when hovering near the top */
+        body {
+            padding-top: 60px; /* prevent content from hiding behind navbar */
+            }
+
+
+
         
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="#">UniSphere</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+            <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+        </ul>
+        <div class="nav-profile">
+            <a href="#profile">Profile</a>
+        </div>
+    </nav>
 
     <div class="dashboard">
         <p class="welcome">Welcome back, user!</p>
@@ -209,9 +281,9 @@
                 <!-- <div class="card profile-card"> -->
                 <div class="profile-icon"></div>
                 <div class="profile-content">
-                    <p>Name : </p>
-                    <p>Username : </p>
-                    <p>Contact Details : </p>
+                    <p><b>Name :</b> {{ user['name'] }}</p>
+                    <p><b>Username :</b> {{ user['username'] }}</p>
+                    <p><b>Contact Details :</b> {{ user['email'] }}</p>
                     <!-- </div> -->
                 </div>
             </a>

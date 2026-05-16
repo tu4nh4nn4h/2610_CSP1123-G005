@@ -546,7 +546,20 @@ def create_event():
 
 @app.route('/user_dashboard1')
 def dashboard():
-    return render_template('user_dashboard1.html')
+    username = session.get('user')
+    if not username:
+        return redirect(url_for('signin'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user:
+        return "User not found"
+    
+    return render_template('user_dashboard1.html' , user=user)
 
 @app.route("/cancel_event/<int:event_id>")
 def cancel_event(event_id):
@@ -648,7 +661,7 @@ def user_profile():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
