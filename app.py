@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -548,10 +548,6 @@ def create_event():
 def dashboard():
     return render_template('user_dashboard1.html')
 
-@app.route('/UserProfile')
-def user_profile():
-    return render_template('UserProfile.html')
-
 @app.route("/cancel_event/<int:event_id>")
 def cancel_event(event_id):
     conn = get_db_connection()
@@ -595,6 +591,76 @@ def cancel_registration(event_id):
     conn.close()
 
     return redirect(url_for("dashboard"))
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # GET user data
+    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return "User not found"
+    
+    student_id = user["student_id"]
+    cursor.execute("SELECT * FROM user_details WHERE student_id = ?", (student_id,))
+    details = cursor.fetchone()
+
+    # UPDATE profile
+    if request.method == 'POST':
+        bio = request.form['bio']
+        birthday = request.form['birthday']
+        faculty = request.form['faculty']
+        year_of_study = request.form['year_of_study']
+
+        if details:
+            cursor.execute("""
+                UPDATE user_details
+                SET bio = ?, birthday = ?, faculty = ?, year_of_study = ?
+                WHERE student_id = ?
+            """, (bio, birthday, faculty, year_of_study, student_id))
+
+        else:
+            cursor.execute("""
+                INSERT INTO user_details (student_id, bio, birthday, faculty, year_of_study)
+                VALUES (?, ?, ?, ?, ?)
+            """, (student_id, bio, birthday, faculty, year_of_study))
+
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('user_profile'))
+
+    conn.close()
+    return render_template('EditProfile.html', user=user, details=details)
+
+@app.route('/UserProfile')
+def user_profile():
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user:
+        return "User not found"
+
+    return render_template('UserProfile.html', user=user)
 
 if __name__ == "__main__":
     setup_database()

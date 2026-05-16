@@ -199,19 +199,19 @@
         <div class="container">
             <div class="edit-profile">
                 <h2>Edit Your Profile</h2>
-                <form>
+                <form action="/edit_profile" method="post">
                     <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" value="John Doe">
+                    <input type="text" id="name" name="name" value="{{ user['name'] }}">
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="JohnDoe">
+                    <input type="text" id="username" name="username" value="{{ user['username'] }}">
                     <label for="bio">Bio:</label>
-                    <input type="text" id="bio" name="bio" value="Computer Science student at UniSphere.">  
+                    <input type="text" id="bio" name="bio" value="{{ details['bio'] if details else '' }}">  
                     <label for="birthday">Birthday:</label>
-                    <input type="date" id="birthday" name="birthday" value="1990-01-01">
+                    <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
                     <label for="faculty">Faculty:</label>
-                    <input type="text" id="faculty" name="faculty" value="Faculty of Science">    
-                    <label for="year-of-study">Year of Study:</label>
-                    <input type="text" id="year-of-study" name="year-of-study" value="2">
+                    <input type="text" id="faculty" name="faculty" value="{{ details['faculty'] if details else 'Faculty of Science' }}">    
+                    <label for="year_of_study">Year of Study:</label>
+                    <input type="text" id="year_of_study" name="year_of_study" value="{{ details['year_of_study'] if details else '2' }}">
                     <input type="submit" value="Update Profile">
 
                 </form>
