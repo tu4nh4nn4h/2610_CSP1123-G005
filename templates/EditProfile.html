@@ -199,7 +199,14 @@
         <div class="container">
             <div class="edit-profile">
                 <h2>Edit Your Profile</h2>
-                <form action="/edit_profile" method="post">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="{{ url_for('static', filename='uploads/' + (details['profile_picture'] if details and details['profile_picture'] else 'default_profile.png')) }}
+                     
+                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc;">
+                </div>
+                <form action="/edit_profile" method="post" enctype="multipart/form-data">
+                    <label for="profile_picture">Profile Picture:</label>
+                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
                     <label for="name">Name:</label>
                     <input type="text" id="name" name="name" value="{{ user['name'] }}">
                     <label for="username">Username:</label>

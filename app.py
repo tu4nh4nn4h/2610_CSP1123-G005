@@ -4,11 +4,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 import smtplib
 from email.mime.text import MIMEText
+import os
+import uuid
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 s = URLSafeTimedSerializer("your-secret-key")
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 EMAIL_ADDRESS = 'zuhairanafey@gmail.com'
 EMAIL_PASSWORD = 'zoqv itsk nuaf xuhm'  # Use an app-specific password for Gmail
@@ -38,6 +44,10 @@ def get_db_connection():
     conn.execute("PRAGMA foreign_keys = 1")
     return conn
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def setup_database():
     conn = get_db_connection()
@@ -60,6 +70,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -100,6 +111,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -143,6 +155,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -630,6 +643,15 @@ def edit_profile():
 
     # UPDATE profile
     if request.method == 'POST':
+        profile_picture = None
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file and file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                unique_filename = str(uuid.uuid4()) + "_" + filename
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+                profile_picture = unique_filename
+
         bio = request.form['bio']
         birthday = request.form['birthday']
         faculty = request.form['faculty']
@@ -638,15 +660,15 @@ def edit_profile():
         if details:
             cursor.execute("""
                 UPDATE user_details
-                SET bio = ?, birthday = ?, faculty = ?, year_of_study = ?
+                SET bio = ?, birthday = ?, faculty = ?, year_of_study = ?, profile_picture = ?
                 WHERE student_id = ?
-            """, (bio, birthday, faculty, year_of_study, student_id))
+            """, (bio, birthday, faculty, year_of_study, profile_picture, student_id))
 
         else:
             cursor.execute("""
-                INSERT INTO user_details (student_id, bio, birthday, faculty, year_of_study)
-                VALUES (?, ?, ?, ?, ?)
-            """, (student_id, bio, birthday, faculty, year_of_study))
+                INSERT INTO user_details (student_id, bio, birthday, faculty, year_of_study, profile_picture)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (student_id, bio, birthday, faculty, year_of_study, profile_picture))
 
         conn.commit()
         conn.close()
