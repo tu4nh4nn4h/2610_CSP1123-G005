@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS user_details (
     birthday DATE,
     faculty TEXT,
     year_of_study INTEGER,
+    profile_picture TEXT,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 

@@ -647,7 +647,7 @@ def edit_profile():
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename != '' and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
+                filename = secure_filename(file.filename.strip())
                 unique_filename = str(uuid.uuid4()) + "_" + filename
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
                 profile_picture = unique_filename

@@ -24,7 +24,7 @@
                 border-radius: 8px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                 width: 480px;
-                height: 520px;
+                height: 720px;
             }
             .edit-profile label {
                 display: block;
@@ -57,7 +57,7 @@
                 border-radius: 8px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
                 width: 480px;
-                height: 520px;
+                height: 720px;
             }
             .popup {
                 display: none;
@@ -200,7 +200,7 @@
             <div class="edit-profile">
                 <h2>Edit Your Profile</h2>
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="{{ url_for('static', filename='uploads/' + (details['profile_picture'] if details and details['profile_picture'] else 'default_profile.png')) }}
+                    <img src="{{ url_for('static', filename='uploads/' + (details['profile_picture'] if details and details['profile_picture'] else 'default.png')) }}"
                      
                     style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid #ccc;">
                 </div>
