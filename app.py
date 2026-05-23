@@ -534,51 +534,20 @@ def create_event():
 
 @app.route('/user_dashboard1')
 def dashboard():
-    return render_template('user_dashboard1.html')
-
-@app.route("/cancel_event/<int:event_id>")
-def cancel_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT event_id, event_name, description, date, time, location
-        FROM events
-        WHERE event_id = ?
-    """, (event_id,))
+    cursor.execute("SELECT event_id, event_name FROM events LIMIT 5")
+    events = cursor.fetchall()
 
-    row = cursor.fetchone()
     conn.close()
 
-    if not row:
-        return "Event not found"
+    return render_template('user_dashboard1.html', events=events)
 
-    event = {
-        "id": row["event_id"],
-        "name": row["event_name"],
-        "desc": row["description"],
-        "date": row["date"],
-        "time": row["time"],
-        "venue": row["location"]
-    }
-
-    return render_template("cancelreg.html", event=event, event_id=event_id)
-
-@app.route("/cancel_registration/<int:event_id>", methods=["POST"])
-def cancel_registration(event_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # ⚠️ You likely need a proper table for registrations with event_id
-    cursor.execute("""
-        DELETE FROM event_registrations
-        WHERE id = ?
-    """, (event_id,))
-
-    conn.commit()
-    conn.close()
-
-    return redirect(url_for("dashboard"))
+@app.route('/cancel-registration')
+def cancel_registration():
+    # This matches the filename in your /templates folder
+    return render_template('cancelreg.html')
 
 if __name__ == "__main__":
     setup_database()

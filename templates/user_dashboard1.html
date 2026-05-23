@@ -211,10 +211,11 @@
             <div class="card event-card">
                 <div class="event-row">
                     <p class="event-label">Upcoming event :</p>
-                    <div class="circles">
-                        <div class="circle" onclick="openCancel(1)"></div>
-                        <div class="circle" onclick="openCancel(2)"></div>
-                    </div>
+                   <div class="circles">
+    {% for e in events %}
+        <div class="circle" onclick="openCancel({{ e['event_id'] }})"></div>
+    {% endfor %}
+</div>
                 </div>
                 <div class="event-row">
                     <p class="event-label">Joined event :</p>
@@ -238,7 +239,7 @@
 
 <script>
 function openCancel(eventId) {
-    window.location.href = "/cancel_event/" + eventId;
+    window.location.href = `/cancel_event/${eventId}`;
 }
 </script>
 
