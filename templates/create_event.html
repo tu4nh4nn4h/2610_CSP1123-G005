@@ -41,14 +41,23 @@
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group">
-                        <label>Event Date</label>
-                        <input type="date" id="date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Event Time</label>
-                        <input type="time" id="time" required>
-                    </div>
+                    <label>Start Date</label>
+                    <input type="date" id="start_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" id="end_date" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Time</label>
+                    <input type="time" id="start_time" required>
+                </div>
+
+                <div class="form-group">
+                    <label>End Time</label>
+                    <input type="time" id="end_time" required>
                 </div>
 
                 <div class="form-group">
@@ -61,6 +70,7 @@
                             <option value="Tun Dr. Hasmah Mohd Ali Digital Library">Tun Dr. Hasmah Mohd Ali Digital Library</option>
                             <option value="Dewan Tun Canselor">Dewan Tun Canselor</option>
                             <option value="Annex Hall">Annex Hall</option>
+                            <option value="Central Plaza">Central Plaza</option>
                             <option value="CLC">CLC</option>
                             <option value="FCI">FCI</option>
                             <option value="FAIE">FAIE</option>
@@ -72,8 +82,15 @@
                     </div>
                 
                 <!-- This will be hidden until a faculty is selected -->
+                 <div class="form-group" id="faculty_wing_container" style="display: none;">
+                    <label>Wing</label>
+                    <select id="faculty_wing" required>
+                        <option value="">Select Wing</option>
+                    </select>
+                </div>
+
                 <div class="form-group" id="specific_location_container" style="display: none;">
-                    <label>Specific Room / Venue</label>
+                    <label>Room / Venue</label>
                     <select id="specific_location" required>
                         <option value="">Select a specific spot</option>
                     </select>
