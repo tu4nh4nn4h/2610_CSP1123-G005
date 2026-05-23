@@ -21,40 +21,39 @@
         </nav>
 
         <div class="container">
+    <div class="form-card">
+        <div class="header">
+            <h2>Create Event</h2>
+            <p id="step-indicator">Step 1 of 2: Basic Details</p>
+        </div>
 
-            <div class="form-card">
-
-                <div class="header">
-                    <h2>Create Event</h2>
-                    <p>Please fill in the event details</p>
+        <form id="createEventForm" onsubmit="handleSubmit(event)">
+            <!-- SECTION 1: BASIC DETAILS -->
+            <div class="form-step" id="step1">
+                <div class="form-group">
+                    <label>Event Name</label>
+                    <input type="text" id="name" placeholder="Enter event name" required>
                 </div>
 
-                <form id="createEvent" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label>Event Description</label>
+                    <input id="description" placeholder="Enter event description" required>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group">
-                        <label>Event Name</label>
-                        <input type="text" id="name" placeholder="Enter event name" required>
+                        <label>Event Date</label>
+                        <input type="date" id="date" required>
                     </div>
-
                     <div class="form-group">
-                        <label>Event Description</label>
-                        <input type="text" id="description" placeholder="Enter event description" required>
+                        <label>Event Time</label>
+                        <input type="time" id="time" required>
                     </div>
+                </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Event Date</label>
-                            <input type="date" id="date" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Event Time</label>
-                            <input type="time" id="time" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
+                <div class="form-group">
                         <label>Event Location</label>
-                        <select id="faculty" required>
+                        <select id="faculty" onchange="updateSpecificLocations()" required>
                             <option value="">Select location</option>
                             <option value="Central Plaza">Central Plaza</option>
                             <option value="MMU Stadium">MMU Stadium</option>
@@ -71,12 +70,47 @@
                             <option value="FCA">FCA</option>
                         </select>
                     </div>
+                
+                <!-- This will be hidden until a faculty is selected -->
+                <div class="form-group" id="specific_location_container" style="display: none;">
+                    <label>Specific Room / Venue</label>
+                    <select id="specific_location" required>
+                        <option value="">Select a specific spot</option>
+                    </select>
+                </div>
 
-                    <button type="submit">Create Event</button>
-
-                </form>
+                <button type="button" onclick="nextStep()">Next</button>
             </div>
-        </div>
+
+            <!-- SECTION 2: LOGISTICS & PRICING -->
+            <div class="form-step" id="step2" style="display: none;">
+                <div class="form-group">
+                    <label>Maximum Participants</label>
+                    <input type="number" id="participants" placeholder="e.g. 100" min="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Type</label>
+                    <select id="event_type" onchange="togglePriceInput()" required>
+                        <option value="free">Free</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+
+                <!-- Hidden by default, shown only if 'paid' is selected -->
+                <div class="form-group" id="price_container" style="display: none;">
+                    <label>Ticket Price (RM)</label>
+                    <input type="number" id="price" step="0.01" placeholder="0.00">
+                </div>
+
+                <div class="form-row">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
+                    <button type="submit">Submit Event</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 <script src="{{ url_for('static', filename='create_event.js') }}"></script>

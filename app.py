@@ -1,14 +1,20 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
 import smtplib
 from email.mime.text import MIMEText
+import os
+import uuid
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 s = URLSafeTimedSerializer("your-secret-key")
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 EMAIL_ADDRESS = 'zuhairanafey@gmail.com'
 EMAIL_PASSWORD = 'zoqv itsk nuaf xuhm'  # Use an app-specific password for Gmail
@@ -38,6 +44,10 @@ def get_db_connection():
     conn.execute("PRAGMA foreign_keys = 1")
     return conn
 
+def allowed_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 def setup_database():
     conn = get_db_connection()
@@ -50,7 +60,8 @@ def setup_database():
                         email TEXT NOT NULL UNIQUE,
                         password TEXT NOT NULL,
                         keyword TEXT,
-                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin'))
+                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
+                        is_verified INTEGER DEFAULT 0
                      )''')
 
     cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
@@ -59,6 +70,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -99,6 +111,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -116,6 +129,9 @@ def setup_database():
                         date TEXT NOT NULL,
                         time TEXT NOT NULL,
                         location TEXT NOT NULL,
+                        participant_limit INTEGER NOT NULL,
+                        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
+                        ticket_price REAL,
                         student_id varchar(10) NOT NULL,
                         FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
                      )''')
@@ -139,6 +155,7 @@ def setup_database():
                         birthday DATE,
                         faculty TEXT,
                         year_of_study INTEGER,
+                        profile_picture TEXT,
                         FOREIGN KEY (student_id) REFERENCES users_general(student_id)
                      )''')
 
@@ -504,26 +521,34 @@ def create_event():
         event_date = request.form['Event_date']
         event_time = request.form['Event_time']
         event_location = request.form['Event_location']
+        participant_limit = request.form['Participant_limit']
+        event_type = request.form['Event_type']
+        ticket_price = request.form['Ticket_price']
 
         username = session.get('user')
 
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+        cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
 
         if not user:
             return "User not found"
 
         student_id = user["student_id"]
+        role = user["role"]
+
+        if role != "organizer":
+            print ("Only organizers can create events. Register as an organizer to create events.")
+            return redirect(url_for('register_organizer'))
 
         cursor.execute("""
             INSERT INTO events
-            (event_name, description, date, time, location, student_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (event_name, event_description, event_date, event_time, event_location, participant_limit, event_type, ticket_price)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, (event_name, event_description, event_date,
-              event_time, event_location, student_id))
+              event_time, event_location, participant_limit, event_type, ticket_price))
 
         conn.commit()
         conn.close()
@@ -534,20 +559,156 @@ def create_event():
 
 @app.route('/user_dashboard1')
 def dashboard():
+<<<<<<< HEAD
     conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("SELECT event_id, event_name FROM events LIMIT 5")
     events = cursor.fetchall()
+=======
+    username = session.get('user')
+    if not username:
+        return redirect(url_for('signin'))
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user:
+        return "User not found"
+    
+    return render_template('user_dashboard1.html' , user=user)
+
+@app.route("/cancel_event/<int:event_id>")
+def cancel_event(event_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT event_id, event_name, event_description, event_date, event_time, event_location
+        FROM events
+        WHERE event_id = ?
+    """, (event_id,))
+>>>>>>> 2e2829bb731fd026b346fb88ab1fb4d0d6cb9506
 
     conn.close()
 
     return render_template('user_dashboard1.html', events=events)
 
+<<<<<<< HEAD
 @app.route('/cancel-registration')
 def cancel_registration():
     # This matches the filename in your /templates folder
     return render_template('cancelreg.html')
+=======
+    event = {
+        "id": row["event_id"],
+        "name": row["event_name"],
+        "desc": row["event_description"],
+        "date": row["event_date"],
+        "time": row["event_time"],
+        "venue": row["event_location"]
+    }
+
+    return render_template("cancelreg.html", event=event, event_id=event_id)
+
+@app.route("/cancel_registration/<int:event_id>", methods=["POST"])
+def cancel_registration(event_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # ⚠️ You likely need a proper table for registrations with event_id
+    cursor.execute("""
+        DELETE FROM event_registrations
+        WHERE id = ?
+    """, (event_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for("dashboard"))
+>>>>>>> 2e2829bb731fd026b346fb88ab1fb4d0d6cb9506
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # GET user data
+    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return "User not found"
+    
+    student_id = user["student_id"]
+    cursor.execute("SELECT * FROM user_details WHERE student_id = ?", (student_id,))
+    details = cursor.fetchone()
+
+    # UPDATE profile
+    if request.method == 'POST':
+        profile_picture = None
+        if 'profile_picture' in request.files:
+            file = request.files['profile_picture']
+            if file and file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename.strip())
+                unique_filename = str(uuid.uuid4()) + "_" + filename
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], unique_filename))
+                profile_picture = unique_filename
+
+        bio = request.form['bio']
+        birthday = request.form['birthday']
+        faculty = request.form['faculty']
+        year_of_study = request.form['year_of_study']
+
+        if details:
+            cursor.execute("""
+                UPDATE user_details
+                SET bio = ?, birthday = ?, faculty = ?, year_of_study = ?, profile_picture = ?
+                WHERE student_id = ?
+            """, (bio, birthday, faculty, year_of_study, profile_picture, student_id))
+
+        else:
+            cursor.execute("""
+                INSERT INTO user_details (student_id, bio, birthday, faculty, year_of_study, profile_picture)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (student_id, bio, birthday, faculty, year_of_study, profile_picture))
+
+        conn.commit()
+        conn.close()
+        
+        return redirect(url_for('user_profile'))
+
+    conn.close()
+    return render_template('EditProfile.html', user=user, details=details)
+
+@app.route('/UserProfile')
+def user_profile():
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('signin'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
+    user = cursor.fetchone()
+    conn.close()
+
+    if not user:
+        return "User not found"
+
+    return render_template('UserProfile.html', user=user)
 
 if __name__ == "__main__":
     setup_database()

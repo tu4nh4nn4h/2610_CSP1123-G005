@@ -172,28 +172,121 @@
             text-transform: uppercase;
         }
 
+        .clickable-card {
+            text-decoration: none; /* Removes underline */
+            color: inherit;        /* Keeps text white/original color */
+            display: flex;         /* Maintains your original layout */
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .clickable-card:hover {
+            transform: translateY(-5px); /* Lift effect on hover */
+            background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
+        }
+
+        .clickable-card:active {
+            transform: translateY(0); /* "Press" effect when clicked */
+        }
+
         /* Responsive Fix */
         @media (max-width: 900px) {
             .grid { grid-template-columns: 1fr; }
             .title { font-size: 2.5rem; }
         }
+
+        .navbar {
+            position: fixed;       /* stays at the top */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            transition: top 0.3s;
+            z-index: 1000;
+            }
+
+            /* Logo styling */
+        .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+            text-decoration: none;
+            padding-right: 13px;
+            }
+
+            /* Nav links container */
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            }
+
+            /* Individual link styling */
+        .nav-links li a,
+        .nav-profile a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 5px 10px;
+            transition: background-color 0.3s, color 0.3s;
+            }
+
+            /* Hover effect for links */
+        .nav-links li a:hover,
+        .nav-profile a:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            }
+
+            /* Profile link on the far right */
+        .nav-profile {
+            margin-left: auto;
+            }
+
+            /* Optional: navbar appears when hovering near the top */
+        body {
+            padding-top: 60px; /* prevent content from hiding behind navbar */
+            }
+
+
+
+        
     </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="#">UniSphere</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
+            <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+        </ul>
+        <div class="nav-profile">
+            <a href="#profile">Profile</a>
+        </div>
+    </nav>
 
     <div class="dashboard">
         <p class="welcome">Welcome back, user!</p>
         <h1 class="title">User Dashboard</h1>
 
         <div class="grid">
-            <div class="card profile-card">
+            <a href="{{ url_for('user_profile') }}" class =" card profile-card clickable-card">
+                <!-- <div class="card profile-card"> -->
                 <div class="profile-icon"></div>
                 <div class="profile-content">
-                    <p>Name : </p>
-                    <p>Username : </p>
-                    <p>Contact Details : </p>
+                    <p><b>Name :</b> {{ user['name'] }}</p>
+                    <p><b>Username :</b> {{ user['username'] }}</p>
+                    <p><b>Contact Details :</b> {{ user['email'] }}</p>
+                    <!-- </div> -->
                 </div>
-            </div>
+            </a>
 
             <div class="card calendar-card">
                 <div class="date-info">
