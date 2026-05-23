@@ -559,17 +559,10 @@ def create_event():
 
 @app.route('/user_dashboard1')
 def dashboard():
-<<<<<<< HEAD
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("SELECT event_id, event_name FROM events LIMIT 5")
-    events = cursor.fetchall()
-=======
     username = session.get('user')
     if not username:
         return redirect(url_for('signin'))
-    
+
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
@@ -578,31 +571,28 @@ def dashboard():
 
     if not user:
         return "User not found"
-    
-    return render_template('user_dashboard1.html' , user=user)
+
+    return render_template('user_dashboard1.html', user=user)
 
 @app.route("/cancel_event/<int:event_id>")
 def cancel_event(event_id):
+    username = session.get('user')
+    if not username:
+        return redirect(url_for('signin'))
+
     conn = get_db_connection()
     cursor = conn.cursor()
-
     cursor.execute("""
         SELECT event_id, event_name, event_description, event_date, event_time, event_location
         FROM events
         WHERE event_id = ?
     """, (event_id,))
->>>>>>> 2e2829bb731fd026b346fb88ab1fb4d0d6cb9506
-
+    row = cursor.fetchone()
     conn.close()
 
-    return render_template('user_dashboard1.html', events=events)
+    if not row:
+        return "Event not found"
 
-<<<<<<< HEAD
-@app.route('/cancel-registration')
-def cancel_registration():
-    # This matches the filename in your /templates folder
-    return render_template('cancelreg.html')
-=======
     event = {
         "id": row["event_id"],
         "name": row["event_name"],
@@ -618,18 +608,14 @@ def cancel_registration():
 def cancel_registration(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # ⚠️ You likely need a proper table for registrations with event_id
     cursor.execute("""
         DELETE FROM event_registrations
         WHERE id = ?
     """, (event_id,))
-
     conn.commit()
     conn.close()
 
     return redirect(url_for("dashboard"))
->>>>>>> 2e2829bb731fd026b346fb88ab1fb4d0d6cb9506
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
