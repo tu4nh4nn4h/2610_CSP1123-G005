@@ -239,6 +239,7 @@ def setup_database():
             personal_email TEXT,
             phone_number TEXT NOT NULL,
             faculty TEXT NOT NULL,
+            event_id INTEGER NOT NULL,
             FOREIGN KEY (event_id) REFERENCES events(event_id),
             FOREIGN KEY (student_id) REFERENCES users_general(student_id)
         )
