@@ -1,4 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
+from datetime import datetime, timedelta
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -43,6 +44,97 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = 1")
     return conn
+
+# =========================================
+# EVENT REMINDER NOTIFICATION FUNCTION
+# =========================================
+
+def create_event_reminders(student_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # =========================================
+    # Get all events registered by the student
+    # =========================================
+    cursor.execute("""
+        SELECT 
+            e.event_id,
+            e.event_name,
+            e.date,
+            e.time
+        FROM event_registrations r
+        JOIN events e
+            ON r.event_id = e.event_id
+        WHERE r.student_id = ?
+    """, (student_id,))
+
+    events = cursor.fetchall()
+
+    # =========================================
+    # Get today's date and tomorrow's date
+    # =========================================
+    today = datetime.today().date()
+    tomorrow = today + timedelta(days=1)
+
+    # =========================================
+    # Loop through every registered event
+    # =========================================
+    for event in events:
+
+        # Convert event date string into actual date format
+        # IMPORTANT:
+        # Change the format if your DB date format is different
+        event_date = datetime.strptime(
+            event["date"],
+            "%Y-%m-%d"
+        ).date()
+
+        # =========================================
+        # Check if event is tomorrow
+        # =========================================
+        if event_date == tomorrow:
+
+            reminder_message = (
+                f"Reminder: {event['event_name']} starts tomorrow at {event['time']}."
+            )
+
+            # =========================================
+            # Prevent duplicate reminder notifications
+            # =========================================
+            cursor.execute("""
+                SELECT *
+                FROM notifications
+                WHERE student_id = ?
+                AND message = ?
+            """, (student_id, reminder_message))
+
+            existing_notification = cursor.fetchone()
+
+            # =========================================
+            # If reminder does not exist yet
+            # Create notification
+            # =========================================
+            if not existing_notification:
+
+                cursor.execute("""
+                    INSERT INTO notifications
+                    (student_id, message, type)
+                    VALUES (?, ?, ?)
+                """, (
+                    student_id,
+                    reminder_message,
+                    "reminder"
+                ))
+
+    conn.commit()
+    conn.close()
+    
+# checks all registered events
+# compares event date with tomorrow
+# if event is tomorrow:
+  # creates reminder noti
+# prevents duplicate reminder 
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -100,21 +192,20 @@ def setup_database():
     # EVENTS TABLE
     # =========================
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS events (
-            event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            event_name TEXT NOT NULL,
-            description TEXT NOT NULL,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL,
-            location TEXT NOT NULL,
-            participant_limit INTEGER NOT NULL,
-            event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
-            ticket_price REAL,
-            student_id TEXT NOT NULL,
-            FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-        )
-    ''')
-
+    CREATE TABLE IF NOT EXISTS events (
+        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        date TEXT NOT NULL,
+        time TEXT NOT NULL,
+        location TEXT NOT NULL,
+        participant_limit INTEGER NOT NULL,
+        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
+        ticket_price REAL,
+        student_id TEXT NOT NULL,
+        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+    )
+''')
     # =========================
     # EVENT TAGS
     # =========================
@@ -687,6 +778,11 @@ def notifications():
         SELECT student_id FROM users_general WHERE username = ?
     """, (username,))
     user = cursor.fetchone()
+    
+    # =========================================
+    # CREATE EVENT REMINDERS
+    # =========================================
+    create_event_reminders(user["student_id"])
 
     if not user:
         conn.close()

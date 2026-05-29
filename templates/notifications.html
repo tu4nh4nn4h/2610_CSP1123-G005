@@ -68,7 +68,19 @@
         {% for n in notifications %}
             <div class="notification {% if n['is_read'] == 0 %}unread{% else %}read{% endif %}">
 
-                <span>{{ n['message'] }}</span>
+                <span>
+
+    {% if n['type'] == 'confirmation' %}
+        ✅
+    {% elif n['type'] == 'reminder' %}
+        ⏰
+    {% elif n['type'] == 'cancellation' %}
+        ❌
+    {% endif %}
+
+    {{ n['message'] }}
+
+</span>
 
                 {% if n['is_read'] == 0 %}
                     <a class="mark-read"
