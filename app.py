@@ -640,35 +640,25 @@ def dashboard():
 
     return render_template('user_dashboard1.html', user=user)
 
-@app.route("/cancel_event/<int:event_id>")
+@app.route('/cancel_event/<int:event_id>')
 def cancel_event(event_id):
-    username = session.get('user')
-    if not username:
-        return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("""
-        SELECT event_id, event_name, event_description, event_date, event_time, event_location
-        FROM events
-        WHERE event_id = ?
-    """, (event_id,))
-    row = cursor.fetchone()
+
+    # delete registration
+    cursor.execute(
+        "DELETE FROM event_registrations WHERE event_id = ?",
+        (event_id,)
+    )
+
+    conn.commit()
     conn.close()
 
-    if not row:
-        return "Event not found"
+    flash("Registration cancelled successfully.")
 
-    event = {
-        "id": row["event_id"],
-        "name": row["event_name"],
-        "desc": row["event_description"],
-        "date": row["event_date"],
-        "time": row["event_time"],
-        "venue": row["event_location"]
-    }
-
-    return render_template("cancelreg.html", event=event, event_id=event_id)
+    # redirect back to dashboard
+    return redirect(url_for('dashboard'))
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
