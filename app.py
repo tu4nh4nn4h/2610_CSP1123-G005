@@ -229,20 +229,18 @@ def setup_database():
     # =========================
     # EVENT REGISTRATIONS
     # =========================
-   # =========================
-# EVENT REGISTRATIONS
-# =========================
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS event_registrations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             student_id TEXT NOT NULL,
             student_email TEXT NOT NULL,
             personal_email TEXT,
             phone_number TEXT NOT NULL,
             faculty TEXT NOT NULL,
+            FOREIGN KEY (event_id) REFERENCES events(event_id),
             FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-            FOREIGN KEY (event_id) REFERENCES events(event_id)
         )
     ''')
 
@@ -370,8 +368,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
-                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
