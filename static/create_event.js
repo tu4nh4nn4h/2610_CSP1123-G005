@@ -1,8 +1,23 @@
 const locationData = {
+    "General": [
+        "Central Plaza",
+        "MMU Stadium",
+        "Surau Al-Hidayah",
+        "Tun Dr. Hasmah Mohd Ali Digital Library",
+        "Dewan Tun Canselor",
+        "Annex Hall"
+    ],
+
     "FCI": {
         "Wing A": ["Smart Lab 1", "FCI Lecture Hall 1"],
         "Wing B": ["Meeting Room Level 3", "Computing Lab 5"],
         "Wing C": ["Innovation Hub", "FCI Seminar Room"]
+    },
+
+    "FAIE": {
+        "Wing A": ["e-Theater", "Sound Studio"],
+        "Wing B": ["Main Gallery", "FAIE Workshop"],
+        "Wing C": ["Media Lab", "FAIE Conference Room"]
     },
 
     "FCM": {
@@ -13,52 +28,73 @@ const locationData = {
 
     "FOM": {
         "Wing A": ["FOM Exam Hall"],
-        "Wing B": ["Case Study Room 1", "Management Suite"]
-
+        "Wing B": ["Case Study Room 1", "Management Suite"],
+        "Wing C": ["FOM Seminar Room", "Strategy Lab"]
     },
 
     "FAC": {
         "Wing A": ["FAC Lecture Room 2"],
         "Wing B": ["Accounting Seminar Room", "Level 1 Lounge"]
+    },
+
+    "FCA": {
+        "Wing A": ["FCA Main Auditorium"],
+        "Wing B": ["FCA Art Studio", "Design Lab"],
+        "Wing C": ["FCA Gallery", "Creative Workshop"]
     }
 };
 
-function updateFacultyWings() {
-    const facultySelect = document.getElementById('faculty');
+function updateMainLocations() {
+    const mainlocSelect = document.getElementById('mainloc');
 
     const wingContainer = document.getElementById('faculty_wing_container');
     const wingSelect = document.getElementById('faculty_wing');
 
+    const generalContainer = document.getElementById('general_location_container');
+    const generalSelect = document.getElementById('general_location');
+
     const specificContainer = document.getElementById('specific_location_container');
     const specificSelect = document.getElementById('specific_location');
 
-    const selectedFaculty = facultySelect.value;
+    const selectedLocation = mainlocSelect.value;
 
-    // Reset wing dropdown
-    wingSelect.innerHTML = '<option value="">Select a wing</option>';
+    // Clear previous options
+    generalSelect.innerHTML = '<option value="">Select Venue</option>';
+    wingSelect.innerHTML = '<option value="">Select Wing</option>';
+    specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
 
-    // Reset specific location dropdown
-    specificSelect.innerHTML = '<option value="">Select a specific spot</option>';
-
+    // Hide everything first
+    generalContainer.style.display = 'none';
+    wingContainer.style.display = 'none';
     specificContainer.style.display = 'none';
 
-    if (selectedFaculty && locationData[selectedFaculty]) {
-        // Show the second dropdown
+    if (selectedLocation === "General") {
 
-       wingContainer.style.display = 'block';
+        generalContainer.style.display = 'block';
 
-        Object.keys(locationData[selectedFaculty]).forEach(wing => {
+        Object.values(locationData["General"]).forEach(location => {
 
             const option = document.createElement('option');
 
+            option.value = location;
+            option.textContent = location;
+
+            generalSelect.appendChild(option);
+        });
+    }
+    else if (selectedLocation && locationData[selectedLocation]) {
+        // Show the second dropdown and populate it based on selected location
+       wingContainer.style.display = 'block';
+
+        Object.keys(locationData[selectedLocation]).forEach(wing => {
+            const option = document.createElement('option');
             option.value = wing;
             option.textContent = wing;
-
             wingSelect.appendChild(option);
         });
 
     } else {
-
+        // Selected a general spot or no faculty, hide the second dropdown
         wingContainer.style.display = 'none';
         specificContainer.style.display = 'none';
     }
@@ -66,20 +102,25 @@ function updateFacultyWings() {
 
 function updateSpecificLocations() {
 
-    const faculty = document.getElementById('faculty').value;
+    const mainloc = document.getElementById('mainloc').value;
+    const generalloc = document.getElementById('general_location').value;
     const wing = document.getElementById('faculty_wing').value;
 
+    const generalContainer = document.getElementById('general_location_container');
     const specificContainer = document.getElementById('specific_location_container');
     const specificSelect = document.getElementById('specific_location');
 
     // Reset options
-    specificSelect.innerHTML = '<option value="">Select a specific spot</option>';
+    specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
 
-    if (faculty && wing) {
+    if (mainloc === "General") {
+        generalContainer.style.display = 'block';
+    }
+    else if (mainloc && wing) {
 
         specificContainer.style.display = 'block';
 
-        locationData[faculty][wing].forEach(location => {
+        locationData[mainloc][wing].forEach(location => {
 
             const option = document.createElement('option');
 

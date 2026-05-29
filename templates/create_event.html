@@ -16,7 +16,7 @@
                 <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
             </ul>
             <div class="profile">
-                <a href="#profile">Profile</a>
+                <a href="{{ url_for('dashboard') }}">Profile</a>
             </div>
         </nav>
 
@@ -62,29 +62,30 @@
 
                 <div class="form-group">
                         <label>Event Location</label>
-                        <select id="faculty" onchange="updateSpecificLocations()" required>
+                        <select id="mainloc" onchange="updateMainLocations()" required>
                             <option value="">Select location</option>
-                            <option value="Central Plaza">Central Plaza</option>
-                            <option value="MMU Stadium">MMU Stadium</option>
-                            <option value="Surau Al-Hidayah">Surau Al-Hidayah</option>
-                            <option value="Tun Dr. Hasmah Mohd Ali Digital Library">Tun Dr. Hasmah Mohd Ali Digital Library</option>
-                            <option value="Dewan Tun Canselor">Dewan Tun Canselor</option>
-                            <option value="Annex Hall">Annex Hall</option>
-                            <option value="Central Plaza">Central Plaza</option>
-                            <option value="CLC">CLC</option>
+                            <option value="General">General Campus Area</option>
                             <option value="FCI">FCI</option>
                             <option value="FAIE">FAIE</option>
+                            <option value="FCM">FCM</option>
                             <option value="FOM">FOM</option>
                             <option value="FAC">FAC</option>
-                            <option value="FCM">FCM</option>
                             <option value="FCA">FCA</option>
                         </select>
                     </div>
                 
+                <!-- This will be hidden until general is selected -->
+                 <div class="form-group" id="general_location_container" style="display: none;">
+                    <label>Venue</label>
+                    <select id="general_location" onchange="updateSpecificLocations()" required>
+                        <option value="">Select Venue</option>
+                    </select>
+                </div>
+
                 <!-- This will be hidden until a faculty is selected -->
                  <div class="form-group" id="faculty_wing_container" style="display: none;">
                     <label>Wing</label>
-                    <select id="faculty_wing" required>
+                    <select id="faculty_wing" onchange="updateSpecificLocations()" required>
                         <option value="">Select Wing</option>
                     </select>
                 </div>
@@ -92,7 +93,7 @@
                 <div class="form-group" id="specific_location_container" style="display: none;">
                     <label>Room / Venue</label>
                     <select id="specific_location" required>
-                        <option value="">Select a specific spot</option>
+                        <option value="">Select Room / Venue</option>
                     </select>
                 </div>
 
