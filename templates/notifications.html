@@ -4,59 +4,70 @@
     <meta charset="UTF-8">
     <title>Notifications</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
+  <style>
+    body {
+        margin: 0;
+        font-family: 'Times New Roman', Times, serif;
+        background: linear-gradient(to right, #fbc2eb, #a18cd1);
+        padding-top: 60px; /* for navbar consistency */
+    }
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
+    .container {
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
 
-        h2 {
-            text-align: center;
-        }
+    h2 {
+        text-align: center;
+        font-size: 40px;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 20px;
+    }
 
-        .notification {
-            border-bottom: 1px solid #ddd;
-            padding: 12px 0;
-        }
+    .notification {
+        border-bottom: 1px solid #ddd;
+        padding: 15px 10px;
+        transition: 0.3s ease;
+    }
 
-        .unread {
-            font-weight: bold;
-            background-color: #f0f8ff;
-            padding: 10px;
-            border-radius: 6px;
-        }
+    .notification:hover {
+        background: #f9f9f9;
+    }
 
-        .read {
-            color: #666;
-            padding: 10px;
-        }
+    .unread {
+        font-weight: bold;
+        background-color: #f0f8ff;
+        padding: 10px;
+        border-radius: 8px;
+    }
 
-        .mark-read {
-            float: right;
-            font-size: 14px;
-            text-decoration: none;
-            color: blue;
-        }
+    .read {
+        color: #666;
+        padding: 10px;
+    }
 
-        .mark-read:hover {
-            text-decoration: underline;
-        }
+    .mark-read {
+        float: right;
+        font-size: 13px;
+        text-decoration: none;
+        color: blue;
+    }
 
-        .empty {
-            text-align: center;
-            color: #888;
-            padding: 20px;
-        }
-    </style>
+    .mark-read:hover {
+        text-decoration: underline;
+    }
+
+    .empty {
+        text-align: center;
+        color: #888;
+        padding: 20px;
+    }
+</style>
 </head>
 
 <body>
