@@ -565,7 +565,7 @@ def dashboard():
     
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
+    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
     user = cursor.fetchone()
     conn.close()
 
@@ -697,6 +697,11 @@ def user_profile():
 
     return render_template('UserProfile.html', user=user)
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('signin'))
+ 
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)
