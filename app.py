@@ -239,7 +239,6 @@ def setup_database():
             personal_email TEXT,
             phone_number TEXT NOT NULL,
             faculty TEXT NOT NULL,
-            event_id INTEGER NOT NULL,
             FOREIGN KEY (event_id) REFERENCES events(event_id),
             FOREIGN KEY (student_id) REFERENCES users_general(student_id)
         )
@@ -673,12 +672,29 @@ def cancel_event(event_id):
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('signin'))
+
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    # get student_id
+    cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        return "User not found"
+
+    student_id = user["student_id"]
+
     cursor.execute("""
         DELETE FROM event_registrations
-        WHERE id = ?
-    """, (event_id,))
+        WHERE event_id = ?
+        AND student_id = ?
+    """, (event_id, student_id))
+
     conn.commit()
     conn.close()
 
