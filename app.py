@@ -39,6 +39,27 @@ def send_verification_email(to_email, token):
         if server:
             server.quit()
 
+def send_email_change_verification(to_email, token):
+    verify_url = f"http://127.0.0.1:5000/verify_new_email/{token}"
+
+    msg = MIMEText(
+        f"Click the link below to verify your new email:\n\n{verify_url}"
+    )
+
+    msg['Subject'] = 'Verify New Email Address'
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = to_email
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.send_message(msg)
+
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+    finally:
+        server.quit()
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -158,7 +179,8 @@ def setup_database():
             password TEXT NOT NULL,
             keyword TEXT,
             role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-            is_verified INTEGER DEFAULT 0
+            is_verified INTEGER DEFAULT 0,
+            pending_email TEXT
         )
     ''')
 
@@ -859,6 +881,82 @@ def notifications():
     conn.close()
 
     return render_template("notifications.html", notifications=notifications)
+
+@app.route('/change_email', methods=['POST'])
+def change_email():
+    if 'user' not in session:
+        return redirect(url_for('signin'))
+
+    current_email = request.form['current_email']
+    new_email = request.form['new_email']
+    username = session['user']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT email FROM users_general WHERE username = ?",
+        (username,)
+    )
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return "User not found"
+
+    if user[0] != current_email:
+        conn.close()
+        return "Current email is incorrect"
+
+    # Store new email temporarily
+    cursor.execute("""
+        UPDATE users_general
+        SET pending_email = ?, is_verified = 0
+        WHERE username = ?
+    """, (new_email, username))
+
+    conn.commit()
+    conn.close()
+
+    token = s.dumps(
+        {'username': username, 'new_email': new_email},
+        salt='change-email'
+    )
+
+    send_email_change_verification(new_email, token)
+
+    return "Verification email sent to your new email address."
+
+@app.route('/verify_new_email/<token>')
+def verify_new_email(token):
+    try:
+        data = s.loads(
+            token,
+            salt='change-email',
+            max_age=3600
+        )
+
+        username = data['username']
+        new_email = data['new_email']
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            UPDATE users_general
+            SET email = ?,
+                pending_email = NULL,
+                is_verified = 1
+            WHERE username = ?
+        """, (new_email, username))
+
+        conn.commit()
+        conn.close()
+
+        return "New email verified successfully. You can now log in."
+
+    except Exception:
+        return "Verification link is invalid or expired."
 
 if __name__ == "__main__":
     setup_database()

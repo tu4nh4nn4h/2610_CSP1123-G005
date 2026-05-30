@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS users_general (
     password TEXT NOT NULL,
     keyword TEXT,
     role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-    is_verified INTEGER DEFAULT 0
+    is_verified INTEGER DEFAULT 0,
+    pending_email TEXT
 );
 
 -- 2. User Details (Profiles)
