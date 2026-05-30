@@ -566,8 +566,6 @@
                 <!-- <div class="card profile-card"> -->
                 <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}"
                 class="dashboard-profile-picture">
-            <a href="{{ url_for('user_profile') }}" class="card profile-card clickable-card">
-                <div class="profile-icon"></div>
                 <div class="profile-content">
                     <p><b>Name :</b> {{ user['name'] }}</p>
                     <p><b>Username :</b> {{ user['username'] }}</p>
