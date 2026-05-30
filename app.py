@@ -8,6 +8,7 @@ from email.mime.text import MIMEText
 import os
 import uuid
 from werkzeug.utils import secure_filename
+from functools import wraps
 
 
 app = Flask(__name__)
@@ -581,6 +582,24 @@ def register_event():
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
+
+    username = session.get('user')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return redirect(url_for('signin'))
+
+    if user["role"] != "organizer":
+        conn.close()
+        flash("Only organizers can create events. Please register as an organizer to create events.")
+        return redirect(url_for('become_organizer'))
+    
     if request.method == 'POST':
         event_name = request.form['Event_name']
         event_description = request.form['Event_description']
@@ -590,24 +609,6 @@ def create_event():
         participant_limit = request.form['Participant_limit']
         event_type = request.form['Event_type']
         ticket_price = request.form['Ticket_price']
-
-        username = session.get('user')
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
-        user = cursor.fetchone()
-
-        if not user:
-            return "User not found"
-
-        student_id = user["student_id"]
-        role = user["role"]
-
-        if role != "organizer":
-            print ("Only organizers can create events. Register as an organizer to create events.")
-            return redirect(url_for('register_organizer'))
 
         cursor.execute("""
             INSERT INTO events
@@ -622,6 +623,69 @@ def create_event():
         return redirect(url_for('eventbrowsing'))
 
     return render_template('create_event.html')
+
+@app.route('/become_organizer')
+def become_organizer():
+
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Get current user
+    cursor.execute(""" SELECT student_id, role FROM users_general WHERE username = ?""", (username,))
+    
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return redirect(url_for('signin'))
+
+    # Already organizer
+    if user['role'] == 'organizer':
+        conn.close()
+        return redirect(url_for('create_event'))
+
+    if request.method == 'POST':
+
+        club_body = request.form['Club_body']
+        position_title = request.form['Position_title']
+
+        try:
+            # Insert organizer details
+            cursor.execute("""
+                INSERT INTO organizer_details
+                (student_id, club_body, position_title)
+                VALUES (?, ?, ?)
+            """, (
+                user['student_id'],
+                club_body,
+                position_title
+            ))
+
+            # Update role
+            cursor.execute("""
+                UPDATE users_general
+                SET role = 'organizer'
+                WHERE student_id = ?
+            """, (user['student_id'],))
+
+            conn.commit()
+
+        except Exception as e:
+            conn.rollback()
+            return f"Error: {e}"
+
+        finally:
+            conn.close()
+
+        return redirect(url_for('create_event'))
+
+    conn.close()
+    return render_template('become_organizer.html')
 
 @app.route('/user_dashboard1')
 def dashboard():
