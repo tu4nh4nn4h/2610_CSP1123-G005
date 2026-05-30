@@ -290,13 +290,11 @@
         <div class="popup-content">
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
             <h3>Change Password</h3>
-            <form action="/change_password" method="post">
-                <label for="current_password">Current Password:</label>
-                <input type="password" id="current_password" name="current_password" required>
-                <label for="new_password">New Password:</label>
-                <input type="password" id="new_password" name="new_password" required>
-                <label for="confirm_password">Confirm Password:</label>
-                <input type="password" id="confirm_password" name="confirm_password" required>
+            <form action="/verify_keyword" method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="keyword">Keyword:</label>
+                <input type="password" id="keyword" name="keyword" required>
                 <input type="submit" value="Update Password">
             </form>
         </div>

@@ -18,8 +18,8 @@ UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-EMAIL_ADDRESS = 'zuhairanafey@gmail.com'
-EMAIL_PASSWORD = 'zoqv itsk nuaf xuhm'  # Use an app-specific password for Gmail
+EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 def send_verification_email(to_email, token):
     verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
 
