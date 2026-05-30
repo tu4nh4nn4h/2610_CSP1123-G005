@@ -69,38 +69,13 @@
             gap: 30px;
         }
 
-        .profile-icon {
+        .dashboard-profile-picture {
             width: 120px;
             height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
             border: 4px solid white;
-            border-radius: 50%;
-            position: relative;
             flex-shrink: 0;
-        }
-
-        /* Drawing the head and shoulders in CSS */
-        .profile-icon::before {
-            content: "";
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            background: white;
-            border-radius: 50%;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .profile-icon::after {
-            content: "";
-            position: absolute;
-            width: 80px;
-            height: 40px;
-            background: white;
-            border-radius: 40px 40px 0 0;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
         }
 
         .profile-content p {
@@ -587,6 +562,10 @@
         <h1 class="title">User Dashboard</h1>
 
         <div class="grid">
+            <a href="{{ url_for('user_profile') }}" class =" card profile-card clickable-card">
+                <!-- <div class="card profile-card"> -->
+                <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}"
+                class="dashboard-profile-picture">
             <a href="{{ url_for('user_profile') }}" class="card profile-card clickable-card">
                 <div class="profile-icon"></div>
                 <div class="profile-content">
@@ -624,7 +603,7 @@
         class="circle circle-small"
 
        onclick='triggerActionMenu(
-    {{ e["event_id"] }},
+    `{{ e["event_id"] }}`,
     `{{ e["event_name"] }}`,
     `{{ e["event_description"] }}`,
     `{{ e["event_date"] }}`,
