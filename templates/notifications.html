@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+
+  <style>
+    body {
+        margin: 0;
+        font-family: 'Times New Roman', Times, serif;
+        background: linear-gradient(to right, #fbc2eb, #a18cd1);
+        padding-top: 60px; /* for navbar consistency */
+    }
+
+    .container {
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 40px;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 20px;
+    }
+
+    .notification {
+        border-bottom: 1px solid #ddd;
+        padding: 15px 10px;
+        transition: 0.3s ease;
+    }
+
+    .notification:hover {
+        background: #f9f9f9;
+    }
+
+    .unread {
+        font-weight: bold;
+        background-color: #f0f8ff;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .read {
+        color: #666;
+        padding: 10px;
+    }
+
+    .mark-read {
+        float: right;
+        font-size: 13px;
+        text-decoration: none;
+        color: blue;
+    }
+
+    .mark-read:hover {
+        text-decoration: underline;
+    }
+
+    .empty {
+        text-align: center;
+        color: #888;
+        padding: 20px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Your Notifications 🔔</h2>
+
+    {% if notifications %}
+        {% for n in notifications %}
+            <div class="notification {% if n['is_read'] == 0 %}unread{% else %}read{% endif %}">
+
+                <span>
+
+    {% if n['type'] == 'confirmation' %}
+        ✅
+    {% elif n['type'] == 'reminder' %}
+        ⏰
+    {% elif n['type'] == 'cancellation' %}
+        ❌
+    {% endif %}
+
+    {{ n['message'] }}
+
+</span>
+
+                {% if n['is_read'] == 0 %}
+                    <a class="mark-read"
+                       href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
+                        Mark as read
+                    </a>
+                {% endif %}
+
+                <div style="font-size: 12px; margin-top: 5px;">
+                    {{ n['created_at'] }}
+                </div>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty">No notifications yet.</div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

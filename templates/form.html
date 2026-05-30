@@ -1,270 +1,471 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Event Registration Form</title>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Registration</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
-
-    <!-- POPUP CSS (INLINE) -->
     <style>
-    /* BACKDROP */
-    .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.55);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
 
-    /* hide */
-    .hidden {
-      display: none;
-    }
+        /* RESET */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
 
-    /* MODAL BOX */
-    .modal-box {
-      width: 360px;
-      background: #fff;
-      border-radius: 16px;
-      padding: 28px 24px;
-      text-align: center;
-      position: relative;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-      animation: pop 0.25s ease;
-    }
+        /* BODY */
+        body{
+            font-family: Arial, sans-serif;
 
-    /* animation */
-    @keyframes pop {
-      from { transform: scale(0.85); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+            background: linear-gradient(
+                135deg,
+                #e6b2b8,
+                #b57edc,
+                #7b2cbf
+            );
 
-    /* CLOSE BUTTON */
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      font-size: 20px;
-      cursor: pointer;
-      color: #999;
-    }
+            min-height:100vh;
 
-    /* ICON */
-    .icon-circle {
-      width: 70px;
-      height: 70px;
-      margin: 10px auto 15px;
-      border-radius: 50%;
-      border: 3px solid #22c55e;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      color: #22c55e;
-      font-weight: bold;
-    }
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
 
-    /* TEXT */
-    .modal-box h2 {
-      margin: 0;
-      font-size: 22px;
-    }
+            padding-top:120px;
+            padding-bottom:40px;
+        }
 
-    .modal-box p {
-      color: #666;
-      margin: 8px 0 20px;
-    }
+        /* NAVBAR */
+        .navbar{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
 
-    /* PURPLE BUTTON */
-    .modal-btn {
-      background: #7c3aed;
-      color: white;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+            background:rgba(255,255,255,0.95);
 
-    .modal-btn:hover {
-      background: #6d28d9;
-    }
-    
-    .navbar {
-      position: fixed;       /* stays at the top */
-      top: 0;
-      left: 0;
-      width: 100%;
-      background-color: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      border-bottom: 1px solid #ddd;
-      transition: top 0.3s;
-      z-index: 1000;
-    }
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
 
-    /* Logo styling */
-    .logo a {
-      font-size: 24px;
-      font-weight: bold;
-      color: black;
-      text-decoration: none;
-      padding-right: 13px;
-    }
+            padding:18px 35px;
 
-    /* Nav links container */
-    .nav-links {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-    }
+            border-bottom:1px solid #ddd;
 
-    /* Individual link styling */
-    .nav-links li a,
-    .profile a {
-      color: black;
-      text-decoration: none;
-      font-size: 16px;
-      padding: 5px 10px;
-      transition: background-color 0.3s, color 0.3s;
-    }
+            z-index:1000;
+        }
 
-    /* Hover effect for links */
-    .nav-links li a:hover,
-    .profile a:hover {
-      background-color: #f0f0f0;
-      border-radius: 4px;
-    }
+        /* LOGO */
+        .logo a{
+            text-decoration:none;
+            color:black;
 
-    /* Profile link on the far right */
-    .profile {
-      margin-left: auto;
-    }
+            font-family:"Times New Roman", Times, serif;
+            font-size:34px;
+            font-weight:bold;
+        }
 
-    /* Optional: navbar appears when hovering near the top */
-    body {
-      padding-top: 60px; /* prevent content from hiding behind navbar */
-    }
+        /* NAV LINKS */
+        .nav-links{
+            list-style:none;
+            display:flex;
+            gap:25px;
+            align-items:center;
+        }
+
+        .nav-links li a,
+        .profile a{
+            text-decoration:none;
+            color:black;
+
+            font-size:15px;
+
+            padding:8px 12px;
+            border-radius:8px;
+
+            transition:0.3s;
+        }
+
+        .nav-links li a:hover,
+        .profile a:hover{
+            background:#f1f1f1;
+        }
+
+        /* MAIN WRAPPER */
+        .main-wrapper{
+            width:100%;
+            display:flex;
+            justify-content:center;
+            padding:20px;
+        }
+
+        /* FORM CARD */
+        .form-card{
+            width:420px;
+
+            background:white;
+
+            padding:35px;
+
+            border-radius:24px;
+
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* HEADER */
+        .header{
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        .header h2{
+            color:#333;
+            margin-bottom:8px;
+        }
+
+        .header p{
+            color:#777;
+            font-size:14px;
+        }
+
+        /* FORM GROUP */
+        .form-group{
+            display:flex;
+            flex-direction:column;
+            margin-bottom:18px;
+        }
+
+        .form-group label{
+            margin-bottom:6px;
+            font-size:14px;
+            font-weight:600;
+            color:#444;
+        }
+
+        /* INPUTS */
+        .form-group input,
+        .form-group select{
+            padding:12px;
+
+            border:1px solid #ddd;
+            border-radius:10px;
+
+            font-size:14px;
+
+            outline:none;
+
+            transition:0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus{
+            border-color:#7c3aed;
+            box-shadow:0 0 5px rgba(124,58,237,0.3);
+        }
+
+        /* ROW */
+        .form-row{
+            display:flex;
+            gap:15px;
+        }
+
+        .form-row .form-group{
+            flex:1;
+        }
+
+        /* CHECKBOX */
+        .checkbox-group{
+            display:flex;
+            align-items:flex-start;
+            gap:10px;
+
+            margin-top:5px;
+            margin-bottom:20px;
+
+            font-size:14px;
+            color:#555;
+        }
+
+        /* BUTTON */
+        button[type="submit"]{
+            width:100%;
+
+            padding:14px;
+
+            border:none;
+            border-radius:10px;
+
+            background:#7c3aed;
+            color:white;
+
+            font-size:15px;
+            font-weight:600;
+
+            cursor:pointer;
+
+            transition:0.3s;
+        }
+
+        button[type="submit"]:hover{
+          background:#6d28d9;
+        }
+
+        /* MODAL */
+        .modal{
+            position:fixed;
+            inset:0;
+
+            background:rgba(0,0,0,0.4);
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+
+            z-index:2000;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        .modal-box{
+            width:320px;
+
+            background:white;
+
+            padding:35px;
+
+            border-radius:20px;
+
+            text-align:center;
+        }
+
+        .icon-circle{
+            width:70px;
+            height:70px;
+
+            background:#7c3aed;
+            color:white;
+
+            border-radius:50%;
+
+            display:flex;
+            justify-content:center;
+            align-items:center;
+
+            margin:auto;
+            margin-bottom:18px;
+
+            font-size:30px;
+            font-weight:bold;
+        }
+
+        /* MODAL BUTTON */
+        .modal-btn{
+            background:#7c3aed;
+            color:white;
+
+            border:none;
+            border-radius:10px;
+
+            padding:12px 20px;
+
+            cursor:pointer;
+
+            font-size:15px;
+            font-weight:600;
+        }
+
+        .modal-btn:hover{
+            background:#6d28d9;
+        }
+
+        /* MOBILE */
+        @media (max-width: 768px){
+
+            .navbar{
+                flex-direction:column;
+                gap:15px;
+                padding:18px;
+            }
+
+            .nav-links{
+                flex-direction:column;
+                gap:10px;
+            }
+
+            body{
+                padding-top:220px;
+            }
+
+            .form-card{
+                width:100%;
+                max-width:420px;
+            }
+
+            .form-row{
+                flex-direction:column;
+                gap:0;
+            }
+        }
+
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
 
+    <!-- NAVBAR -->
     <nav class="navbar">
-      <div class="logo">
-        <a href="#">UniSphere</a>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#browse">Browse Event</a></li>
-        <li><a href="#explore">Explore</a></li>
-        <li><a href="#create">Create Event - Be an Organizer</a></li>
-      </ul>
-      <div class="profile">
-        <a href="#profile">Profile</a>
-      </div>
-    </nav>
 
-
-    <div class="container">
-
-      <div class="form-card">
-
-        <div class="header">
-          <h2>Event Registration</h2>
-          <p>Please fill in your details carefully</p>
+        <div class="logo">
+            <a href="#">UniSphere</a>
         </div>
 
-    <form id="regForm" onsubmit="handleSubmit(event)">
-      
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="name" placeholder="Enter your full name" required>
-      </div>
+        <ul class="nav-links">
+            <li><a href="#">Browse Event</a></li>
+            <li><a href="#">Explore</a></li>
+            <li><a href="#">Create Event - Be an Organizer</a></li>
+        </ul>
 
-          <div class="form-group">
-            <label>Student ID</label>
-            <input type="text" id="studentId" placeholder="e.g. 252FC" required>
-          </div>
+        <div class="profile">
+            <a href="#">Profile</a>
+        </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="Email" required>
+    </nav>
+
+    <!-- FORM -->
+    <div class="main-wrapper">
+
+        <div class="form-card">
+
+            <div class="header">
+                <h2>Event Registration</h2>
+                <p>Please fill in your details carefully</p>
             </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="text" id="phone" placeholder="01X-XXXXXXX" required>
-            </div>
+            <form id="regForm">
 
-            <div class="form-group">
-              <label>Faculty</label>
-              <select id="faculty" required>
-                <option value="">Select faculty</option>
-                <option value="FCI">FCI</option>
-                <option value="FAIE">FAIE</option>
-                <option value="FOM">FOM</option>
-                <option value="FAC">FAC</option>
-                <option value="FCM">FCM</option>
-                <option value="FCA">FCA</option>
-              </select>
-            </div>
-          </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                </div>
 
-          <button type="submit">Register</button>
+                <div class="form-group">
+                    <label>Student ID</label>
+                    <input
+                        type="text"
+                        id="studentId"
+                        placeholder="e.g. 252FC"
+                        required
+                    >
+                </div>
 
-        </form>
-      </div>
+                <div class="form-group">
+                    <label>Student Email</label>
+                    <input
+                        type="email"
+                        id="studentEmail"
+                        placeholder="student@mmu.edu.my"
+                        required
+                    >
+                </div>
+
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input
+                            type="text"
+                            id="phone"
+                            placeholder="01X-XXXXXXX"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label>Faculty</label>
+
+                        <select id="faculty" required>
+                            <option value="">Select faculty</option>
+                            <option value="FCI">FCI</option>
+                            <option value="FAIE">FAIE</option>
+                            <option value="FOM">FOM</option>
+                            <option value="FAC">FAC</option>
+                            <option value="FCM">FCM</option>
+                            <option value="FCA">FCA</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="checkbox-group">
+
+                    <input
+                        type="checkbox"
+                        id="outlookCalendar"
+                        name="add_to_calendar"
+                    >
+
+                    <label for="outlookCalendar">
+                        Add this event to my Outlook Calendar
+                    </label>
+
+                </div>
+
+                <button type="submit">
+                    Register
+                </button>
+
+            </form>
+
+        </div>
+
     </div>
 
     <!-- SUCCESS MODAL -->
     <div id="successModal" class="modal hidden">
 
-      <div class="modal-box">
+        <div class="modal-box">
 
-        <div class="close-btn" onclick="closeModal()">×</div>
+            <div class="icon-circle">
+                ✓
+            </div>
 
-        <div class="icon-circle">
-          ✓
+            <h2>Successful</h2>
+
+            <p style="margin:10px 0 20px; color:#666;">
+                You have registered.
+            </p>
+
+            <button onclick="closeModal()" class="modal-btn">
+                Back to Event Page
+            </button>
+
         </div>
-
-        <h2>Successful</h2>
-        <p>You have registered.</p>
-
-        <button class="modal-btn" onclick="goBackEvent()">
-          Back to Event Page
-        </button>
-
-      </div>
 
     </div>
 
-    <!-- JS -->
+    <!-- SCRIPT -->
     <script>
-    function handleSubmit(event) {
-      event.preventDefault();
 
-      // show modal instead of popup
-      document.getElementById("successModal").classList.remove("hidden");
-    }
+        function closeModal() {
 
-    function closeModal() {
-      document.getElementById("successModal").classList.add("hidden");
-    }
+            document
+                .getElementById("successModal")
+                .classList.add("hidden");
 
-    function goBackEvent() {
-      let eventId = localStorage.getItem("eventId") || 1;
-      window.location.href = `/event/${eventId}`;
-    }
+            let eventId =
+                localStorage.getItem("eventId") || 2;
+
+            window.location.href = /event/${eventId};
+        }
+
     </script>
 
-    <script src="{{ url_for('static', filename='event.js') }}"></script>
-
-  </body>
+</body>
 </html>

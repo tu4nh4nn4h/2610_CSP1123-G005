@@ -1,4 +1,5 @@
 from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
+from datetime import datetime, timedelta
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -44,6 +45,97 @@ def get_db_connection():
     conn.execute("PRAGMA foreign_keys = 1")
     return conn
 
+# =========================================
+# EVENT REMINDER NOTIFICATION FUNCTION
+# =========================================
+
+def create_event_reminders(student_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # =========================================
+    # Get all events registered by the student
+    # =========================================
+    cursor.execute("""
+        SELECT 
+            e.event_id,
+            e.event_name,
+            e.date,
+            e.time
+        FROM event_registrations r
+        JOIN events e
+            ON r.event_id = e.event_id
+        WHERE r.student_id = ?
+    """, (student_id,))
+
+    events = cursor.fetchall()
+
+    # =========================================
+    # Get today's date and tomorrow's date
+    # =========================================
+    today = datetime.today().date()
+    tomorrow = today + timedelta(days=1)
+
+    # =========================================
+    # Loop through every registered event
+    # =========================================
+    for event in events:
+
+        # Convert event date string into actual date format
+        # IMPORTANT:
+        # Change the format if your DB date format is different
+        event_date = datetime.strptime(
+            event["date"],
+            "%Y-%m-%d"
+        ).date()
+
+        # =========================================
+        # Check if event is tomorrow
+        # =========================================
+        if event_date == tomorrow:
+
+            reminder_message = (
+                f"Reminder: {event['event_name']} starts tomorrow at {event['time']}."
+            )
+
+            # =========================================
+            # Prevent duplicate reminder notifications
+            # =========================================
+            cursor.execute("""
+                SELECT *
+                FROM notifications
+                WHERE student_id = ?
+                AND message = ?
+            """, (student_id, reminder_message))
+
+            existing_notification = cursor.fetchone()
+
+            # =========================================
+            # If reminder does not exist yet
+            # Create notification
+            # =========================================
+            if not existing_notification:
+
+                cursor.execute("""
+                    INSERT INTO notifications
+                    (student_id, message, type)
+                    VALUES (?, ?, ?)
+                """, (
+                    student_id,
+                    reminder_message,
+                    "reminder"
+                ))
+
+    conn.commit()
+    conn.close()
+    
+# checks all registered events
+# compares event date with tomorrow
+# if event is tomorrow:
+  # creates reminder noti
+# prevents duplicate reminder 
+
 def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -53,160 +145,123 @@ def setup_database():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users_general (
-                        student_id varchar(10) PRIMARY KEY,
-                        name TEXT NOT NULL,
-                        username TEXT NOT NULL UNIQUE,
-                        email TEXT NOT NULL UNIQUE,
-                        password TEXT NOT NULL,
-                        keyword TEXT,
-                        role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-                        is_verified INTEGER DEFAULT 0
-                     )''')
+    # =========================
+    # USERS TABLE
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users_general (
+            student_id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            keyword TEXT,
+            role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
+            is_verified INTEGER DEFAULT 0
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
-                        student_id TEXT PRIMARY KEY,
-                        bio TEXT,
-                        birthday DATE,
-                        faculty TEXT,
-                        year_of_study INTEGER,
-                        profile_picture TEXT,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
+    # =========================
+    # USER PROFILE DETAILS
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_details (
+            student_id TEXT PRIMARY KEY,
+            bio TEXT,
+            birthday DATE,
+            faculty TEXT,
+            year_of_study INTEGER,
+            profile_picture TEXT,
+            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
-                        student_id TEXT PRIMARY KEY,
-                        club_body TEXT NOT NULL,
-                        position_title TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
+    # =========================
+    # ORGANIZER DETAILS
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS organizer_details (
+            student_id TEXT PRIMARY KEY,
+            club_body TEXT NOT NULL,
+            position_title TEXT NOT NULL,
+            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        event_name TEXT NOT NULL,
-                        description TEXT NOT NULL,
-                        date TEXT NOT NULL,
-                        time TEXT NOT NULL,
-                        location TEXT NOT NULL,
-                        student_id TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-                     )''')
+    # =========================
+    # EVENTS TABLE
+    # =========================
+    cursor.execute('''
+    CREATE TABLE IF NOT EXISTS events (
+        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event_name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        date TEXT NOT NULL,
+        time TEXT NOT NULL,
+        location TEXT NOT NULL,
+        participant_limit INTEGER NOT NULL,
+        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
+        ticket_price REAL,
+        student_id TEXT NOT NULL,
+        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
+    )
+''')
+    # =========================
+    # EVENT TAGS
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS event_tags (
+            tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tag_name TEXT UNIQUE NOT NULL
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
-                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        tag_name TEXT UNIQUE NOT NULL
-                     )''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS event_tag_map (
+            event_id INTEGER NOT NULL,
+            tag_id INTEGER NOT NULL,
+            PRIMARY KEY(event_id, tag_id),
+            FOREIGN KEY (event_id) REFERENCES events(event_id),
+            FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
-                        event_id INTEGER NOT NULL,
-                        tag_id INTEGER NOT NULL,
-                        PRIMARY KEY(event_id, tag_id),
-                        FOREIGN KEY (event_id) REFERENCES events(event_id),
-                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
-                     )''')
+    # =========================
+    # EVENT REGISTRATIONS
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS event_registrations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            event_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            student_id TEXT NOT NULL,
+            student_email TEXT NOT NULL,
+            personal_email TEXT,
+            phone_number TEXT NOT NULL,
+            faculty TEXT NOT NULL,
+            FOREIGN KEY (event_id) REFERENCES events(event_id),
+            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+        )
+    ''')
 
-    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
-                        student_id varchar(10) PRIMARY KEY,
-                        bio TEXT,
-                        birthday DATE,
-                        faculty TEXT,
-                        year_of_study INTEGER,
-                        profile_picture TEXT,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
-                        student_id varchar(10) PRIMARY KEY,
-                        club_body TEXT NOT NULL,
-                        position_title TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        event_name TEXT NOT NULL,
-                        description TEXT NOT NULL,
-                        date TEXT NOT NULL,
-                        time TEXT NOT NULL,
-                        location TEXT NOT NULL,
-                        participant_limit INTEGER NOT NULL,
-                        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
-                        ticket_price REAL,
-                        student_id varchar(10) NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
-                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        tag_name TEXT UNIQUE NOT NULL
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
-                        event_id INTEGER NOT NULL,
-                        tag_id INTEGER NOT NULL,
-                        PRIMARY KEY(event_id, tag_id),
-                        FOREIGN KEY (event_id) REFERENCES events(event_id),
-                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS user_details (
-                        student_id varchar(10) PRIMARY KEY,
-                        bio TEXT,
-                        birthday DATE,
-                        faculty TEXT,
-                        year_of_study INTEGER,
-                        profile_picture TEXT,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS organizer_details (
-                        student_id varchar(10) PRIMARY KEY,
-                        club_body TEXT NOT NULL,
-                        position_title TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS events (
-                        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        event_name TEXT NOT NULL,
-                        description TEXT NOT NULL,
-                        date TEXT NOT NULL,
-                        time TEXT NOT NULL,
-                        location TEXT NOT NULL,
-                        student_id varchar(10) NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tags (
-                        tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        tag_name TEXT UNIQUE NOT NULL
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_tag_map (
-                        event_id INTEGER NOT NULL,
-                        tag_id INTEGER NOT NULL,
-                        PRIMARY KEY(event_id, tag_id),
-                        FOREIGN KEY (event_id) REFERENCES events(event_id),
-                        FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
-                     )''')
-
-    cursor.execute('''CREATE TABLE IF NOT EXISTS event_registrations (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        name TEXT NOT NULL,
-                        student_id varchar(10) NOT NULL,
-                        student_email TEXT NOT NULL,
-                        personal_email TEXT,
-                        phone_number TEXT NOT NULL,
-                        faculty TEXT NOT NULL,
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id),
-                        FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-                    )''')
-
+    # =========================
+    # NOTIFICATIONS TABLE 
+    # =========================
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS notifications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            student_id TEXT NOT NULL,
+            message TEXT NOT NULL,
+            type TEXT NOT NULL,
+            is_read INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+        )
+    ''')
 
     conn.commit()
     conn.close()
-
-
+    
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -313,8 +368,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, 0)",
-                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user'))
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
@@ -478,7 +533,7 @@ def form():
     event_id = request.args.get('event_id', 1)
     return render_template('form.html', event_id=event_id)
 
-@app.route('/register', methods=['POST'])
+@app.route('/register_event', methods=['POST'])
 def register_event():
 
     data = request.get_json(silent=True)
@@ -489,29 +544,40 @@ def register_event():
             "message": "No JSON data received"
         }), 400
 
-    print("Data received:", data)
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # 1. Save registration
     cursor.execute("""
         INSERT INTO event_registrations
-        (name, student_id, student_email, personal_email, phone_number, faculty)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (name, student_id, student_email, personal_email, phone_number, faculty, event_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         data.get('name'),
         data.get('studentId'),
         data.get('studentEmail'),
         data.get('personalEmail'),
         data.get('phone'),
-        data.get('faculty')
+        data.get('faculty'),
+        data.get('event_id')
+))
+    # 2. Create notification (IMPORTANT PART)
+    cursor.execute("""
+        INSERT INTO notifications (student_id, message, type)
+        VALUES (?, ?, ?)
+    """, (
+        data.get('studentId'),
+        "You have successfully registered for an event.",
+        "confirmation"
     ))
 
     conn.commit()
     conn.close()
 
-    return redirect(url_for('eventregister'))
-
+    return jsonify({
+        "status": "success",
+        "message": "Registration successful"
+    }) # now every registration will store notification & create notification automatically 
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
@@ -562,7 +628,7 @@ def dashboard():
     username = session.get('user')
     if not username:
         return redirect(url_for('signin'))
-    
+
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
@@ -571,47 +637,53 @@ def dashboard():
 
     if not user:
         return "User not found"
-    
-    return render_template('user_dashboard1.html' , user=user)
 
-@app.route("/cancel_event/<int:event_id>")
+    return render_template('user_dashboard1.html', user=user)
+
+@app.route('/cancel_event/<int:event_id>')
 def cancel_event(event_id):
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT event_id, event_name, event_description, event_date, event_time, event_location
-        FROM events
-        WHERE event_id = ?
-    """, (event_id,))
+    # delete registration
+    cursor.execute(
+        "DELETE FROM event_registrations WHERE event_id = ?",
+        (event_id,)
+    )
 
-    row = cursor.fetchone()
+    conn.commit()
     conn.close()
 
-    if not row:
-        return "Event not found"
+    flash("Registration cancelled successfully.")
 
-    event = {
-        "id": row["event_id"],
-        "name": row["event_name"],
-        "desc": row["event_description"],
-        "date": row["event_date"],
-        "time": row["event_time"],
-        "venue": row["event_location"]
-    }
-
-    return render_template("cancelreg.html", event=event, event_id=event_id)
+    # redirect back to dashboard
+    return redirect(url_for('dashboard'))
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('signin'))
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # ⚠️ You likely need a proper table for registrations with event_id
+    # get student_id
+    cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        return "User not found"
+
+    student_id = user["student_id"]
+
     cursor.execute("""
         DELETE FROM event_registrations
-        WHERE id = ?
-    """, (event_id,))
+        WHERE event_id = ?
+        AND student_id = ?
+    """, (event_id, student_id))
 
     conn.commit()
     conn.close()
@@ -702,7 +774,44 @@ def logout():
     session.clear()
     return redirect(url_for('signin'))
  
+# notification page
+@app.route('/notifications')
+def notifications():
+    username = session.get('user')
+    if not username:
+        return redirect(url_for('signin'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT student_id FROM users_general WHERE username = ?
+    """, (username,))
+    user = cursor.fetchone()
+    
+    # =========================================
+    # CREATE EVENT REMINDERS
+    # =========================================
+    create_event_reminders(user["student_id"])
+
+    if not user:
+        conn.close()
+        return "User not found"
+
+    cursor.execute("""
+        SELECT * FROM notifications
+        WHERE student_id = ?
+        ORDER BY created_at DESC
+    """, (user["student_id"],))
+
+    notifications = cursor.fetchall()
+    conn.close()
+
+    return render_template("notifications.html", notifications=notifications)
+
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)
+    
+
 
