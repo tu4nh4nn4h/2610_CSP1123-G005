@@ -667,11 +667,7 @@ def become_organizer():
             ))
 
             # Update role
-            cursor.execute("""
-                UPDATE users_general
-                SET role = 'organizer'
-                WHERE student_id = ?
-            """, (user['student_id'],))
+            cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
 
             conn.commit()
 
