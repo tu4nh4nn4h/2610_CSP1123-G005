@@ -9,6 +9,7 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
+from xendit import Xendit
 
 
 app = Flask(__name__)
@@ -669,9 +670,12 @@ def be_organizer():
         conn.close()
         return redirect(url_for('create_event'))
 
-    if request.method == 'POST':
-        club_body = request.form.get('club_body')
-        position_title = request.form.get('position_title')
+    if request.method == 'GET':
+        return render_template('be_organizer.html')
+
+    data=request.get_json()
+    club_body = data.get('club_body')
+    position_title = data.get('position_title')
 
     try:
         # Insert organizer details
@@ -690,7 +694,7 @@ def be_organizer():
     finally:
         conn.close()
 
-    return redirect(url_for('create_event'))
+    return jsonify({"status": "become_organizer_success"})
 
 @app.route('/user_dashboard1')
 def dashboard():
