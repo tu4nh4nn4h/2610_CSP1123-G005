@@ -133,7 +133,7 @@
                     <label for="Position_title">Position Title</label>
                     <input type="text" id="Position_title" name="Position_title" required><br>
 
-                    <button type="button" onclick="becomeOrganizer()" class="button">Become Organizer</button>
+                    <button type="submit" onclick="becomeOrganizer()" class="button">Become Organizer</button>
                 </form>
             </div>
         </div>
@@ -147,19 +147,6 @@
                         position_title: document.getElementById('Position_title').value
                     })
                 })
-                .then(res => res.text())  // plain text response from Flask
-                .then(message => {
-                    alert(message);  // show the message returned by Flask
-
-                    if (message === "Success") {
-                        // Redirect organizer to create event page
-                        window.location.href = "/createevent";
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Something went wrong.");
-                });
             }
             </script>
     </body>
