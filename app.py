@@ -353,39 +353,40 @@ def reset_password():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == 'POST':
-        name = request.form['Name']
-        email = request.form['Email']
-        username = request.form['Username']
-        student_id = request.form['Student_id']
-        password = request.form['Password']
-        confirm_password = request.form['confirmPassword']
-        keyword = request.form.get('keyword')
+    data = request.get_json()  # <-- parse JSON body
 
-        if password != confirm_password:
-            return "Passwords do not match"
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
-            conn.commit()
-
-            token = s.dumps(email, salt='email-confirm')
-
-            send_verification_email(email, token)  # Implement this function to send the email
+    # extract values from JSON
+    name = data.get('name')
+    email = data.get('email')
+    username = data.get('username')
+    student_id = data.get('student_id')
+    password = data.get('password')
+    confirm_password = data.get('confirm_password')  # make sure JS sends this
+    keyword = data.get('keyword')
 
 
+    if password != confirm_password:
+        return "Passwords do not match"
 
-        except sqlite3.IntegrityError:
-            return "Username or email already exists"
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
-        finally:
-            conn.close()
+    try:
+        cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                        (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
+        conn.commit()
 
-        return redirect(url_for('signin'))
+        token = s.dumps(email, salt='email-confirm')
+
+        send_verification_email(email, token)  # Implement this function to send the email
+
+    except sqlite3.IntegrityError:
+        return "Username or email already exists"
+
+    finally:
+        conn.close()
+
+    return redirect(url_for('signin'))
 
     return render_template('register.html')
 
@@ -598,7 +599,7 @@ def create_event():
     if user["role"] != "organizer":
         conn.close()
         flash("Only organizers can create events. Please register as an organizer to create events.")
-        return redirect(url_for('become_organizer'))
+        return redirect(url_for('be_organizer'))
     
     if request.method == 'POST':
         event_name = request.form['Event_name']
@@ -624,13 +625,13 @@ def create_event():
 
     return render_template('create_event.html')
 
-@app.route('/become_organizer')
-def become_organizer():
+@app.route('/be_organizer', methods=['GET', 'POST'])
+def be_organizer():
 
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -649,39 +650,32 @@ def become_organizer():
         conn.close()
         return redirect(url_for('create_event'))
 
-    if request.method == 'POST':
+    if request.method == 'GET':
+        return render_template('be_organizer.html')
+    
+    data = request.get_json()
 
-        club_body = request.form['Club_body']
-        position_title = request.form['Position_title']
+    club_body = data.get('club_body')
+    position_title = data.get('position_title')
 
-        try:
-            # Insert organizer details
-            cursor.execute("""
-                INSERT INTO organizer_details
-                (student_id, club_body, position_title)
-                VALUES (?, ?, ?)
-            """, (
-                user['student_id'],
-                club_body,
-                position_title
-            ))
+    try:
+        # Insert organizer details
+        cursor.execute(""" INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)""", 
+            (user['student_id'], club_body,position_title))
 
-            # Update role
-            cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
+        # Update role
+        cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
 
-            conn.commit()
+        conn.commit()
 
-        except Exception as e:
-            conn.rollback()
-            return f"Error: {e}"
+    except Exception as e:
+        conn.rollback()
+        return f"Error: {e}"
 
-        finally:
-            conn.close()
+    finally:
+        conn.close()
 
-        return redirect(url_for('create_event'))
-
-    conn.close()
-    return render_template('become_organizer.html')
+    return "success"
 
 @app.route('/user_dashboard1')
 def dashboard():
@@ -756,7 +750,7 @@ def edit_profile():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('login'))
+        return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()

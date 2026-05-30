@@ -126,18 +126,41 @@
 
         <div class="userToOrganizer-form">
             <div id="becomeOrganizerForm">
-                <form id="becomeOrganizerForm" action="/register" method="post">
+                <form id="becomeOrganizerForm" action="/be_organizer" method="post">
                     <label for="Club_body">Club / Body</label>
                     <input type="text" id="Club_body" name="Club_body" required><br>
 
                     <label for="Position_title">Position Title</label>
                     <input type="text" id="Position_title" name="Position_title" required><br>
 
-                    <button type="submit" class="button">
-                        Become Organizer
-                    </button>
+                    <button type="button" onclick="becomeOrganizer()" class="button">Become Organizer</button>
                 </form>
             </div>
         </div>
+        <script>
+            function becomeOrganizer() {
+                fetch('/be_organizer', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        club_body: document.getElementById('Club_body').value,
+                        position_title: document.getElementById('Position_title').value
+                    })
+                })
+                .then(res => res.text())  // plain text response from Flask
+                .then(message => {
+                    alert(message);  // show the message returned by Flask
+
+                    if (message === "Success") {
+                        // Redirect organizer to create event page
+                        window.location.href = "/createevent";
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Something went wrong.");
+                });
+            }
+            </script>
     </body>
 </html>
