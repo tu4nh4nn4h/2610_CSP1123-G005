@@ -353,40 +353,37 @@ def reset_password():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    data = request.get_json()  # <-- parse JSON body
+    if request.method == 'POST':
+        name = request.form.get('Name')
+        email = request.form.get('Email')
+        username = request.form.get('Username')
+        student_id = request.form.get('Student_id')
+        password = request.form.get('Password')
+        confirm_password = request.form.get('confirmPassword')
+        keyword = request.form.get('keyword')
 
-    # extract values from JSON
-    name = data.get('name')
-    email = data.get('email')
-    username = data.get('username')
-    student_id = data.get('student_id')
-    password = data.get('password')
-    confirm_password = data.get('confirm_password')  # make sure JS sends this
-    keyword = data.get('keyword')
+        if password != confirm_password:
+            return "Passwords do not match"
 
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-    if password != confirm_password:
-        return "Passwords do not match"
+        try:
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                            (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
+            conn.commit()
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+            token = s.dumps(email, salt='email-confirm')
 
-    try:
-        cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                        (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
-        conn.commit()
+            send_verification_email(email, token)  # Implement this function to send the email
 
-        token = s.dumps(email, salt='email-confirm')
+        except sqlite3.IntegrityError:
+            return "Username or email already exists"
 
-        send_verification_email(email, token)  # Implement this function to send the email
+        finally:
+            conn.close()
 
-    except sqlite3.IntegrityError:
-        return "Username or email already exists"
-
-    finally:
-        conn.close()
-
-    return redirect(url_for('signin'))
+        return redirect(url_for('signin'))
 
     return render_template('register.html')
 
