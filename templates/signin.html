@@ -1,52 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
      <head>
-        <title>UniSphere</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>UniSphere - Sign In</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+                font-family: 'Poppins', sans-serif;
+            }
             body {
-                font-family: Arial, sans-serif;
                 background: linear-gradient(to right, #fbc2eb, #a18cd1);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: 100vh;
+                padding: 20px;
+            }
+            .auth-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                max-width: 450px;
             }
             .login-form {
                 background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                width: 400px;
-                margin-left: 40px;
+                padding: 40px 35px;
+                border-radius: 24px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+                width: 100%;
+            }
+            .login-form h2 {
+                color: #3f1b57;
+                font-weight: 700;
+                margin-bottom: 25px;
+            }
+            .form-group {
+                margin-bottom: 18px;
             }
             .login-form label {
                 display: block;
-                margin-top: 10px;
+                font-weight: 500;
+                font-size: 0.9rem;
+                color: #555;
+                margin-bottom: 6px;
             }
             .login-form input[type="text"],
             .login-form input[type="password"] {
                 width: 100%;
-                padding: 8px;
+                padding: 12px 16px;
                 margin-top: 5px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
+                border: 1.5px solid #ddd;
+                border-radius: 12px;
+                font-size: 1rem;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                outline: none;
+                color: #333;
             }
+
+            .login-form input[type="text"]:focus,
+            .login-form input[type="password"]:focus {
+                border-color: #b37cd4;
+                box-shadow: 0 0 0 3px rgba(179, 124, 212, 0.25);
+            }
+
             .login-form input[type="submit"] {
-                margin-top: 15px;
-                padding: 10px;
+                margin-top: 10px;
+                padding: 14px;
                 width: 100%;
                 background-color: #bb00ff;
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 12px;
+                font-size: 1rem;
+                font-weight: 600;
+                transition: background-color 0.2s, transform 0.1s;
+                text-transform: uppercase;
                 cursor: pointer;
             }
+
             .login-form input[type="submit"]:hover {
-                background-color: #0056b3;
+                background-color: #9c5ec2;
+            }
+            .login-form input[type="submit"]:active {
+                transform: scale(0.98);
+            }
+
+            .links-container {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 0.88rem;
+                color: #666;
+            }
+
+            .links-container p {
+                margin-bottom: 8px;
+            }
+
+            .links-container a {
+                color: #7b2cbf;
+                text-decoration: none;
+                font-weight: 500;
+                transition: color 0.2s;
+            }
+
+            .links-container a:hover {
+                color: #9c5ec2;
+                text-decoration: underline;
             }
             .header {
                  text-align: center;
-                 margin-bottom: 20px;
+                 margin-bottom: 30px;
+                 color: #fff;
+                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            .header h1 {
+                font-size: 3rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 5px;
+            }
+            .header h2 {
+                font-size: 1rem;
+                font-weight: 300;
+                opacity: 0.9;
             }
             .popup {
                 display: none;
@@ -58,91 +142,133 @@
                 background-color: rgba(0, 0, 0, 0.5);
                 justify-content: center;
                 align-items: center;
+                backdrop-filter: blur(4px);
             }
             .popup-content {
                 background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                padding: 35px;
+                border-radius: 24px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+                width: 90%;
+                max-width: 400px;
+                position: relative;
                 text-align: center;
             }
-            .popupForgotPassword {
-                display: none;
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 400px;
-                height: 300px;
-                background-color: rgba(0, 0, 0, 0.5);
-                justify-content: center;
-                align-items: center;
+            .popup-content h2 {
+                font-size: 1.5rem;
+                color: #3f1b57;
+                margin-bottom: 20px;
+                font-weight: 700;
+            }
+
+            .popup-close-btn {
+                position: absolute;
+                top: 12px;
+                right: 20px;
+                font-size: 1.6rem;
+                cursor: pointer;
+                color: #7b2cbf;
+                font-weight: 700;
+            }
+
+            .register-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 15px;
+            }
+
+            .register-options a {
+                background: #b37cd4;
+                color: white;
+                padding: 12px;
+                border-radius: 12px;
+                text-decoration: none;
+                font-weight: 500;
+                transition: background 0.2s;
+            }
+
+            .register-options a:hover {
+                background: #9c5ec2;
             }
 
         </style>
-        <div class="header">
-            <h1>UniSphere</h1>
-            <h2>Enter your credentials to use all of sites features</h2>
-        </div>
      </head>
      <body>
-        <div class="login-form">
-            <h2 style="text-align: center;">Welcome Back!</h2>
-            <form action="/signin" method="post">
-                <label for ="username">Username:</label><br>
-                <input type="text" id="username" name="username"><br>
-                <label for="password">Password:</label><br>
-                <input type="password" id="password" name="password"><br>
-                <input type="submit" value="Log In">
-            </form>
-            <p style="text-align: center;"><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
-            <p style="text-align: center;">Don't have an account? <a href="#" onclick="showPopup()">Register here</a></p>
+        <div class="auth-container">
+            <div class="header">
+                <h1>UniSphere</h1>
+                <h2>Enter your credentials to use all of sites features</h2>
+            </div>
+        
+            <div class="login-form">
+                <h2 style="text-align: center;">Welcome Back!</h2>
+                <form action="/signin" method="post">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <input type="submit" value="Log In">
+                </form>
+                <div class="links-container">
+                    <p><a href="#" onclick="forgotPassword()">Forgot Password?</a></p>
+                    <p>Don't have an account? <a href="#" onclick="showPopup()">Register here</a></p>
+                </div>
+            </div>
             <div id="popup" class="popup">
                 <div class="popup-content">
-                    <span style="float: right; cursor: pointer;" onclick="hidePopup()">&times;</span>
+                    <span class="popup-close-btn" onclick="hidePopup()">&times;</span>
                     <h2>Sign Up as:</h2>
-                    <a href="{{ url_for('register') }}">User</a>
-                    <a href="{{ url_for('register_organizer') }}">Event Organizer</a>
-                    <!-- <a href="{{ url_for('register') }}"><button>Student</button></a>
-                    <a href="{{ url_for('register_organizer') }}"><button>Event Organizer</button></a> -->
+                    <div class="register-options">
+                        <a href="{{ url_for('register') }}">User</a>
+                        <a href="{{ url_for('register_organizer') }}">Event Organizer</a>
+                    </div>
                 </div>
-                <script>
-                    function showPopup() {
-                        var popup = document.getElementById("popup");
-                        popup.style.display = "block";
-                        popup.classList.toggle("show");
-                    }
-                    function hidePopup() {
-                        var popup = document.getElementById("popup");
-                        popup.style.display = "none";
-                    }
-                </script>
             </div>
-            <div id="forgotPasswordPopup" class="popupForgotPassword">
-                <div class="popup-content">
-                    <span style="float: right; cursor: pointer;" onclick="hideForgotPasswordPopup()">&times;</span>
-                    <h2>Forgot Password</h2>
+            <script>
+                function showPopup() {
+                    var popup = document.getElementById("popup");
+                    popup.style.display = "block";
+                    popup.classList.toggle("show");
+                }
+                function hidePopup() {
+                    var popup = document.getElementById("popup");
+                    popup.style.display = "none";
+                }
+            </script>
+            </div>
+            <div id="forgotPasswordPopup" class="popup">
+                <div class="popup-content" style="text-align: left;">
+                    <span class="popup-close-btn" onclick="hideForgotPasswordPopup()">&times;</span>
+                    <h2 style="text-align: center;">Forgot Password</h2>
                     <form action="/verify_keyword" method="post">
-                        <label for="username">Username:</label><br>
-                        <input type="text" id="username" name="username" required><br>
-
-                        <label for="keyword">Keyword:</label><br>
-                        <input type="text" id="keyword" name="keyword" required><br>
-                        
-                        <input type="submit" value="Send Reset Link">
+                        <div class="form-group">
+                            <label for="username">Username:</label><br>
+                            <input type="text" id="username" name="username" required><br>                           
+                        </div>
+                        <div class="form-group">                
+                            <label for="keyword">Keyword:</label><br>
+                            <input type="text" id="keyword" name="keyword" required><br>
+                        </div>
+                        <input type="submit" value="Send Reset Link" style="width:100%; background-color:#b37cd4; color:white; border:none; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; text-transform:uppercase;">
                     </form>
                 </div>
-                <script>
-                    function forgotPassword() {
-                        var popup = document.getElementById("forgotPasswordPopup");
-                        popup.style.display = "block";
-                        popup.classList.toggle("show");
-                    }
-                    function hideForgotPasswordPopup() {
-                        var popup = document.getElementById("forgotPasswordPopup");
-                        popup.style.display = "none";
-                    }
-                </script>
+            </div>
+            <script>
+                function forgotPassword() {
+                    var popup = document.getElementById("forgotPasswordPopup");
+                    popup.style.display = "block";
+                    popup.classList.toggle("show");
+                }
+                function hideForgotPasswordPopup() {
+                    var popup = document.getElementById("forgotPasswordPopup");
+                    popup.style.display = "none";
+                }
+            </script>
         </div>
      </body>
 </html>
