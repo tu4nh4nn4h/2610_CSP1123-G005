@@ -9,7 +9,7 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
-from xendit import Xendit
+#from xendit import Xendit
 
 
 app = Flask(__name__)
