@@ -4,472 +4,381 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
- <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-/* BODY */
-body{
-    font-family:'Poppins', sans-serif;
-
-    background: linear-gradient(
-        135deg,
-        #e6b2b8,
-        #b57edc,
-        #7b2cbf
-    );
-
-    min-height:100vh;
-
-    display:flex;
-    justify-content:center;
-    align-items:flex-start;
-
-    padding-top:120px;
-    padding-bottom:40px;
-}
-
-/* NAVBAR */
-.navbar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-
-    background-color:white;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:10px 20px;
-
-    border-bottom:1px solid #ddd;
-
-    transition:top 0.3s;
-    z-index:1000;
-}
-
-/* LOGO */
-.logo a{
-    font-size:24px;
-    font-weight:bold;
-    color:black;
-    text-decoration:none;
-    padding-right:13px;
-}
-
-/* NAV LINKS */
-.nav-links{
-    list-style:none;
-    display:flex;
-    gap:20px;
-}
-
-.nav-links li a,
-.profile a{
-    color:black;
-    text-decoration:none;
-    font-size:16px;
-    padding:5px 10px;
-    transition:background-color 0.3s, color 0.3s;
-}
-
-/* HOVER EFFECT */
-.nav-links li a:hover,
-.profile a:hover{
-    background-color:#f0f0f0;
-    border-radius:4px;
-}
-
-/* PROFILE */
-.profile{
-    margin-left:auto;
-}
-
-/* MAIN WRAPPER */
-.main-wrapper{
-    width:100%;
-    display:flex;
-    justify-content:center;
-    padding:20px;
-}
-
-/* FORM CARD */
-.form-card{
-    width:420px;
-
-    background:white;
-
-    padding:35px;
 
-    border-radius:24px;
-
-    box-shadow:0 10px 30px rgba(0,0,0,0.2);
-}
-
-/* HEADER */
-.header{
-    text-align:center;
-    margin-bottom:25px;
-}
-
-.header h2{
-    color:#333;
-    margin-bottom:8px;
-}
-
-.header p{
-    color:#777;
-    font-size:14px;
-}
-
-/* FORM GROUP */
-.form-group{
-    display:flex;
-    flex-direction:column;
-    margin-bottom:18px;
-}
-
-.form-group label{
-    margin-bottom:6px;
-    font-size:14px;
-    font-weight:600;
-    color:#444;
-}
-
-/* INPUTS */
-.form-group input,
-.form-group select{
-    padding:12px;
-
-    border:1px solid #ddd;
-    border-radius:10px;
-
-    font-size:14px;
-
-    outline:none;
-
-    transition:0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus{
-    border-color:#7c3aed;
-    box-shadow:0 0 5px rgba(124,58,237,0.3);
-}
-
-/* ROW */
-.form-row{
-    display:flex;
-    gap:15px;
-}
-
-.form-row .form-group{
-    flex:1;
-}
-
-/* CHECKBOX */
-.checkbox-group{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-
-    margin-top:5px;
-    margin-bottom:20px;
-
-    font-size:14px;
-    color:#555;
-}
-
-/* BUTTON */
-button[type="submit"]{
-    width:100%;
-
-    padding:14px;
-
-    border:none;
-    border-radius:10px;
-
-    background:#7c3aed;
-    color:white;
-
-    font-size:15px;
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:0.3s;
-}
-
-button[type="submit"]:hover{
-    background:#6d28d9;
-}
-
-/* MODAL */
-.modal{
-    position:fixed;
-    inset:0;
-
-    background:rgba(0,0,0,0.4);
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    z-index:2000;
-}
-
-.hidden{
-    display:none;
-}
-
-.modal-box{
-    width:320px;
-
-    background:white;
-
-    padding:35px;
-
-    border-radius:20px;
-
-    text-align:center;
-}
-
-.icon-circle{
-    width:70px;
-    height:70px;
-
-    background:#7c3aed;
-    color:white;
-
-    border-radius:50%;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    margin:auto;
-    margin-bottom:18px;
-
-    font-size:30px;
-    font-weight:bold;
-}
-
-/* MODAL BUTTON */
-.modal-btn{
-    background:#7c3aed;
-    color:white;
-
-    border:none;
-    border-radius:10px;
-
-    padding:12px 20px;
-
-    cursor:pointer;
-
-    font-size:15px;
-    font-weight:600;
-}
-
-.modal-btn:hover{
-    background:#6d28d9;
-}
-
-/* MOBILE */
-@media (max-width:768px){
-
-    .navbar{
-        flex-direction:column;
-        gap:15px;
-        padding:18px;
-    }
-
-    .nav-links{
-        flex-direction:column;
-        gap:10px;
-        align-items:center;
-    }
-
-    .profile{
-        margin-left:0;
-    }
-
-    body{
-        padding-top:220px;
-    }
-
-    .form-card{
-        width:100%;
-        max-width:420px;
-    }
-
-    .form-row{
-        flex-direction:column;
-        gap:0;
-    }
-}
-</style>
+    <style>
+        /* (YOUR CSS UNCHANGED — KEPT EXACTLY AS YOU PROVIDED) */
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            font-family:'Poppins', sans-serif;
+            background: linear-gradient(135deg,#e6b2b8,#b57edc,#7b2cbf);
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:flex-start;
+            padding-top:120px;
+            padding-bottom:40px;
+        }
+
+        .navbar{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            background-color:white;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:10px 20px;
+            border-bottom:1px solid #ddd;
+            transition:top 0.3s;
+            z-index:1000;
+        }
+
+        .logo a{
+            font-size:24px;
+            font-weight:bold;
+            color:black;
+            text-decoration:none;
+            padding-right:13px;
+        }
+
+        .nav-links{
+            list-style:none;
+            display:flex;
+            gap:20px;
+        }
+
+        .nav-links li a,
+        .profile a{
+            color:black;
+            text-decoration:none;
+            font-size:16px;
+            padding:5px 10px;
+            transition:background-color 0.3s, color 0.3s;
+        }
+
+        .nav-links li a:hover,
+        .profile a:hover{
+            background-color:#f0f0f0;
+            border-radius:4px;
+        }
+
+        .profile{
+            margin-left:auto;
+        }
+
+        .main-wrapper{
+            width:100%;
+            display:flex;
+            justify-content:center;
+            padding:20px;
+        }
+
+        .form-card{
+            width:420px;
+            background:white;
+            padding:35px;
+            border-radius:24px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header{
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        .header h2{
+            color:#333;
+            margin-bottom:8px;
+        }
+
+        .header p{
+            color:#777;
+            font-size:14px;
+        }
+
+        .form-group{
+            display:flex;
+            flex-direction:column;
+            margin-bottom:18px;
+        }
+
+        .form-group label{
+            margin-bottom:6px;
+            font-size:14px;
+            font-weight:600;
+            color:#444;
+        }
+
+        .form-group input,
+        .form-group select{
+            padding:12px;
+            border:1px solid #ddd;
+            border-radius:10px;
+            font-size:14px;
+            outline:none;
+            transition:0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus{
+            border-color:#7c3aed;
+            box-shadow:0 0 5px rgba(124,58,237,0.3);
+        }
+
+        .form-row{
+            display:flex;
+            gap:15px;
+        }
+
+        .form-row .form-group{
+            flex:1;
+        }
+
+        .checkbox-group{
+            display:flex;
+            align-items:flex-start;
+            gap:10px;
+            margin-top:5px;
+            margin-bottom:20px;
+            font-size:14px;
+            color:#555;
+        }
+
+        button[type="submit"]{
+            width:100%;
+            padding:14px;
+            border:none;
+            border-radius:10px;
+            background:#7c3aed;
+            color:white;
+            font-size:15px;
+            font-weight:600;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        button[type="submit"]:hover{
+            background:#6d28d9;
+        }
+
+        .modal{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.4);
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index:2000;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        .modal-box{
+            width:320px;
+            background:white;
+            padding:35px;
+            border-radius:20px;
+            text-align:center;
+        }
+
+        .icon-circle{
+            width:70px;
+            height:70px;
+            background:#7c3aed;
+            color:white;
+            border-radius:50%;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            margin:auto;
+            margin-bottom:18px;
+            font-size:30px;
+            font-weight:bold;
+        }
+
+        .modal-btn{
+            background:#7c3aed;
+            color:white;
+            border:none;
+            border-radius:10px;
+            padding:12px 20px;
+            cursor:pointer;
+            font-size:15px;
+            font-weight:600;
+        }
+
+        .modal-btn:hover{
+            background:#6d28d9;
+        }
+
+        @media (max-width:768px){
+            .navbar{
+                flex-direction:column;
+                gap:15px;
+                padding:18px;
+            }
+
+            .nav-links{
+                flex-direction:column;
+                gap:10px;
+                align-items:center;
+            }
+
+            .profile{
+                margin-left:0;
+            }
+
+            body{
+                padding-top:220px;
+            }
+
+            .form-card{
+                width:100%;
+                max-width:420px;
+            }
+
+            .form-row{
+                flex-direction:column;
+                gap:0;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="logo">
+        <a href="#">UniSphere</a>
+    </div>
 
-        <div class="logo">
-            <a href="#">UniSphere</a>
+    <ul class="nav-links">
+        <li><a href="#">Browse Event</a></li>
+        <li><a href="#">Explore</a></li>
+        <li><a href="#">Create Event - Be an Organizer</a></li>
+    </ul>
+
+    <div class="profile">
+        <a href="#">Profile</a>
+    </div>
+</nav>
+
+<!-- FORM -->
+<div class="main-wrapper">
+    <div class="form-card">
+
+        <div class="header">
+            <h2>Event Registration</h2>
+            <p>Please fill in your details carefully</p>
         </div>
 
-        <ul class="nav-links">
-            <li><a href="#">Browse Event</a></li>
-            <li><a href="#">Explore</a></li>
-            <li><a href="#">Create Event - Be an Organizer</a></li>
-        </ul>
+        <form id="regForm">
 
-        <div class="profile">
-            <a href="#">Profile</a>
-        </div>
-
-    </nav>
-
-    <!-- FORM -->
-    <div class="main-wrapper">
-
-        <div class="form-card">
-
-            <div class="header">
-                <h2>Event Registration</h2>
-                <p>Please fill in your details carefully</p>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required>
             </div>
 
-            <form id="regForm">
+            <div class="form-group">
+                <label>Student ID</label>
+                <input type="text" id="studentId" required>
+            </div>
+
+            <div class="form-group">
+                <label>Student Email</label>
+                <input type="email" id="studentEmail" required>
+            </div>
+
+            <div class="form-row">
 
                 <div class="form-group">
-                    <label>Full Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        placeholder="Enter your full name"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label>Student ID</label>
-                    <input
-                        type="text"
-                        id="studentId"
-                        placeholder="e.g. 252FC"
-                        required
-                    >
+                    <label>Phone Number</label>
+                    <input type="text" id="phone" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Student Email</label>
-                    <input
-                        type="email"
-                        id="studentEmail"
-                        placeholder="student@mmu.edu.my"
-                        required
-                    >
+                    <label>Faculty</label>
+                    <select id="faculty" required>
+                        <option value="">Select faculty</option>
+                        <option value="FCI">FCI</option>
+                        <option value="FAIE">FAIE</option>
+                        <option value="FOM">FOM</option>
+                        <option value="FAC">FAC</option>
+                        <option value="FCM">FCM</option>
+                        <option value="FCA">FCA</option>
+                    </select>
                 </div>
 
-                <div class="form-row">
+            </div>
 
-                    <div class="form-group">
-                        <label>Phone Number</label>
-                        <input
-                            type="text"
-                            id="phone"
-                            placeholder="01X-XXXXXXX"
-                            required
-                        >
-                    </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="outlookCalendar">
+                <label for="outlookCalendar">
+                    Add this event to my Outlook Calendar
+                </label>
+            </div>
 
-                    <div class="form-group">
-                        <label>Faculty</label>
+            <button type="submit">Register</button>
 
-                        <select id="faculty" required>
-                            <option value="">Select faculty</option>
-                            <option value="FCI">FCI</option>
-                            <option value="FAIE">FAIE</option>
-                            <option value="FOM">FOM</option>
-                            <option value="FAC">FAC</option>
-                            <option value="FCM">FCM</option>
-                            <option value="FCA">FCA</option>
-                        </select>
-                    </div>
+        </form>
 
-                </div>
+    </div>
+</div>
 
-                <div class="checkbox-group">
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal hidden">
 
-                    <input
-                        type="checkbox"
-                        id="outlookCalendar"
-                        name="add_to_calendar"
-                    >
+    <div class="modal-box">
 
-                    <label for="outlookCalendar">
-                        Add this event to my Outlook Calendar
-                    </label>
+        <div class="icon-circle">✓</div>
 
-                </div>
+        <h2>Successful</h2>
 
-                <button type="submit">
-                    Register
-                </button>
+        <p style="margin:10px 0 20px; color:#666;">
+            You have registered.
+        </p>
 
-            </form>
-
-        </div>
+        <button onclick="closeModal()" class="modal-btn">
+            Back to Event Page
+        </button>
 
     </div>
 
-    <!-- SUCCESS MODAL -->
-    <div id="successModal" class="modal hidden">
+</div>
 
-        <div class="modal-box">
+<!-- SCRIPT -->
+<script>
 
-            <div class="icon-circle">
-                ✓
-            </div>
+document.getElementById("regForm").addEventListener("submit", function(e){
+    e.preventDefault();
 
-            <h2>Successful</h2>
+    // show modal
+    document.getElementById("successModal").classList.remove("hidden");
 
-            <p style="margin:10px 0 20px; color:#666;">
-                You have registered.
-            </p>
+});
 
-            <button onclick="closeModal()" class="modal-btn">
-                Back to Event Page
-            </button>
+function closeModal(){
 
-        </div>
+    document.getElementById("successModal").classList.add("hidden");
 
-    </div>
+    let eventId = localStorage.getItem("eventId") || 2;
 
-    <!-- SCRIPT -->
-    <script>
+    window.location.href = `/event/${eventId}`;
+}
 
-        function closeModal() {
-
-            document
-                .getElementById("successModal")
-                .classList.add("hidden");
-
-            let eventId =
-                localStorage.getItem("eventId") || 2;
-
-            window.location.href = /event/${eventId};
-        }
-
-    </script>
+</script>
 
 </body>
 </html>
