@@ -25,8 +25,8 @@ UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+EMAIL_ADDRESS = 'zuhairanafey@gmail.com'
+EMAIL_PASSWORD = 'zoqv itsk nuaf xuhm'  # Use an app-specific password for Gmail
 def send_verification_email(to_email, token):
     verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
 
@@ -46,27 +46,6 @@ def send_verification_email(to_email, token):
         if server:
             server.quit()
 
-def send_email_change_verification(to_email, token):
-    verify_url = f"http://127.0.0.1:5000/verify_new_email/{token}"
-
-    msg = MIMEText(
-        f"Click the link below to verify your new email:\n\n{verify_url}"
-    )
-
-    msg['Subject'] = 'Verify New Email Address'
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = to_email
-
-    try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        server.send_message(msg)
-
-    except Exception as e:
-        print(f"Error sending email: {e}")
-
-    finally:
-        server.quit()
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -186,8 +165,7 @@ def setup_database():
             password TEXT NOT NULL,
             keyword TEXT,
             role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-            is_verified INTEGER DEFAULT 0,
-            pending_email TEXT
+            is_verified INTEGER DEFAULT 0
         )
     ''')
 
@@ -383,12 +361,12 @@ def reset_password():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        name = request.form.get('Name')
-        email = request.form.get('Email')
-        username = request.form.get('Username')
-        student_id = request.form.get('Student_id')
-        password = request.form.get('Password')
-        confirm_password = request.form.get('confirmPassword')
+        name = request.form['Name']
+        email = request.form['Email']
+        username = request.form['Username']
+        student_id = request.form['Student_id']
+        password = request.form['Password']
+        confirm_password = request.form['confirmPassword']
         keyword = request.form.get('keyword')
 
         if password != confirm_password:
@@ -399,12 +377,14 @@ def register():
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                            (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
+                           (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
 
             send_verification_email(email, token)  # Implement this function to send the email
+
+
 
         except sqlite3.IntegrityError:
             return "Username or email already exists"
@@ -609,14 +589,23 @@ def register_event():
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
+    if request.method == 'POST':
+        event_name = request.form['Event_name']
+        event_description = request.form['Event_description']
+        event_date = request.form['Event_date']
+        event_time = request.form['Event_time']
+        event_location = request.form['Event_location']
+        participant_limit = request.form['Participant_limit']
+        event_type = request.form['Event_type']
+        ticket_price = request.form['Ticket_price']
 
-    username = session.get('user')
+        username = session.get('user')
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+        conn = get_db_connection()
+        cursor = conn.cursor()
 
-    cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
-    user = cursor.fetchone()
+        cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
+        user = cursor.fetchone()
 
     if not user:
         conn.close()
@@ -652,57 +641,6 @@ def create_event():
 
     return render_template('create_event.html')
 
-@app.route('/be_organizer', methods=['GET', 'POST'])
-def be_organizer():
-
-    username = session.get('user')
-
-    if not username:
-        return redirect(url_for('signin'))
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Get current user
-    cursor.execute(""" SELECT student_id, role FROM users_general WHERE username = ?""", (username,))
-    
-    user = cursor.fetchone()
-
-    if not user:
-        conn.close()
-        return redirect(url_for('signin'))
-
-    # Already organizer
-    if user['role'] == 'organizer':
-        conn.close()
-        return redirect(url_for('create_event'))
-
-    if request.method == 'GET':
-        return render_template('be_organizer.html')
-
-    data=request.get_json()
-    club_body = data.get('club_body')
-    position_title = data.get('position_title')
-
-    try:
-        # Insert organizer details
-        cursor.execute(""" INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)""", 
-            (user['student_id'], club_body,position_title))
-
-        # Update role
-        cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
-
-        conn.commit()
-
-    except Exception as e:
-        conn.rollback()
-        return f"Error: {e}"
-
-    finally:
-        conn.close()
-
-    return jsonify({"status": "become_organizer_success"})
-
 @app.route('/user_dashboard1')
 def dashboard():
     username = session.get('user')
@@ -711,7 +649,7 @@ def dashboard():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
+    cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
     user = cursor.fetchone()
     conn.close()
 
@@ -776,7 +714,7 @@ def edit_profile():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -849,11 +787,6 @@ def user_profile():
 
     return render_template('UserProfile.html', user=user)
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('signin'))
- 
 # notification page
 @app.route('/notifications')
 def notifications():
@@ -888,82 +821,6 @@ def notifications():
     conn.close()
 
     return render_template("notifications.html", notifications=notifications)
-
-@app.route('/change_email', methods=['POST'])
-def change_email():
-    if 'user' not in session:
-        return redirect(url_for('signin'))
-
-    current_email = request.form['current_email']
-    new_email = request.form['new_email']
-    username = session['user']
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    cursor.execute(
-        "SELECT email FROM users_general WHERE username = ?",
-        (username,)
-    )
-    user = cursor.fetchone()
-
-    if not user:
-        conn.close()
-        return "User not found"
-
-    if user[0] != current_email:
-        conn.close()
-        return "Current email is incorrect"
-
-    # Store new email temporarily
-    cursor.execute("""
-        UPDATE users_general
-        SET pending_email = ?, is_verified = 0
-        WHERE username = ?
-    """, (new_email, username))
-
-    conn.commit()
-    conn.close()
-
-    token = s.dumps(
-        {'username': username, 'new_email': new_email},
-        salt='change-email'
-    )
-
-    send_email_change_verification(new_email, token)
-
-    return "Verification email sent to your new email address."
-
-@app.route('/verify_new_email/<token>')
-def verify_new_email(token):
-    try:
-        data = s.loads(
-            token,
-            salt='change-email',
-            max_age=3600
-        )
-
-        username = data['username']
-        new_email = data['new_email']
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            UPDATE users_general
-            SET email = ?,
-                pending_email = NULL,
-                is_verified = 1
-            WHERE username = ?
-        """, (new_email, username))
-
-        conn.commit()
-        conn.close()
-
-        return "New email verified successfully. You can now log in."
-
-    except Exception:
-        return "Verification link is invalid or expired."
 
 if __name__ == "__main__":
     setup_database()
