@@ -36,8 +36,10 @@ CREATE TABLE IF NOT EXISTS events (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_name TEXT NOT NULL,
     event_description TEXT NOT NULL,
-    event_date DATE NOT NULL,
-    event_time TIME NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
     event_location TEXT NOT NULL,
     participant_limit INTEGER NOT NULL,
     event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
@@ -74,6 +76,19 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
+CREATE TABLE IF NOT EXISTS payments (
+    payment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    student_id VARCHAR(10) NOT NULL,
+    xendit_reference TEXT NOT NULL,
+    amount REAL NOT NULL,
+    status TEXT NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (event_id) REFERENCES events(event_id),
+    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+);
+
 SELECT * FROM users_general;
 SELECT * FROM user_details;
 SELECT * FROM organizer_details;
@@ -81,3 +96,4 @@ SELECT * FROM events;
 SELECT * FROM event_tags;
 SELECT * FROM event_tag_map;
 SELECT * FROM event_registrations;
+SELECT * FROM payments;
