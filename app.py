@@ -626,17 +626,20 @@ def create_event():
         event_description = request.form['Event_description']
         event_date = request.form['Event_date']
         event_time = request.form['Event_time']
-        event_location = request.form['Event_location']
+        main_location = request.form['mainloc']
+        general_location = request.form['general_location']
+        faculty_wing = request.form['faculty_wing']
+        specific_location = request.form['specific_location']
         participant_limit = request.form['Participant_limit']
         event_type = request.form['Event_type']
         ticket_price = request.form['Ticket_price']
 
         cursor.execute("""
             INSERT INTO events
-            (event_name, event_description, event_date, event_time, event_location, participant_limit, event_type, ticket_price)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            (event_name, event_description, event_date, event_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, ticket_price, student_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (event_name, event_description, event_date,
-              event_time, event_location, participant_limit, event_type, ticket_price))
+              event_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, ticket_price, user['student_id']))
 
         conn.commit()
         conn.close()

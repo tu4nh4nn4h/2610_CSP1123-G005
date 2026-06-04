@@ -40,7 +40,10 @@ CREATE TABLE IF NOT EXISTS events (
     end_date DATE NOT NULL,
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
-    event_location TEXT NOT NULL,
+    main_location TEXT NOT NULL,         -- corresponds to id="mainloc"
+    general_location TEXT,               -- optional, only for general locations
+    faculty_wing TEXT,                   -- optional, only for faculty path
+    specific_location TEXT,              -- optional, only for faculty path
     participant_limit INTEGER NOT NULL,
     event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
     ticket_price REAL,
