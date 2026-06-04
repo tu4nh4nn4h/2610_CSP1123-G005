@@ -10,7 +10,13 @@ import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
 from xendit import Xendit
+from dotenv import load_dotenv
 
+# Load environment variables
+load_dotenv()
+
+# Initialize Xendit
+xendit = Xendit(api_key=os.environ.get('XENDIT_API_KEY'))
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -624,8 +630,10 @@ def create_event():
     if request.method == 'POST':
         event_name = request.form['Event_name']
         event_description = request.form['Event_description']
-        event_date = request.form['Event_date']
-        event_time = request.form['Event_time']
+        start_date = request.form['Start_date']
+        end_date = request.form['End_date']
+        start_time = request.form['Start_time']
+        end_time = request.form['End_time']
         event_location = request.form['Event_location']
         participant_limit = request.form['Participant_limit']
         event_type = request.form['Event_type']
@@ -633,10 +641,9 @@ def create_event():
 
         cursor.execute("""
             INSERT INTO events
-            (event_name, event_description, event_date, event_time, event_location, participant_limit, event_type, ticket_price)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (event_name, event_description, event_date,
-              event_time, event_location, participant_limit, event_type, ticket_price))
+            (event_name, event_description, start_date, end_date, start_time, end_time, event_location, participant_limit, event_type, ticket_price)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (event_name, event_description, start_date, end_date, start_time, end_time, event_location, participant_limit, event_type, ticket_price))
 
         conn.commit()
         conn.close()
