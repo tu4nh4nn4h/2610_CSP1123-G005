@@ -4,312 +4,316 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+ <style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* BODY */
+body{
+    font-family:'Poppins', sans-serif;
+
+    background: linear-gradient(
+        135deg,
+        #e6b2b8,
+        #b57edc,
+        #7b2cbf
+    );
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+
+    padding-top:120px;
+    padding-bottom:40px;
+}
+
+/* NAVBAR */
+.navbar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+
+    background-color:white;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:10px 20px;
+
+    border-bottom:1px solid #ddd;
+
+    transition:top 0.3s;
+    z-index:1000;
+}
+
+/* LOGO */
+.logo a{
+    font-size:24px;
+    font-weight:bold;
+    color:black;
+    text-decoration:none;
+    padding-right:13px;
+}
+
+/* NAV LINKS */
+.nav-links{
+    list-style:none;
+    display:flex;
+    gap:20px;
+}
+
+.nav-links li a,
+.profile a{
+    color:black;
+    text-decoration:none;
+    font-size:16px;
+    padding:5px 10px;
+    transition:background-color 0.3s, color 0.3s;
+}
+
+/* HOVER EFFECT */
+.nav-links li a:hover,
+.profile a:hover{
+    background-color:#f0f0f0;
+    border-radius:4px;
+}
+
+/* PROFILE */
+.profile{
+    margin-left:auto;
+}
+
+/* MAIN WRAPPER */
+.main-wrapper{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    padding:20px;
+}
+
+/* FORM CARD */
+.form-card{
+    width:420px;
+
+    background:white;
+
+    padding:35px;
 
-    <style>
-
-        /* RESET */
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
+    border-radius:24px;
 
-        /* BODY */
-        body{
-            font-family: Arial, sans-serif;
-
-            background: linear-gradient(
-                135deg,
-                #e6b2b8,
-                #b57edc,
-                #7b2cbf
-            );
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
 
-            min-height:100vh;
-
-            display:flex;
-            justify-content:center;
-            align-items:flex-start;
-
-            padding-top:120px;
-            padding-bottom:40px;
-        }
-
-        /* NAVBAR */
-        .navbar{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-
-            background:rgba(255,255,255,0.95);
-
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-
-            padding:18px 35px;
-
-            border-bottom:1px solid #ddd;
-
-            z-index:1000;
-        }
-
-        /* LOGO */
-        .logo a{
-            text-decoration:none;
-            color:black;
-
-            font-family:"Times New Roman", Times, serif;
-            font-size:34px;
-            font-weight:bold;
-        }
-
-        /* NAV LINKS */
-        .nav-links{
-            list-style:none;
-            display:flex;
-            gap:25px;
-            align-items:center;
-        }
-
-        .nav-links li a,
-        .profile a{
-            text-decoration:none;
-            color:black;
-
-            font-size:15px;
-
-            padding:8px 12px;
-            border-radius:8px;
-
-            transition:0.3s;
-        }
-
-        .nav-links li a:hover,
-        .profile a:hover{
-            background:#f1f1f1;
-        }
-
-        /* MAIN WRAPPER */
-        .main-wrapper{
-            width:100%;
-            display:flex;
-            justify-content:center;
-            padding:20px;
-        }
-
-        /* FORM CARD */
-        .form-card{
-            width:420px;
-
-            background:white;
+/* HEADER */
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
 
-            padding:35px;
+.header h2{
+    color:#333;
+    margin-bottom:8px;
+}
 
-            border-radius:24px;
+.header p{
+    color:#777;
+    font-size:14px;
+}
 
-            box-shadow:0 10px 30px rgba(0,0,0,0.2);
-        }
+/* FORM GROUP */
+.form-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:18px;
+}
 
-        /* HEADER */
-        .header{
-            text-align:center;
-            margin-bottom:25px;
-        }
+.form-group label{
+    margin-bottom:6px;
+    font-size:14px;
+    font-weight:600;
+    color:#444;
+}
 
-        .header h2{
-            color:#333;
-            margin-bottom:8px;
-        }
+/* INPUTS */
+.form-group input,
+.form-group select{
+    padding:12px;
 
-        .header p{
-            color:#777;
-            font-size:14px;
-        }
+    border:1px solid #ddd;
+    border-radius:10px;
 
-        /* FORM GROUP */
-        .form-group{
-            display:flex;
-            flex-direction:column;
-            margin-bottom:18px;
-        }
+    font-size:14px;
 
-        .form-group label{
-            margin-bottom:6px;
-            font-size:14px;
-            font-weight:600;
-            color:#444;
-        }
+    outline:none;
 
-        /* INPUTS */
-        .form-group input,
-        .form-group select{
-            padding:12px;
+    transition:0.2s;
+}
 
-            border:1px solid #ddd;
-            border-radius:10px;
+.form-group input:focus,
+.form-group select:focus{
+    border-color:#7c3aed;
+    box-shadow:0 0 5px rgba(124,58,237,0.3);
+}
 
-            font-size:14px;
+/* ROW */
+.form-row{
+    display:flex;
+    gap:15px;
+}
 
-            outline:none;
+.form-row .form-group{
+    flex:1;
+}
 
-            transition:0.2s;
-        }
+/* CHECKBOX */
+.checkbox-group{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
 
-        .form-group input:focus,
-        .form-group select:focus{
-            border-color:#7c3aed;
-            box-shadow:0 0 5px rgba(124,58,237,0.3);
-        }
+    margin-top:5px;
+    margin-bottom:20px;
 
-        /* ROW */
-        .form-row{
-            display:flex;
-            gap:15px;
-        }
+    font-size:14px;
+    color:#555;
+}
 
-        .form-row .form-group{
-            flex:1;
-        }
+/* BUTTON */
+button[type="submit"]{
+    width:100%;
 
-        /* CHECKBOX */
-        .checkbox-group{
-            display:flex;
-            align-items:flex-start;
-            gap:10px;
+    padding:14px;
 
-            margin-top:5px;
-            margin-bottom:20px;
+    border:none;
+    border-radius:10px;
 
-            font-size:14px;
-            color:#555;
-        }
+    background:#7c3aed;
+    color:white;
 
-        /* BUTTON */
-        button[type="submit"]{
-            width:100%;
+    font-size:15px;
+    font-weight:600;
 
-            padding:14px;
+    cursor:pointer;
 
-            border:none;
-            border-radius:10px;
+    transition:0.3s;
+}
 
-            background:#7c3aed;
-            color:white;
+button[type="submit"]:hover{
+    background:#6d28d9;
+}
 
-            font-size:15px;
-            font-weight:600;
+/* MODAL */
+.modal{
+    position:fixed;
+    inset:0;
 
-            cursor:pointer;
+    background:rgba(0,0,0,0.4);
 
-            transition:0.3s;
-        }
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-        button[type="submit"]:hover{
-          background:#6d28d9;
-        }
+    z-index:2000;
+}
 
-        /* MODAL */
-        .modal{
-            position:fixed;
-            inset:0;
+.hidden{
+    display:none;
+}
 
-            background:rgba(0,0,0,0.4);
+.modal-box{
+    width:320px;
 
-            display:flex;
-            justify-content:center;
-            align-items:center;
+    background:white;
 
-            z-index:2000;
-        }
+    padding:35px;
 
-        .hidden{
-            display:none;
-        }
+    border-radius:20px;
 
-        .modal-box{
-            width:320px;
+    text-align:center;
+}
 
-            background:white;
+.icon-circle{
+    width:70px;
+    height:70px;
 
-            padding:35px;
+    background:#7c3aed;
+    color:white;
 
-            border-radius:20px;
+    border-radius:50%;
 
-            text-align:center;
-        }
+    display:flex;
+    justify-content:center;
+    align-items:center;
 
-        .icon-circle{
-            width:70px;
-            height:70px;
+    margin:auto;
+    margin-bottom:18px;
 
-            background:#7c3aed;
-            color:white;
+    font-size:30px;
+    font-weight:bold;
+}
 
-            border-radius:50%;
+/* MODAL BUTTON */
+.modal-btn{
+    background:#7c3aed;
+    color:white;
 
-            display:flex;
-            justify-content:center;
-            align-items:center;
+    border:none;
+    border-radius:10px;
 
-            margin:auto;
-            margin-bottom:18px;
+    padding:12px 20px;
 
-            font-size:30px;
-            font-weight:bold;
-        }
+    cursor:pointer;
 
-        /* MODAL BUTTON */
-        .modal-btn{
-            background:#7c3aed;
-            color:white;
+    font-size:15px;
+    font-weight:600;
+}
 
-            border:none;
-            border-radius:10px;
+.modal-btn:hover{
+    background:#6d28d9;
+}
 
-            padding:12px 20px;
+/* MOBILE */
+@media (max-width:768px){
 
-            cursor:pointer;
+    .navbar{
+        flex-direction:column;
+        gap:15px;
+        padding:18px;
+    }
 
-            font-size:15px;
-            font-weight:600;
-        }
+    .nav-links{
+        flex-direction:column;
+        gap:10px;
+        align-items:center;
+    }
 
-        .modal-btn:hover{
-            background:#6d28d9;
-        }
+    .profile{
+        margin-left:0;
+    }
 
-        /* MOBILE */
-        @media (max-width: 768px){
+    body{
+        padding-top:220px;
+    }
 
-            .navbar{
-                flex-direction:column;
-                gap:15px;
-                padding:18px;
-            }
+    .form-card{
+        width:100%;
+        max-width:420px;
+    }
 
-            .nav-links{
-                flex-direction:column;
-                gap:10px;
-            }
-
-            body{
-                padding-top:220px;
-            }
-
-            .form-card{
-                width:100%;
-                max-width:420px;
-            }
-
-            .form-row{
-                flex-direction:column;
-                gap:0;
-            }
-        }
-
-    </style>
+    .form-row{
+        flex-direction:column;
+        gap:0;
+    }
+}
+</style>
 </head>
 
 <body>
