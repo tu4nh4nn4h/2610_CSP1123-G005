@@ -44,9 +44,9 @@ CREATE TABLE IF NOT EXISTS events (
     general_location TEXT,               -- optional, only for general locations
     faculty_wing TEXT,                   -- optional, only for faculty path
     specific_location TEXT,              -- optional, only for faculty path
-    participant_limit INTEGER NOT NULL,
+    participants INTEGER NOT NULL,
     event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
-    ticket_price REAL,
+    price REAL,
     student_id varchar(10) NOT NULL,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );

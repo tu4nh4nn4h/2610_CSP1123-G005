@@ -139,11 +139,11 @@ function updateSpecificLocations() {
 
 function nextStep() {
     // Basic validation before moving to next step
-    const name = document.getElementById('name').value;
-    const startdate = document.getElementById('start_date').value;
-    const enddate = document.getElementById('end_date').value;
+    const event_name = document.getElementById('event_name').value;
+    const start_date = document.getElementById('start_date').value;
+    const end_date = document.getElementById('end_date').value;
 
-    if (name && startdate && enddate) {
+    if (event_name && start_date && end_date) {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
         document.getElementById('step-indicator').innerText = "Step 2 of 2: Logistics & Pricing";
@@ -173,13 +173,31 @@ function togglePriceInput() {
     }
 }
 
+function submitEvent() {
+    const formData = handleSubmit(event); // collect data, maybe reuse handleSubmit
+    fetch('/createevent', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "create_event_success") {
+            alert("Event created successfully!");
+            window.location.href = "/eventbrowsing";
+        } else {
+            alert("Failed to create event. Please try again.");
+        }
+    });
+}
+
 function handleSubmit(event) {
     event.preventDefault();
     
     // Collect all data
    const formData = {
-    name: document.getElementById('name').value,
-    description: document.getElementById('description').value,
+    event_name: document.getElementById('event_name').value,
+    event_description: document.getElementById('event_description').value,
 
     start_date: document.getElementById('start_date').value,
     end_date: document.getElementById('end_date').value,
@@ -187,15 +205,17 @@ function handleSubmit(event) {
     start_time: document.getElementById('start_time').value,
     end_time: document.getElementById('end_time').value,
 
-    location: document.getElementById('location').value,
+    main_location: document.getElementById('mainloc').value,
+    general_location: document.getElementById('general_location').value,
+    faculty_wing: document.getElementById('faculty_wing').value,
+    specific_location: document.getElementById('specific_location').value,
+
     participants: document.getElementById('participants').value,
-    type: document.getElementById('event_type').value,
+    event_type: document.getElementById('event_type').value,
     price: document.getElementById('price').value || 0
     };
 
-    console.log("Form Submitted Successfully:", formData);
-    alert("Event Created Successfully!");
-    // Here you would typically use fetch() to send data to your Flask backend
+    return formData;
 }
 
 /* =========================
