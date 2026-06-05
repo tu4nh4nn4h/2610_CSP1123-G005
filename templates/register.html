@@ -50,7 +50,8 @@
             }
             .registration-form input[type="text"],
             .registration-form input[type="email"],
-            .registration-form input[type="password"] {
+            .registration-form input[type="password"],
+            .registration-form select {
                 width: 100%;
                 padding: 11px 16px;
                 margin-top: 5px;
@@ -64,7 +65,8 @@
             }
             .registration-form input[type="text"]:focus,
             .registration-form input[type="email"]:focus,
-            .registration-form input[type="password"]:focus {
+            .registration-form input[type="password"]:focus,
+            .registration-form select:focus {
                 border-color: #b37cd4;
                 box-shadow: 0 0 0 3px rgba(179, 124, 212, 0.25);
             }
@@ -186,7 +188,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="keyword">Keyword:</label>
+                        <label for="security_question">Security Question:</label>
+                        <select id="security_question" name="security_question" required>
+                            <option value="">-- Select a Question --</option>
+                            <option value="pet">What is the name of your first pet?</option>
+                            <option value="school">What is the name of your primary school?</option>
+                            <option value="city">In what city were you born?</option>
+                            <option value="food">What is your favorite food?</option>
+                            <option value="teacher">Who was your favorite teacher?</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keyword">Security Answer:</label>
                         <input type="text" id="keyword" name="keyword"><br>
                     </div>
 
@@ -215,6 +229,7 @@
                         username: document.getElementById("Username").value,
                         student_id: document.getElementById("Student_id").value,
                         password: document.getElementById("Password").value,
+                        security_question: document.getElementById("security_question").value,
                         keyword: document.getElementById("keyword").value
                     })
                 })

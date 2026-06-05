@@ -317,9 +317,11 @@
             <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
             <h3>Change Password</h3>
             <form action="/verify_keyword" method="post">
+                <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;">Please enter your username and the answer to your security question to receive a password reset link.</p>
+                <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;"><b>Security Question:</b> {{ security_question }}</p>
                 <label for="username">Username:</label>
                 <input type="text" id="username" name="username" required>
-                <label for="keyword">Keyword:</label>
+                <label for="keyword">Answer:</label>
                 <input type="password" id="keyword" name="keyword" required>
                 <input type="submit" value="Verify Keyword">
             </form>

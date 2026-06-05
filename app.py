@@ -181,7 +181,8 @@ def setup_database():
             keyword TEXT,
             role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
             is_verified INTEGER DEFAULT 0,
-            pending_email TEXT
+            pending_email TEXT,
+            security_question TEXT
         )
     ''')
 
@@ -384,6 +385,7 @@ def register():
         password = request.form.get('Password')
         confirm_password = request.form.get('confirmPassword')
         keyword = request.form.get('keyword')
+        security_question = request.form.get('security_question')
 
         if password != confirm_password:
             return "Passwords do not match"
@@ -392,8 +394,8 @@ def register():
         cursor = conn.cursor()
 
         try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                            (student_id, name, username, email, generate_password_hash(password), keyword, 'user', 0))
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'user', 0))
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')

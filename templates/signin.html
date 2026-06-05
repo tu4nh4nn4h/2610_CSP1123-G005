@@ -246,12 +246,14 @@
                     <span class="popup-close-btn" onclick="hideForgotPasswordPopup()">&times;</span>
                     <h2 style="text-align: center;">Forgot Password</h2>
                     <form action="/verify_keyword" method="post">
+                        <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px;">Please enter your username and the answer to your security question to receive a password reset link.</p>
+                        <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px;"><b>Security Question:</b> {{ security_question }}</p>
                         <div class="form-group">
                             <label for="username">Username:</label><br>
                             <input type="text" id="username" name="username" required><br>                           
                         </div>
                         <div class="form-group">                
-                            <label for="keyword">Keyword:</label><br>
+                            <label for="keyword">Answer:</label><br>
                             <input type="text" id="keyword" name="keyword" required><br>
                         </div>
                         <input type="submit" value="Send Reset Link" style="width:100%; background-color:#b37cd4; color:white; border:none; padding:12px; border-radius:12px; font-weight:600; cursor:pointer; text-transform:uppercase;">
