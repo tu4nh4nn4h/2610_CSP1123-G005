@@ -9,7 +9,23 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
-#from xendit import Xendit
+import xendit
+from xendit.apis import InvoiceApi
+from xendit.api_client import ApiClient
+from xendit.configuration import Configuration
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
+
+# Initialize the Xendit client with your API key
+api_key = os.getenv("XENDIT_API_KEY")  # Ensure you have this in your .env file
+
+config = Configuration(access_token=api_key)
+
+xendit_client = ApiClient(configuration=config)
+invoice_api = InvoiceApi(xendit_client)
+
+
 
 
 app = Flask(__name__)
@@ -220,17 +236,22 @@ def setup_database():
     CREATE TABLE IF NOT EXISTS events (
         event_id INTEGER PRIMARY KEY AUTOINCREMENT,
         event_name TEXT NOT NULL,
-        description TEXT NOT NULL,
-        date TEXT NOT NULL,
-        time TEXT NOT NULL,
-        location TEXT NOT NULL,
-        participant_limit INTEGER NOT NULL,
+        event_description TEXT NOT NULL,
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
+        start_time TIME NOT NULL,
+        end_time TIME NOT NULL,
+        main_location TEXT NOT NULL,         -- corresponds to id="mainloc"
+        general_location TEXT,               -- optional, only for general locations
+        faculty_wing TEXT,                   -- optional, only for faculty path
+        specific_location TEXT,              -- optional, only for faculty path
+        participants INTEGER NOT NULL,
         event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
-        ticket_price REAL,
-        student_id TEXT NOT NULL,
+        price REAL,
+        student_id varchar(10) NOT NULL,
         FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-    )
-''')
+        )
+    ''')
     # =========================
     # EVENT TAGS
     # =========================
@@ -549,8 +570,10 @@ def event_detail(event_id):
     }
 
     event = events.get(event_id)
-    return render_template('eventregsys.html', event=event)
+    if not event:
+        return "Event not found", 404
 
+    return render_template('eventregsys.html', event=event)
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
@@ -623,32 +646,51 @@ def create_event():
         flash("Only organizers can create events. Please register as an organizer to create events.")
         return redirect(url_for('be_organizer'))
     
+    if request.method == 'GET':
+        return render_template('create_event.html')
+
     if request.method == 'POST':
-        event_name = request.form['Event_name']
-        event_description = request.form['Event_description']
-        event_date = request.form['Event_date']
-        event_time = request.form['Event_time']
-        main_location = request.form['mainloc']
-        general_location = request.form['general_location']
-        faculty_wing = request.form['faculty_wing']
-        specific_location = request.form['specific_location']
-        participant_limit = request.form['Participant_limit']
-        event_type = request.form['Event_type']
-        ticket_price = request.form['Ticket_price']
+        data=request.get_json()
+        event_name = data.get('event_name')
+        event_description = data.get('event_description')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        start_time = data.get('start_time')
+        end_time = data.get('end_time')
 
-        cursor.execute("""
-            INSERT INTO events
-            (event_name, event_description, event_date, event_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, ticket_price, student_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (event_name, event_description, event_date,
-              event_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, ticket_price, user['student_id']))
+        main_location = data.get('mainloc')
 
-        conn.commit()
-        conn.close()
+        if main_location == 'General':
+            general_location = data.get('general_location')
+            faculty_wing = None
+            specific_location = None
+        else:
+            general_location = None
+            faculty_wing = data.get('faculty_wing')
+            specific_location = data.get('specific_location')
 
-        return redirect(url_for('eventbrowsing'))
+        participant_limit = data.get('participants')
+        event_type = data.get('event_type')
+        price = float(data.get('price')) if event_type == 'paid' else 0
 
-    return render_template('create_event.html')
+        try:
+            cursor.execute("""
+                INSERT INTO events
+                (event_name, event_description, start_date, end_date, start_time, end_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, price, student_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (event_name, event_description, start_date, end_date, start_time, end_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, price, user['student_id']))
+
+            conn.commit()
+
+        except Exception as e:
+            conn.rollback()
+            return f"Error: {e}"
+
+        finally:
+            conn.close()
+
+        return jsonify({"status": "create_event_success"})
+
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():
@@ -678,28 +720,29 @@ def be_organizer():
     if request.method == 'GET':
         return render_template('be_organizer.html')
 
-    data=request.get_json()
-    club_body = data.get('club_body')
-    position_title = data.get('position_title')
+    if request.method == 'POST':
+        data=request.get_json()
+        club_body = data.get('club_body')
+        position_title = data.get('position_title')
 
-    try:
-        # Insert organizer details
-        cursor.execute(""" INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)""", 
-            (user['student_id'], club_body,position_title))
+        try:
+            # Insert organizer details
+            cursor.execute(""" INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)""", 
+                (user['student_id'], club_body,position_title))
 
-        # Update role
-        cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
+            # Update role
+            cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
 
-        conn.commit()
+            conn.commit()
 
-    except Exception as e:
-        conn.rollback()
-        return f"Error: {e}"
+        except Exception as e:
+            conn.rollback()
+            return f"Error: {e}"
 
-    finally:
-        conn.close()
+        finally:
+            conn.close()
 
-    return jsonify({"status": "become_organizer_success"})
+        return jsonify({"status": "become_organizer_success"})
 
 @app.route('/user_dashboard1')
 def dashboard():
