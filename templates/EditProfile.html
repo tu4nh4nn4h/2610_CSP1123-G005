@@ -124,7 +124,8 @@
         input[type="email"],
         input[type="password"],
         input[type="date"],
-        input[type="file"] {
+        input[type="file"],
+        select {
             width: 100%;
             padding: 10px;
             margin-top: 6px;
@@ -261,7 +262,32 @@
                     <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
                     
                     <label for="faculty">Faculty:</label>
-                    <input type="text" id="faculty" name="faculty" value="{{ details['faculty'] if details else 'Faculty of Science' }}">    
+                    <select id="faculty" name="faculty">
+                        <option value="Faculty of Computing and Informatics"
+                            {% if not details or details['faculty'] == 'Faculty of Computing and Informatics' %}selected{% endif %} style="color: black;">
+                            Faculty of Computing and Informatics
+                        </option>
+
+                        <option value="Faculty of Artificial Intelligence & Engineering"
+                            {% if details and details['faculty'] == 'Faculty of Artificial Intelligence & Engineering' %}selected{% endif %} style="color: black;">
+                            Faculty of Artificial Intelligence & Engineering
+                        </option>
+
+                        <option value="Faculty of Management"
+                            {% if details and details['faculty'] == 'Faculty of Management' %}selected{% endif %} style="color: black;">        
+                            Faculty of Management
+                        </option>
+
+                        <option value="Faculty of Cinematic Arts"
+                            {% if details and details['faculty'] == 'Faculty of Cinematic Arts' %}selected{% endif %} style="color: black;">
+                            Faculty of Cinematic Arts
+                        </option>
+
+                        <option value="Faculty of Creative Multimedia"
+                            {% if details and details['faculty'] == 'Faculty of Creative Multimedia' %}selected{% endif %} style="color: black;">
+                            Faculty of Creative Multimedia
+                        </option>
+                    </select>
                     
                     <label for="year_of_study">Year of Study:</label>
                     <input type="text" id="year_of_study" name="year_of_study" value="{{ details['year_of_study'] if details else '2' }}">
