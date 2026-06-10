@@ -142,8 +142,9 @@ function nextStep() {
     const eventName = document.getElementById('event_name').value;
     const startDate = document.getElementById('start_date').value;
     const endDate = document.getElementById('end_date').value;
+    const eventMode = document.getElementById('event_mode').value;
 
-    if (eventName && startDate && endDate) {
+    if (eventName && startDate && endDate && eventMode) {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
         document.getElementById('step-indicator').innerText = "Step 2 of 2: Logistics";
