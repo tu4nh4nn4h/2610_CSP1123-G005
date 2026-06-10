@@ -9,24 +9,6 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
-import xendit
-from xendit.apis import InvoiceApi
-from xendit.api_client import ApiClient
-from xendit.configuration import Configuration
-from dotenv import load_dotenv
-
-load_dotenv()  # Load environment variables from .env file
-
-# Initialize the Xendit client with your API key
-api_key = os.getenv("XENDIT_API_KEY")  # Ensure you have this in your .env file
-
-config = Configuration(access_token=api_key)
-
-xendit_client = ApiClient(configuration=config)
-invoice_api = InvoiceApi(xendit_client)
-
-
-
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -241,13 +223,13 @@ def setup_database():
         end_date DATE NOT NULL,
         start_time TIME NOT NULL,
         end_time TIME NOT NULL,
+        event_mode TEXT NOT NULL CHECK(event_mode IN ('online', 'offline', 'hybrid')),
         main_location TEXT NOT NULL,         -- corresponds to id="mainloc"
         general_location TEXT,               -- optional, only for general locations
         faculty_wing TEXT,                   -- optional, only for faculty path
         specific_location TEXT,              -- optional, only for faculty path
         participants INTEGER NOT NULL,
-        event_type TEXT NOT NULL CHECK(event_type IN ('free', 'paid')),
-        price REAL,
+        event_link TEXT,
         student_id varchar(10) NOT NULL,
         FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
         )
@@ -651,34 +633,34 @@ def create_event():
 
     if request.method == 'POST':
         data=request.get_json()
-        event_name = data.get('event_name')
-        event_description = data.get('event_description')
-        start_date = data.get('start_date')
-        end_date = data.get('end_date')
-        start_time = data.get('start_time')
-        end_time = data.get('end_time')
+        event_name = data.get('eventName')
+        event_description = data.get('eventDescription')
+        start_date = data.get('startDate')
+        end_date = data.get('endDate')
+        start_time = data.get('startTime')
+        end_time = data.get('endTime')
+        event_mode = data.get('eventMode')
 
-        main_location = data.get('mainloc')
+        main_location = data.get('mainLocation')
 
         if main_location == 'General':
-            general_location = data.get('general_location')
+            general_location = data.get('generalLocation')
             faculty_wing = None
             specific_location = None
         else:
             general_location = None
-            faculty_wing = data.get('faculty_wing')
-            specific_location = data.get('specific_location')
+            faculty_wing = data.get('facultyWing')
+            specific_location = data.get('specificLocation')
 
         participant_limit = data.get('participants')
-        event_type = data.get('event_type')
-        price = float(data.get('price')) if event_type == 'paid' else 0
+        event_link = data.get('eventLink')
 
         try:
             cursor.execute("""
                 INSERT INTO events
-                (event_name, event_description, start_date, end_date, start_time, end_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, price, student_id)
+                (event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participant_limit, event_link, student_id)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (event_name, event_description, start_date, end_date, start_time, end_time, main_location, general_location, faculty_wing, specific_location, participant_limit, event_type, price, user['student_id']))
+            """, (event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participant_limit, event_link, user['student_id']))
 
             conn.commit()
 
