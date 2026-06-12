@@ -9,21 +9,21 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
-import xendit
-from xendit.apis import InvoiceApi
-from xendit.api_client import ApiClient
-from xendit.configuration import Configuration
-from dotenv import load_dotenv
+# import xendit
+# # from xendit.apis import InvoiceApi
+# # from xendit.api_client import ApiClient
+# # from xendit.configuration import Configuration
+# # from dotenv import load_dotenv
 
-load_dotenv()  # Load environment variables from .env file
+# # load_dotenv()  # Load environment variables from .env file
 
-# Initialize the Xendit client with your API key
-api_key = os.getenv("XENDIT_API_KEY")  # Ensure you have this in your .env file
+# # Initialize the Xendit client with your API key
+# api_key = os.getenv("XENDIT_API_KEY")  # Ensure you have this in your .env file
 
-config = Configuration(access_token=api_key)
+# config = Configuration(access_token=api_key)
 
-xendit_client = ApiClient(configuration=config)
-invoice_api = InvoiceApi(xendit_client)
+# xendit_client = ApiClient(configuration=config)
+# invoice_api = InvoiceApi(xendit_client)
 
 
 
@@ -322,9 +322,6 @@ def signin():
 
 
         conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
-        user = cursor.fetchone()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
