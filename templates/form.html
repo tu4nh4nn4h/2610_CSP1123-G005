@@ -8,257 +8,253 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* (YOUR CSS UNCHANGED — KEPT EXACTLY AS YOU PROVIDED) */
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body{
-            font-family:'Poppins', sans-serif;
-            background: linear-gradient(135deg,#e6b2b8,#b57edc,#7b2cbf);
-            min-height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:flex-start;
-            padding-top:120px;
-            padding-bottom:40px;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e6b2b8, #b57edc, #7b2cbf);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 120px;
+            padding-bottom: 40px;
         }
 
-        .navbar{
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            background-color:white;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:10px 20px;
-            border-bottom:1px solid #ddd;
-            transition:top 0.3s;
-            z-index:1000;
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            transition: top 0.3s;
+            z-index: 1000;
         }
 
-        .logo a{
-            font-size:24px;
-            font-weight:bold;
-            color:black;
-            text-decoration:none;
-            padding-right:13px;
+        .logo a {
+            font-size: 24px;
+            font-weight: bold;
+            color: black;
+            text-decoration: none;
+            padding-right: 13px;
         }
 
-        .nav-links{
-            list-style:none;
-            display:flex;
-            gap:20px;
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
         }
 
         .nav-links li a,
-        .profile a{
-            color:black;
-            text-decoration:none;
-            font-size:16px;
-            padding:5px 10px;
-            transition:background-color 0.3s, color 0.3s;
+        .profile a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 5px 10px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .nav-links li a:hover,
-        .profile a:hover{
-            background-color:#f0f0f0;
-            border-radius:4px;
+        .profile a:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
         }
 
-        .profile{
-            margin-left:auto;
+        .profile {
+            margin-left: auto;
         }
 
-        .main-wrapper{
-            width:100%;
-            display:flex;
-            justify-content:center;
-            padding:20px;
+        .main-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
 
-        .form-card{
-            width:420px;
-            background:white;
-            padding:35px;
-            border-radius:24px;
-            box-shadow:0 10px 30px rgba(0,0,0,0.2);
+        .form-card {
+            width: 420px;
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
-        .header{
-            text-align:center;
-            margin-bottom:25px;
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
-        .header h2{
-            color:#333;
-            margin-bottom:8px;
+        .header h2 {
+            color: #333;
+            margin-bottom: 8px;
         }
 
-        .header p{
-            color:#777;
-            font-size:14px;
+        .header p {
+            color: #777;
+            font-size: 14px;
         }
 
-        .form-group{
-            display:flex;
-            flex-direction:column;
-            margin-bottom:18px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 18px;
         }
 
-        .form-group label{
-            margin-bottom:6px;
-            font-size:14px;
-            font-weight:600;
-            color:#444;
+        .form-group label {
+            margin-bottom: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
         }
 
         .form-group input,
-        .form-group select{
-            padding:12px;
-            border:1px solid #ddd;
-            border-radius:10px;
-            font-size:14px;
-            outline:none;
-            transition:0.2s;
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
         }
 
         .form-group input:focus,
-        .form-group select:focus{
-            border-color:#7c3aed;
-            box-shadow:0 0 5px rgba(124,58,237,0.3);
+        .form-group select:focus {
+            border-color: #7c3aed;
+            box-shadow: 0 0 5px rgba(124,58,237,0.3);
         }
 
-        .form-row{
-            display:flex;
-            gap:15px;
+        .form-row {
+            display: flex;
+            gap: 15px;
         }
 
-        .form-row .form-group{
-            flex:1;
+        .form-row .form-group {
+            flex: 1;
         }
 
-        .checkbox-group{
-            display:flex;
-            align-items:flex-start;
-            gap:10px;
-            margin-top:5px;
-            margin-bottom:20px;
-            font-size:14px;
-            color:#555;
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
         }
 
-        button[type="submit"]{
-            width:100%;
-            padding:14px;
-            border:none;
-            border-radius:10px;
-            background:#7c3aed;
-            color:white;
-            font-size:15px;
-            font-weight:600;
-            cursor:pointer;
-            transition:0.3s;
+        button[type="submit"] {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #7c3aed;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
-        button[type="submit"]:hover{
-            background:#6d28d9;
+        button[type="submit"]:hover {
+            background: #6d28d9;
         }
 
-        .modal{
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.4);
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            z-index:2000;
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
         }
 
-        .hidden{
-            display:none;
+        .hidden {
+            display: none;
         }
 
-        .modal-box{
-            width:320px;
-            background:white;
-            padding:35px;
-            border-radius:20px;
-            text-align:center;
+        .modal-box {
+            width: 320px;
+            background: white;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
         }
 
-        .icon-circle{
-            width:70px;
-            height:70px;
-            background:#7c3aed;
-            color:white;
-            border-radius:50%;
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            margin:auto;
-            margin-bottom:18px;
-            font-size:30px;
-            font-weight:bold;
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            background: #7c3aed;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            margin-bottom: 18px;
+            font-size: 30px;
+            font-weight: bold;
         }
 
-        .modal-btn{
-            background:#7c3aed;
-            color:white;
-            border:none;
-            border-radius:10px;
-            padding:12px 20px;
-            cursor:pointer;
-            font-size:15px;
-            font-weight:600;
+        .modal-btn {
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
         }
 
-        .modal-btn:hover{
-            background:#6d28d9;
+        .modal-btn:hover {
+            background: #6d28d9;
         }
 
-        @media (max-width:768px){
-            .navbar{
-                flex-direction:column;
-                gap:15px;
-                padding:18px;
+        @media (max-width:768px) {
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+                padding: 18px;
             }
 
-            .nav-links{
-                flex-direction:column;
-                gap:10px;
-                align-items:center;
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
             }
 
-            .profile{
-                margin-left:0;
+            .profile {
+                margin-left: 0;
             }
 
-            body{
-                padding-top:220px;
+            body {
+                padding-top: 220px;
             }
 
-            .form-card{
-                width:100%;
-                max-width:420px;
+            .form-card {
+                width: 100%;
+                max-width: 420px;
             }
 
-            .form-row{
-                flex-direction:column;
-                gap:0;
+            .form-row {
+                flex-direction: column;
+                gap: 0;
             }
         }
     </style>
 </head>
-
 <body>
 
-<!-- NAVBAR -->
 <nav class="navbar">
     <div class="logo">
         <a href="#">UniSphere</a>
@@ -274,7 +270,6 @@
     </div>
 </nav>
 
-<!-- FORM -->
 <div class="main-wrapper">
     <div class="form-card">
 
@@ -302,7 +297,6 @@
             </div>
 
             <div class="form-row">
-
                 <div class="form-group">
                     <label>Phone Number</label>
                     <input type="text" id="phone" required>
@@ -320,7 +314,6 @@
                         <option value="FCA">FCA</option>
                     </select>
                 </div>
-
             </div>
 
             <div class="checkbox-group">
@@ -331,13 +324,11 @@
             </div>
 
             <button type="submit">Register</button>
-
         </form>
 
     </div>
 </div>
 
-<!-- SUCCESS MODAL -->
 <div id="successModal" class="modal hidden">
     <div class="modal-box">
         <div class="icon-circle">✓</div>
@@ -351,7 +342,6 @@
     </div>
 </div>
 
-<!-- SCRIPT -->
 <script>
 document.getElementById("regForm").addEventListener("submit", function(e){
     e.preventDefault();
