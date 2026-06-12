@@ -82,8 +82,8 @@ def create_event_reminders(student_id):
         SELECT 
             e.event_id,
             e.event_name,
-            e.date,
-            e.time
+            e.start_date AS date,
+            e.start_time AS time
         FROM event_registrations r
         JOIN events e
             ON r.event_id = e.event_id
@@ -991,6 +991,23 @@ def verify_new_email(token):
 
     except Exception:
         return "Verification link is invalid or expired."
+    
+@app.route('/mark_notification_read/<int:notification_id>')
+def mark_notification_read(notification_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE id = ?
+    """, (notification_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('notifications'))
 
 if __name__ == "__main__":
     setup_database()

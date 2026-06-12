@@ -87,6 +87,8 @@
         ⏰
     {% elif n['type'] == 'cancellation' %}
         ❌
+    {% elif n['type'] == 'Profile Updated' %}
+        👤
     {% endif %}
 
     {{ n['message'] }}
