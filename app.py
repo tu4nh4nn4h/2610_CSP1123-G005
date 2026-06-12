@@ -161,6 +161,19 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def create_notification(student_id, message, type):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO notifications
+        (student_id, message, type)
+        VALUES (?, ?, ?)
+    """, (student_id, message, type))
+
+    conn.commit()
+    conn.close()
 
 def setup_database():
     conn = get_db_connection()
@@ -833,7 +846,12 @@ def edit_profile():
 
         conn.commit()
         conn.close()
-        
+        create_notification(
+            student_id,
+            "Your profile information has been updated successfully.",
+            "Profile Updated"
+        )
+
         return redirect(url_for('user_profile'))
 
     conn.close()
