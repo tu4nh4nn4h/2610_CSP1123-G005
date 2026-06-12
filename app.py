@@ -377,6 +377,10 @@ def reset_password():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
     if request.method == 'POST':
         name = request.form.get('Name')
         email = request.form.get('Email')
@@ -389,9 +393,6 @@ def register():
 
         if password != confirm_password:
             return "Passwords do not match"
-
-        conn = get_db_connection()
-        cursor = conn.cursor()
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -507,9 +508,15 @@ def change_password():
 
 @app.route('/eventbrowsing')
 def eventbrowsing():
-    return render_template('EventDisBrow.html')
-
-
+    # Fetch all events from the real SQLite database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT event_id, event_name, event_description, start_date, main_location FROM events")
+    db_events = cursor.fetchall()
+    conn.close()
+    
+    return render_template('EventDisBrow.html', events=db_events)
+   
 @app.route('/eventregister')
 def eventregister():
     return render_template('eventregsys.html')
@@ -517,46 +524,28 @@ def eventregister():
 
 @app.route('/event/<int:event_id>')
 def event_detail(event_id):
-    events = {
-        1: {
-            "name": "Hackathon 2026",
-            "desc": "Build innovative solutions in a competitive environment.",
-            "date": "20 May 2026",
-            "time": "10:00 AM - 6:00 PM",
-            "venue": "Dewan Tun Canselor, MMU Cyberjaya"
-        },
-        2: {
-            "name": "Food Festival 2026",
-            "desc": "Explore global cuisines and enjoy fun activities.",
-            "date": "25 May 2026",
-            "time": "10:00 AM - 10:00 PM",
-            "venue": "Central Plaza, MMU Cyberjaya"
-        },
-        3: {
-            "name": "MMU Fun Run 2026",
-            "desc": "A fun and energetic community running event.",
-            "date": "30 May 2026",
-            "time": "8:00 AM - 5:00 PM",
-            "venue": "Stadium MMU Cyberjaya"
-        },
-        4: {
-            "name": "MMU Career Talk 2026",
-            "desc": "Gain insights from industry professionals.",
-            "date": "27 June 2026",
-            "time": "10:00 AM - 4:00 PM",
-            "venue": "CLC, MMU Cyberjaya"
-        }
-    }
-
-    event = events.get(event_id)
+    # Fetch the specific event matching the ID from your database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    event = cursor.fetchone()
+    conn.close()
+    
     if not event:
         return "Event not found", 404
 
+    # Renders your registration system page, passing the actual database item
     return render_template('eventregsys.html', event=event)
+
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
-    event_id = request.args.get('event_id', 1)
+    # Grabs the event_id passed via query parameters from the previous page
+    event_id = request.args.get('event_id')
+    
+    if not event_id:
+        return "Missing event tracking identifier", 400
+        
     return render_template('form.html', event_id=event_id)
 
 @app.route('/register_event', methods=['POST'])
