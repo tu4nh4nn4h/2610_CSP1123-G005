@@ -61,21 +61,37 @@
                 </div>
 
                 <div class="form-group">
-                        <label>Event Location:</label>
-                        <select id="mainloc" onchange="updateMainLocations()" required>
-                            <option value="">Select location</option>
-                            <option value="General">General Campus Area</option>
-                            <option value="FCI">FCI</option>
-                            <option value="FAIE">FAIE</option>
-                            <option value="FCM">FCM</option>
-                            <option value="FOM">FOM</option>
-                            <option value="FAC">FAC</option>
-                            <option value="FCA">FCA</option>
-                        </select>
-                    </div>
-                
+                    <label>Event Mode:</label>
+                    <select id="event_mode" onchange="toggleEventLink()" required>
+                        <option value="">Select mode</option>
+                        <option value="online">Online</option>
+                        <option value="offline">Offline</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+
+                <button type="button" onclick="nextStep()">Next</button>
+            </div>
+
+            <!-- SECTION 2: LOGISTICS & PRICING -->
+            <div class="form-step" id="step2" style="display: none;">
                 <!-- This will be hidden until general is selected -->
-                 <div class="form-group" id="general_location_container" style="display: none;">
+
+                <div class="form-group">
+                    <label>Event Location:</label>
+                    <select id="mainloc" onchange="updateMainLocations()" required>
+                        <option value="">Select location</option>
+                        <option value="General">General Campus Area</option>
+                        <option value="FCI">FCI</option>
+                        <option value="FAIE">FAIE</option>
+                        <option value="FCM">FCM</option>
+                        <option value="FOM">FOM</option>
+                        <option value="FAC">FAC</option>
+                        <option value="FCA">FCA</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="general_location_container" style="display: none;">
                     <label>Venue:</label>
                     <select id="general_location" onchange="updateSpecificLocations()" required>
                         <option value="">Select Venue</option>
@@ -83,7 +99,7 @@
                 </div>
 
                 <!-- This will be hidden until a faculty is selected -->
-                 <div class="form-group" id="faculty_wing_container" style="display: none;">
+                <div class="form-group" id="faculty_wing_container" style="display: none;">
                     <label>Wing:</label>
                     <select id="faculty_wing" onchange="updateSpecificLocations()" required>
                         <option value="">Select Wing</option>
@@ -97,28 +113,14 @@
                     </select>
                 </div>
 
-                <button type="button" onclick="nextStep()">Next</button>
-            </div>
-
-            <!-- SECTION 2: LOGISTICS & PRICING -->
-            <div class="form-step" id="step2" style="display: none;">
                 <div class="form-group">
                     <label>Maximum Participants:</label>
                     <input type="number" id="participants" placeholder="e.g. 100" min="1" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Event Type:</label>
-                    <select id="event_type" onchange="togglePriceInput()" required>
-                        <option value="free">Free</option>
-                        <option value="paid">Paid</option>
-                    </select>
-                </div>
-
-                <!-- Hidden by default, shown only if 'paid' is selected -->
-                <div class="form-group" id="price_container" style="display: none;">
-                    <label>Ticket Price (RM):</label>
-                    <input type="number" id="price" step="0.01" placeholder="0.00">
+                <div class="form-group" id="event_link_container">
+                    <label>Event link:</label>
+                    <input type="url" id="event_link" placeholder="e.g. https://example.com">
                 </div>
 
                 <div class="form-row">

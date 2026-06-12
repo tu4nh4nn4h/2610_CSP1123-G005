@@ -103,9 +103,9 @@ function updateMainLocations() {
 
 function updateSpecificLocations() {
 
-    const mainloc = document.getElementById('mainloc').value;
-    const generalloc = document.getElementById('general_location').value;
-    const wing = document.getElementById('faculty_wing').value;
+    const mainLocation = document.getElementById('mainloc').value;
+    const generalLocation = document.getElementById('general_location').value;
+    const facultyWing = document.getElementById('faculty_wing').value;
 
     const generalContainer = document.getElementById('general_location_container');
     const specificContainer = document.getElementById('specific_location_container');
@@ -114,14 +114,14 @@ function updateSpecificLocations() {
     // Reset options
     specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
 
-    if (mainloc === "General") {
+    if (mainLocation === "General") {
         generalContainer.style.display = 'block';
     }
-    else if (mainloc && wing) {
+    else if (mainLocation && facultyWing) {
 
         specificContainer.style.display = 'block';
 
-        locationData[mainloc][wing].forEach(location => {
+        locationData[mainLocation][facultyWing].forEach(location => {
 
             const option = document.createElement('option');
 
@@ -139,14 +139,15 @@ function updateSpecificLocations() {
 
 function nextStep() {
     // Basic validation before moving to next step
-    const event_name = document.getElementById('event_name').value;
-    const start_date = document.getElementById('start_date').value;
-    const end_date = document.getElementById('end_date').value;
+    const eventName = document.getElementById('event_name').value;
+    const startDate = document.getElementById('start_date').value;
+    const endDate = document.getElementById('end_date').value;
+    const eventMode = document.getElementById('event_mode').value;
 
-    if (event_name && start_date && end_date) {
+    if (eventName && startDate && endDate && eventMode) {
         document.getElementById('step1').style.display = 'none';
         document.getElementById('step2').style.display = 'block';
-        document.getElementById('step-indicator').innerText = "Step 2 of 2: Logistics & Pricing";
+        document.getElementById('step-indicator').innerText = "Step 2 of 2: Logistics";
     } else {
         alert("Please fill in the basic details first.");
     }
@@ -156,21 +157,6 @@ function prevStep() {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step1').style.display = 'block';
     document.getElementById('step-indicator').innerText = "Step 1 of 2: Basic Details";
-}
-
-function togglePriceInput() {
-    const eventType = document.getElementById('event_type').value;
-    const priceContainer = document.getElementById('price_container');
-    const priceInput = document.getElementById('price');
-
-    if (eventType === 'paid') {
-        priceContainer.style.display = 'block';
-        priceInput.setAttribute('required', 'true');
-    } else {
-        priceContainer.style.display = 'none';
-        priceInput.removeAttribute('required');
-        priceInput.value = ""; // Clear value if switched back to free
-    }
 }
 
 function submitEvent() {
@@ -196,25 +182,25 @@ function handleSubmit(event) {
     
     // Collect all data
    const formData = {
-    event_name: document.getElementById('event_name').value,
-    event_description: document.getElementById('event_description').value,
+    eventName: document.getElementById('event_name').value,
+    eventDescription: document.getElementById('event_description').value,
 
-    start_date: document.getElementById('start_date').value,
-    end_date: document.getElementById('end_date').value,
+    startDate: document.getElementById('start_date').value,
+    endDate: document.getElementById('end_date').value,
 
-    start_time: document.getElementById('start_time').value,
-    end_time: document.getElementById('end_time').value,
+    startTime: document.getElementById('start_time').value,
+    endTime: document.getElementById('end_time').value,
 
-    main_location: document.getElementById('mainloc').value,
-    general_location: document.getElementById('general_location').value,
-    faculty_wing: document.getElementById('faculty_wing').value,
-    specific_location: document.getElementById('specific_location').value,
+    eventMode: document.getElementById('event_mode').value,
+
+    mainLocation: document.getElementById('mainloc').value,
+    generalLocation: document.getElementById('general_location').value,
+    facultyWing: document.getElementById('faculty_wing').value,
+    specificLocation: document.getElementById('specific_location').value,
 
     participants: document.getElementById('participants').value,
-    event_type: document.getElementById('event_type').value,
-    price: document.getElementById('price').value || 0
-    };
-
+    eventLink: document.getElementById('event_link').value
+   };
     return formData;
 }
 
@@ -248,6 +234,21 @@ function validateDateTime() {
 
     } else {
         endTime.min = "";
+    }
+}
+
+function toggleEventLink() {
+    const eventMode = document.getElementById("event_mode").value;
+    const linkContainer = document.getElementById("event_link_container");
+    const eventLink = document.getElementById("event_link");
+
+    if (eventMode === "offline") {
+        linkContainer.style.display = "none";
+        eventLink.required = false;
+        eventLink.value = "";
+    } else {
+        linkContainer.style.display = "block";
+        eventLink.required = true;
     }
 }
 
