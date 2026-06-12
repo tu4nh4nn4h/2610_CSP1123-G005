@@ -266,7 +266,7 @@
 
     <ul class="nav-links">
         <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-        <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+        <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
     </ul>
 
     <div class="profile">
@@ -362,7 +362,7 @@ document.getElementById("regForm").addEventListener("submit", function(e){
         studentId: document.getElementById('studentId').value,
         studentEmail: document.getElementById('studentEmail').value,
         phone: document.getElementById('phone').value,
-        faculty: document.getElementById('faculty').value
+        faculty: document.getElementById('faculty').value,
         outlook_calendar: document.getElementById('outlookCalendar').checked 
     };
 
