@@ -88,8 +88,8 @@ def create_event_reminders(student_id):
         SELECT 
             e.event_id,
             e.event_name,
-            e.date,
-            e.time
+            e.start_date AS date,
+            e.start_time AS time
         FROM event_registrations r
         JOIN events e
             ON r.event_id = e.event_id
@@ -170,6 +170,20 @@ def allowed_file(filename):
 def allowed_poster_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_POSTER_EXTENSIONS
+
+def create_notification(student_id, message, type):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO notifications
+        (student_id, message, type)
+        VALUES (?, ?, ?)
+    """, (student_id, message, type))
+
+    conn.commit()
+    conn.close()
 
 def setup_database():
     conn = get_db_connection()
@@ -738,7 +752,12 @@ def edit_profile():
 
         conn.commit()
         conn.close()
-        
+        create_notification(
+            user["student_id"],
+            "Your profile information has been updated successfully.",
+            "Profile Updated"
+        )
+
         return redirect(url_for('user_profile'))
 
     conn.close()
@@ -816,7 +835,7 @@ def change_email():
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT email FROM users_general WHERE username = ?",
+        "SELECT email, student_id FROM users_general WHERE username = ?",
         (username,)
     )
     user = cursor.fetchone()
@@ -838,6 +857,11 @@ def change_email():
 
     conn.commit()
     conn.close()
+    create_notification(
+        user["student_id"],
+        "Your email address has been changed successfully.",
+        "Email Changed"
+    )
 
     token = s.dumps(
         {'username': username, 'new_email': new_email},
@@ -878,6 +902,23 @@ def verify_new_email(token):
 
     except Exception:
         return "Verification link is invalid or expired."
+    
+@app.route('/mark_notification_read/<int:notification_id>')
+def mark_notification_read(notification_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE notifications
+        SET is_read = 1
+        WHERE id = ?
+    """, (notification_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('notifications'))
 
 if __name__ == "__main__":
     setup_database()
