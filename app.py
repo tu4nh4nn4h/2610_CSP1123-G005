@@ -307,9 +307,6 @@ def signin():
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
-        user = cursor.fetchone()
         conn.close()
         if user:
             stored_password = user[4]  # Assuming password is the 5th column
