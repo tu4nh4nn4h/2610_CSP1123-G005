@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS event_registrations (
 
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    student_id varchar(10) PRIMARY KEY,
+    student_id varchar(10) NOT NULL,
     message TEXT NOT NULL,
     type TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,

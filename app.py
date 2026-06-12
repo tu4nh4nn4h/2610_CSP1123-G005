@@ -278,7 +278,7 @@ def setup_database():
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS notifications (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id TEXT NOT NULL,
+            student_id varchar(10) NOT NULL,
             message TEXT NOT NULL,
             type TEXT NOT NULL,
             is_read INTEGER DEFAULT 0,
