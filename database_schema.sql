@@ -80,6 +80,18 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
+
+CREATE TABLE IF NOT EXISTS notifications (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id varchar(10) PRIMARY KEY,
+    message TEXT NOT NULL,
+    type TEXT NOT NULL,
+    is_read INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+);
+
+
 SELECT * FROM users_general;
 SELECT * FROM user_details;
 SELECT * FROM organizer_details;
@@ -87,3 +99,4 @@ SELECT * FROM events;
 SELECT * FROM event_tags;
 SELECT * FROM event_tag_map;
 SELECT * FROM event_registrations;
+SELECT * FROM notifications;
