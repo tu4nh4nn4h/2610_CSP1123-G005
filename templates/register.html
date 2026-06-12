@@ -7,6 +7,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
         <style>
             *{
@@ -145,6 +146,27 @@
                 font-weight: 300;
                 opacity: 0.95;
             }
+            .password-wrapper {
+                position: relative;
+            }
+
+            .password-wrapper input {
+                width: 100%;
+                padding-right: 45px;
+            }
+
+            .toggle-password {
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+                cursor: pointer;
+                color: #888;
+            }
+
+            .toggle-password:hover {
+                color: #b37cd4;
+            }
         </style>
 
     </head>
@@ -179,12 +201,18 @@
 
                     <div class="form-group">
                         <label for="Password">Password: </label>
-                        <input type="password" id="Password" name="Password"><br>
+                        <div class="password-wrapper">
+                            <input type="password" id="Password" name="Password"><br>
+                            <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('Password', this)"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
                         <label for="confirmPassword">Confirm Password: </label>
-                        <input type="password" id="confirmPassword" name="confirmPassword"><br>
+                        <div class="password-wrapper">
+                            <input type="password" id="confirmPassword" name="confirmPassword"><br>
+                            <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('confirmPassword', this)"></i>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -270,6 +298,19 @@
                 .then(data => {
                     alert("New OTP sent!");
                 });
+            }
+            function togglePassword(inputId, icon) {
+                const input = document.getElementById(inputId);
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    icon.classList.remove("fa-eye");
+                    icon.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    icon.classList.remove("fa-eye-slash");
+                    icon.classList.add("fa-eye");
+                }
             }
             </script>
         </div>
