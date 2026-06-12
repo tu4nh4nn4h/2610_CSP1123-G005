@@ -847,7 +847,7 @@ def edit_profile():
         conn.commit()
         conn.close()
         create_notification(
-            student_id,
+            user["student_id"],
             "Your profile information has been updated successfully.",
             "Profile Updated"
         )
@@ -929,7 +929,7 @@ def change_email():
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT email FROM users_general WHERE username = ?",
+        "SELECT email, student_id FROM users_general WHERE username = ?",
         (username,)
     )
     user = cursor.fetchone()
@@ -951,6 +951,11 @@ def change_email():
 
     conn.commit()
     conn.close()
+    create_notification(
+        user["student_id"],
+        "Your email address has been changed successfully.",
+        "Email Changed"
+    )
 
     token = s.dumps(
         {'username': username, 'new_email': new_email},

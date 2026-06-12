@@ -89,6 +89,8 @@
         ❌
     {% elif n['type'] == 'Profile Updated' %}
         👤
+    {% elif n['type'] == 'Email Changed' %}
+        📧
     {% endif %}
 
     {{ n['message'] }}
