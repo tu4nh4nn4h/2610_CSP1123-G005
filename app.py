@@ -558,7 +558,7 @@ def register_event():
             "status": "error",
             "message": "No JSON data received"
         }), 400
-
+        
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -576,7 +576,7 @@ def register_event():
         data.get('faculty'),
         data.get('event_id')
 ))
-    # 2. Create notification (IMPORTANT PART)
+    # 2. Create notification
     cursor.execute("""
         INSERT INTO notifications (student_id, message, type)
         VALUES (?, ?, ?)
@@ -585,14 +585,76 @@ def register_event():
         "You have successfully registered for an event.",
         "confirmation"
     ))
+    # ========================================================
+    # 3. NEW: Fetch Event Details & Build .ics File If Requested
+    # ========================================================
+    response_data = {
+        "status": "success",
+        "message": "Registration successful"
+    }
+
+    if data.get('outlook_calendar'):
+        # Query event timing and location tracking from database
+        cursor.execute("""
+            SELECT event_name, event_description, start_date, end_date, 
+                   start_time, end_time, main_location, general_location, 
+                   faculty_wing, specific_location 
+            FROM events WHERE event_id = ?
+        """, (data.get('event_id'),))
+        event = cursor.fetchone()
+
+        if event:
+            # Consolidate location fields accurately
+            if event['main_location'] == 'General':
+                location = event['general_location'] or "Online/General"
+            else:
+                parts = [event['main_location'], event['faculty_wing'], event['specific_location']]
+                location = ", ".join([p for p in parts if p])
+
+            # Formatting Dates/Times to match Outlook rules (YYYYMMDDTHHMMSSZ)
+            # Stripping hyphens and colons from database entries
+            clean_start_date = event['start_date'].replace("-", "")
+            clean_end_date = event['end_date'].replace("-", "")
+            clean_start_time = event['start_time'].replace(":", "")
+            clean_end_time = event['end_time'].replace(":", "")
+
+            # Adjust seconds syntax format if database saves them short
+            if len(clean_start_time) == 4: clean_start_time += "00"
+            if len(clean_end_time) == 4: clean_end_time += "00"
+
+            # Combine elements. (Note: Using floating time configurations 
+            # to default match user local device system runtime setting)
+            dtstart = f"{clean_start_date}T{clean_start_time}"
+            dtend = f"{clean_end_date}T{clean_end_time}"
+            dtstamp = datetime.now().strftime('%Y%m%dT%H%M%S')
+
+            # Clean plaintext description (Outlook string rules)
+            description = event['event_description'].replace('\n', ' ').replace('\r', '')
+
+            # Construct explicit .ics formatting package
+            ics_template = (
+                "BEGIN:VCALENDAR\n"
+                "VERSION:2.0\n"
+                "PRODID:-//UniSphere//Event Management System//EN\n"
+                "BEGIN:VEVENT\n"
+                f"UID:event_{'event_id'}_{'student_id'}@unisphere.edu\n"
+                f"DTSTAMP:{dtstamp}\n"
+                f"DTSTART:{dtstart}\n"
+                f"DTEND:{dtend}\n"
+                f"SUMMARY:{event['event_name']}\n"
+                f"DESCRIPTION:{event['event_description']}\n"
+                f"LOCATION:{location}\n"
+                "END:VEVENT\n"
+                "END:VCALENDAR"
+            )
+
+            response_data["download_calendar"] = True
+            response_data["ics_content"] = ics_template
 
     conn.commit()
     conn.close()
 
-    return jsonify({
-        "status": "success",
-        "message": "Registration successful"
-    }) # now every registration will store notification & create notification automatically 
+    return jsonify(response_data)
 
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
