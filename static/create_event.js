@@ -113,26 +113,18 @@ function updateSpecificLocations() {
 
     // Reset options
     specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
-
     if (mainLocation === "General") {
         generalContainer.style.display = 'block';
     }
     else if (mainLocation && facultyWing) {
-
         specificContainer.style.display = 'block';
-
         locationData[mainLocation][facultyWing].forEach(location => {
-
             const option = document.createElement('option');
-
             option.value = location;
             option.textContent = location;
-
             specificSelect.appendChild(option);
         });
-
     } else {
-
         specificContainer.style.display = 'none';
     }
 }
@@ -157,51 +149,6 @@ function prevStep() {
     document.getElementById('step2').style.display = 'none';
     document.getElementById('step1').style.display = 'block';
     document.getElementById('step-indicator').innerText = "Step 1 of 2: Basic Details";
-}
-
-function submitEvent() {
-    const formData = handleSubmit(event); // collect data, maybe reuse handleSubmit
-    fetch('/createevent', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(formData)
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "create_event_success") {
-            alert("Event created successfully!");
-            window.location.href = "/eventbrowsing";
-        } else {
-            alert("Failed to create event. Please try again.");
-        }
-    });
-}
-
-function handleSubmit(event) {
-    event.preventDefault();
-    
-    // Collect all data
-   const formData = {
-    eventName: document.getElementById('event_name').value,
-    eventDescription: document.getElementById('event_description').value,
-
-    startDate: document.getElementById('start_date').value,
-    endDate: document.getElementById('end_date').value,
-
-    startTime: document.getElementById('start_time').value,
-    endTime: document.getElementById('end_time').value,
-
-    eventMode: document.getElementById('event_mode').value,
-
-    mainLocation: document.getElementById('mainloc').value,
-    generalLocation: document.getElementById('general_location').value,
-    facultyWing: document.getElementById('faculty_wing').value,
-    specificLocation: document.getElementById('specific_location').value,
-
-    participants: document.getElementById('participants').value,
-    eventLink: document.getElementById('event_link').value
-   };
-    return formData;
 }
 
 /* =========================
@@ -252,8 +199,59 @@ function toggleEventLink() {
     }
 }
 
+function toggleMaxParticipants() {
+    const participationOption = document.getElementById("participation_option").value;
+    const maxParticipantsContainer = document.getElementById("limited_participants_container");
+    const participantsLimit = document.getElementById("limited_max_participants");
+
+    if (participationOption === "limited") {
+        maxParticipantsContainer.style.display = "block";
+        participantsLimit.required = true;
+    } else {
+        maxParticipantsContainer.style.display = "none";
+        participantsLimit.required = false;
+        participantsLimit.value = "";
+    }
+}
+
 // Event listeners
 startDate.addEventListener("change", validateDateTime);
 endDate.addEventListener("change", validateDateTime);
 startTime.addEventListener("change", validateDateTime);
 endTime.addEventListener("change", validateDateTime);
+
+function submitEvent() {
+
+    const form = document.getElementById('createEventForm');
+    const formData = new FormData(form);
+
+    fetch('/createevent', {method: 'POST',body: formData})
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "create_event_success") {
+            alert("Event created successfully!");
+            window.location.href = "/eventbrowsing";
+        } else {
+            alert("Failed to create event: " + (data.message || "Please try again."));
+        }
+    })
+    
+    .catch(error => {
+        console.error(error);
+        alert("An error occurred.");
+    });
+}
+
+document.getElementById('event_poster').addEventListener('change', function() {
+
+    const file = this.files[0];
+
+    if (file) {
+        const preview = document.getElementById('posterPreview');
+
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+
+        document.querySelector('.upload-poster').style.display = 'none';
+    }
+});

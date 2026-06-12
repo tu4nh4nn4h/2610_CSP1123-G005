@@ -1,3 +1,5 @@
+from fileinput import filename
+
 from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
 from datetime import datetime, timedelta
 import sqlite3
@@ -16,6 +18,10 @@ s = URLSafeTimedSerializer("your-secret-key")
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+EVENT_POSTER_FOLDER = 'static/eventPoster'
+ALLOWED_POSTER_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
 
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
@@ -161,137 +167,20 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def allowed_poster_file(filename):
+    return '.' in filename and \
+            filename.rsplit('.', 1)[1].lower() in ALLOWED_POSTER_EXTENSIONS
 
 def setup_database():
     conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # =========================
-    # USERS TABLE
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users_general (
-            student_id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            username TEXT NOT NULL UNIQUE,
-            email TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            keyword TEXT,
-            role TEXT NOT NULL CHECK(role IN ('user', 'organizer', 'admin')),
-            is_verified INTEGER DEFAULT 0,
-            pending_email TEXT,
-            security_question TEXT
-        )
-    ''')
-
-    # =========================
-    # USER PROFILE DETAILS
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS user_details (
-            student_id TEXT PRIMARY KEY,
-            bio TEXT,
-            birthday DATE,
-            faculty TEXT,
-            year_of_study INTEGER,
-            profile_picture TEXT,
-            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-        )
-    ''')
-
-    # =========================
-    # ORGANIZER DETAILS
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS organizer_details (
-            student_id TEXT PRIMARY KEY,
-            club_body TEXT NOT NULL,
-            position_title TEXT NOT NULL,
-            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-        )
-    ''')
-
-    # =========================
-    # EVENTS TABLE
-    # =========================
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS events (
-        event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        event_name TEXT NOT NULL,
-        event_description TEXT NOT NULL,
-        start_date DATE NOT NULL,
-        end_date DATE NOT NULL,
-        start_time TIME NOT NULL,
-        end_time TIME NOT NULL,
-        event_mode TEXT NOT NULL CHECK(event_mode IN ('online', 'offline', 'hybrid')),
-        main_location TEXT NOT NULL,         -- corresponds to id="mainloc"
-        general_location TEXT,               -- optional, only for general locations
-        faculty_wing TEXT,                   -- optional, only for faculty path
-        specific_location TEXT,              -- optional, only for faculty path
-        participants INTEGER NOT NULL,
-        event_link TEXT,
-        student_id varchar(10) NOT NULL,
-        FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
-        )
-    ''')
-    # =========================
-    # EVENT TAGS
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS event_tags (
-            tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            tag_name TEXT UNIQUE NOT NULL
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS event_tag_map (
-            event_id INTEGER NOT NULL,
-            tag_id INTEGER NOT NULL,
-            PRIMARY KEY(event_id, tag_id),
-            FOREIGN KEY (event_id) REFERENCES events(event_id),
-            FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id)
-        )
-    ''')
-
-    # =========================
-    # EVENT REGISTRATIONS
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS event_registrations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            event_id INTEGER NOT NULL,
-            name TEXT NOT NULL,
-            student_id TEXT NOT NULL,
-            student_email TEXT NOT NULL,
-            personal_email TEXT,
-            phone_number TEXT NOT NULL,
-            faculty TEXT NOT NULL,
-            FOREIGN KEY (event_id) REFERENCES events(event_id),
-            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-        )
-    ''')
-
-    # =========================
-    # NOTIFICATIONS TABLE 
-    # =========================
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS notifications (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            student_id varchar(10) NOT NULL,
-            message TEXT NOT NULL,
-            type TEXT NOT NULL,
-            is_read INTEGER DEFAULT 0,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (student_id) REFERENCES users_general(student_id)
-        )
-    ''')
+    with open('database_schema.sql', 'r', encoding='utf-8') as f:conn.executescript(f.read())
 
     conn.commit()
     conn.close()
     
 @app.route('/')
 def home():
+    setup_database()
     return render_template('home.html')
 
 
@@ -618,47 +507,63 @@ def create_event():
         return render_template('create_event.html')
 
     if request.method == 'POST':
-        data=request.get_json()
-        event_name = data.get('eventName')
-        event_description = data.get('eventDescription')
-        start_date = data.get('startDate')
-        end_date = data.get('endDate')
-        start_time = data.get('startTime')
-        end_time = data.get('endTime')
-        event_mode = data.get('eventMode')
+        event_poster = None
 
-        main_location = data.get('mainLocation')
+        if 'eventPoster' in request.files:
+            file = request.files['eventPoster']
+
+            if file and file.filename != '' and allowed_file(file.filename):
+                filename = secure_filename(file.filename.strip())
+                unique_filename = str(uuid.uuid4()) + "_" + filename
+                file.save(os.path.join(app.config['EVENT_POSTER_FOLDER'], unique_filename))
+                event_poster = unique_filename
+
+        event_name = request.form.get('eventName')
+        event_description = request.form.get('eventDescription')
+        start_date = request.form.get('startDate')
+        end_date = request.form.get('endDate')
+        start_time = request.form.get('startTime')
+        end_time = request.form.get('endTime')
+        event_mode = request.form.get('eventMode')
+
+        main_location = request.form.get('mainLocation')
 
         if main_location == 'General':
-            general_location = data.get('generalLocation')
+            general_location = request.form.get('generalLocation')
             faculty_wing = None
             specific_location = None
         else:
             general_location = None
-            faculty_wing = data.get('facultyWing')
-            specific_location = data.get('specificLocation')
+            faculty_wing = request.form.get('facultyWing')
+            specific_location = request.form.get('specificLocation')
 
-        participant_limit = data.get('participants')
-        event_link = data.get('eventLink')
+        participation_option = request.form.get('participationOption')
+        if participation_option == "unlimited":
+            limited_max_participants = None
+        else:
+            limited_max_participants = request.form.get('limitedMaxParticipants')
+
+        event_link = request.form.get('eventLink')
 
         try:
             cursor.execute("""
                 INSERT INTO events
-                (event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participant_limit, event_link, student_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participant_limit, event_link, user['student_id']))
+                (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, student_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, user['student_id']))
 
             conn.commit()
-
+            return jsonify({"status": "create_event_success"})
+        
         except Exception as e:
             conn.rollback()
-            return f"Error: {e}"
+            return jsonify({
+            "status": "create_event_failed",
+            "message": str(e)
+            })
 
         finally:
             conn.close()
-
-        return jsonify({"status": "create_event_success"})
-
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():

@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS organizer_details (
 -- 4. Events
 CREATE TABLE IF NOT EXISTS events (
     event_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_poster TEXT,                   -- new column for event poster URL/path
     event_name TEXT NOT NULL,
     event_description TEXT NOT NULL,
     start_date DATE NOT NULL,
@@ -46,7 +47,8 @@ CREATE TABLE IF NOT EXISTS events (
     general_location TEXT,               -- optional, only for general locations
     faculty_wing TEXT,                   -- optional, only for faculty path
     specific_location TEXT,              -- optional, only for faculty path
-    participants INTEGER NOT NULL,
+    participation_option TEXT NOT NULL CHECK(participation_option IN ('unlimited', 'limited')),
+    limited_max_participants INTEGER,    -- optional, only for limited participation
     event_link TEXT,
     student_id varchar(10) NOT NULL,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
