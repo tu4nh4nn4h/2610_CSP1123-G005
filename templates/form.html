@@ -284,6 +284,7 @@
         </div>
 
         <form id="regForm">
+            <input type="hidden" id="eventId" value="{{ event_id }}">
 
             <div class="form-group">
                 <label>Full Name</label>
@@ -338,45 +339,57 @@
 
 <!-- SUCCESS MODAL -->
 <div id="successModal" class="modal hidden">
-
     <div class="modal-box">
-
         <div class="icon-circle">✓</div>
-
         <h2>Successful</h2>
-
         <p style="margin:10px 0 20px; color:#666;">
             You have registered.
         </p>
-
         <button onclick="closeModal()" class="modal-btn">
             Back to Event Page
         </button>
-
     </div>
-
 </div>
 
 <!-- SCRIPT -->
 <script>
-
 document.getElementById("regForm").addEventListener("submit", function(e){
     e.preventDefault();
 
-    // show modal
-    document.getElementById("successModal").classList.remove("hidden");
+    const payload = {
+        event_id: parseInt(document.getElementById('eventId').value),
+        name: document.getElementById('name').value,
+        studentId: document.getElementById('studentId').value,
+        studentEmail: document.getElementById('studentEmail').value,
+        phone: document.getElementById('phone').value,
+        faculty: document.getElementById('faculty').value
+        outlook_calendar: document.getElementById('outlookCalendar').checked 
+    };
 
+    fetch('/register_event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            document.getElementById("successModal").classList.remove("hidden");
+        } else {
+            alert('Registration failed database storage: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error during database storage:', error);
+        alert('An internal server connection error occurred.');
+    });
 });
 
 function closeModal(){
-
     document.getElementById("successModal").classList.add("hidden");
-
-    let eventId = localStorage.getItem("eventId") || 2;
-
+    let eventId = document.getElementById('eventId').value || 1;
     window.location.href = `/event/${eventId}`;
 }
-
 </script>
 
 </body>

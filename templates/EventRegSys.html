@@ -13,7 +13,7 @@
       </div>
       <ul class="nav-links">
         <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-            <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
+        <li><a href="{{ url_for('create_event') }}">Create Event - Be an Organizer</a></li>
       </ul>
       <div class="profile">
         <a href="#profile">Profile</a>
@@ -21,31 +21,24 @@
     </nav>
 
     <div class="container">
-
       {% if event %}
-    <div class="event-card">
+      <div class="event-card">
+        <h2>{{ event['event_name'] }}</h2>
+        <p>{{ event['event_description'] }}</p>
+        <ul>
+          <li><strong>Date:</strong> {{ event['start_date'] }} to {{ event['end_date'] }}</li>
+          <li><strong>Time:</strong> {{ event['start_time'] }} - {{ event['end_time'] }}</li>
+          <li><strong>Venue:</strong> {{ event['main_location'] }} ({{ event['event_mode'] }})</li>
+        </ul>
 
-      <h2>{{ event.name }}</h2>
-
-      <p class="desc">
-        {{ event.desc }}
-      </p>
-
-      <div class="details">
-        <p><strong>Date:</strong> {{ event.date }}</p>
-        <p><strong>Time:</strong> {{ event.time }}</p>
-        <p><strong>Venue:</strong> {{ event.venue }}</p>
-      </div>
-
-     <a href="{{ url_for('form', event_id=event_id) }}">
-  <button class="register-btn">Register</button>
-</a>
+      <a href="{{ url_for('form', event_id=event['event_id']) }}" class="register-btn">Register for Event</a>
+      <button class="register-btn">Register</button>
+      </a>
 
     </div>
     {% else %}
     <p>Event not found.</p>
     {% endif %}
-
     </div>
 
   </body>
