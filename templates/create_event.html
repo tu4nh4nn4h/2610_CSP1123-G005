@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
     <head>
         <title>Organizer: Event Creation Form</title>
@@ -27,113 +26,133 @@
                     <p id="step-indicator">Step 1 of 2: Basic Details</p>
                 </div>
 
-                <form id="createEventForm" onsubmit="handleSubmit(event)">
+                <form method="POST" id="createEventForm" enctype="multipart/form-data">
                     <!-- SECTION 1: BASIC DETAILS -->
                     <div class="form-step" id="step1">
-                <div class="form-group">
-                    <label>Event Name:</label>
-                    <input type="text" id="event_name" placeholder="Enter event name" required>
-                </div>
 
-                <div class="form-group">
-                    <label>Event Description:</label>
-                    <textarea id="event_description" placeholder="Enter event description" required></textarea>
-                </div>
+                        <div class="form-group">
+                            <label for="event_poster" class="poster-label">Insert Event Poster:</label>
 
-                <div class="form-row">
-                    <label>Start Date:</label>
-                    <input type="date" id="start_date" required>
-                </div>
+                            <label for="event_poster" class="event-poster-container">
+                                <p class="upload-poster">+</p>
+                                <img id="posterPreview" class="poster-preview" style="display: none;">
+                            </label>
+                            <input type="file" id="event_poster" name="eventPoster" accept="image/*"hidden>
+                        </div>
 
-                <div class="form-group">
-                    <label>End Date:</label>
-                    <input type="date" id="end_date" required>
-                </div>
+                        <div class="form-group">
+                            <label>Event Name:</label>
+                            <input type="text" id="event_name" name="eventName" placeholder="Enter event name" required>
+                        </div>
 
-                <div class="form-group">
-                    <label>Start Time:</label>
-                    <input type="time" id="start_time" required>
-                </div>
+                        <div class="form-group">
+                            <label>Event Description:</label>
+                            <textarea id="event_description" name="eventDescription" placeholder="Enter event description" required></textarea>
+                        </div>
 
-                <div class="form-group">
-                    <label>End Time:</label>
-                    <input type="time" id="end_time" required>
-                </div>
+                        <div class="form-row">
+                            <label>Start Date:</label>
+                            <input type="date" id="start_date" name="startDate" required>
+                        </div>
 
-                <div class="form-group">
-                    <label>Event Mode:</label>
-                    <select id="event_mode" onchange="toggleEventLink()" required>
-                        <option value="">Select mode</option>
-                        <option value="online">Online</option>
-                        <option value="offline">Offline</option>
-                        <option value="hybrid">Hybrid</option>
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label>End Date:</label>
+                            <input type="date" id="end_date" name="endDate" required>
+                        </div>
 
-                <button type="button" onclick="nextStep()">Next</button>
+                        <div class="form-group">
+                            <label>Start Time:</label>
+                            <input type="time" id="start_time" name="startTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>End Time:</label>
+                            <input type="time" id="end_time" name="endTime" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Event Mode:</label>
+                            <select id="event_mode" name="eventMode" onchange="toggleEventLink()" required>
+                                <option value="">Select mode</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                                <option value="hybrid">Hybrid</option>
+                            </select>
+                        </div>
+
+                        <button type="button" onclick="nextStep()">Next</button>
+                    </div>
+
+                    <!-- SECTION 2: LOGISTICS & PRICING -->
+                    <div class="form-step" id="step2" style="display: none;">
+                        <!-- This will be hidden until general is selected -->
+
+                        <div class="form-group">
+                            <label>Event Location:</label>
+                            <select id="mainloc" name="mainLocation" onchange="updateMainLocations()" required>
+                                <option value="">Select location</option>
+                                <option value="General">General Campus Area</option>
+                                <option value="FCI">FCI</option>
+                                <option value="FAIE">FAIE</option>
+                                <option value="FCM">FCM</option>
+                                <option value="FOM">FOM</option>
+                                <option value="FAC">FAC</option>
+                                <option value="FCA">FCA</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="general_location_container" style="display: none;">
+                            <label>Venue:</label>
+                            <select id="general_location" name="generalLocation" onchange="updateSpecificLocations()" required>
+                                <option value="">Select Venue</option>
+                            </select>
+                        </div>
+
+                        <!-- This will be hidden until a faculty is selected -->
+                        <div class="form-group" id="faculty_wing_container" style="display: none;">
+                            <label>Wing:</label>
+                            <select id="faculty_wing" name="facultyWing" onchange="updateSpecificLocations()" required>
+                                <option value="">Select Wing</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="specific_location_container" style="display: none;">
+                            <label>Room / Venue:</label>
+                            <select id="specific_location" name="specificLocation" required>
+                                <option value="">Select Room / Venue</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="participation_option_container">
+                            <label>Participation Type:</label>
+                            <select id="participation_option" name="participationOption" onchange="toggleMaxParticipants()" required>
+                                <option value="">Select Participation Type</option>
+                                <option value="unlimited">Unlimited</option>
+                                <option value="limited">Limited</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="limited_participants_container" style="display: none;">
+                            <label>Max Participants:</label>
+                            <input type="number" id="limited_max_participants" name="limitedMaxParticipants" min="1" placeholder="Enter maximum participants">
+                        </div>
+
+                        <div class="form-group" id="event_link_container">
+                            <label>Event link:</label>
+                            <input type="url" id="event_link" name="eventLink" placeholder="e.g. https://example.com">
+                        </div>
+
+                        <div class="form-row">
+                            <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
+                            <button type="button" class="btn-primary" onclick="submitEvent()">Submit Event</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <!-- SECTION 2: LOGISTICS & PRICING -->
-            <div class="form-step" id="step2" style="display: none;">
-                <!-- This will be hidden until general is selected -->
-
-                <div class="form-group">
-                    <label>Event Location:</label>
-                    <select id="mainloc" onchange="updateMainLocations()" required>
-                        <option value="">Select location</option>
-                        <option value="General">General Campus Area</option>
-                        <option value="FCI">FCI</option>
-                        <option value="FAIE">FAIE</option>
-                        <option value="FCM">FCM</option>
-                        <option value="FOM">FOM</option>
-                        <option value="FAC">FAC</option>
-                        <option value="FCA">FCA</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="general_location_container" style="display: none;">
-                    <label>Venue:</label>
-                    <select id="general_location" onchange="updateSpecificLocations()" required>
-                        <option value="">Select Venue</option>
-                    </select>
-                </div>
-
-                <!-- This will be hidden until a faculty is selected -->
-                <div class="form-group" id="faculty_wing_container" style="display: none;">
-                    <label>Wing:</label>
-                    <select id="faculty_wing" onchange="updateSpecificLocations()" required>
-                        <option value="">Select Wing</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="specific_location_container" style="display: none;">
-                    <label>Room / Venue:</label>
-                    <select id="specific_location" required>
-                        <option value="">Select Room / Venue</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Maximum Participants:</label>
-                    <input type="number" id="participants" placeholder="e.g. 100" min="1" required>
-                </div>
-
-                <div class="form-group" id="event_link_container">
-                    <label>Event link:</label>
-                    <input type="url" id="event_link" placeholder="e.g. https://example.com">
-                </div>
-
-                <div class="form-row">
-                    <button type="button" class="btn-secondary" onclick="prevStep()">Back</button>
-                    <button type="button" onclick="submitEvent()">Submit Event</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+        </div>
 
 
-<script src="{{ url_for('static', filename='create_event.js') }}"></script>
+        <script src="{{ url_for('static', filename='create_event.js') }}"></script>
 
-</body>
+    </body>
 </html>
