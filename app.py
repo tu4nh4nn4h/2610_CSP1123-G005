@@ -456,122 +456,142 @@ def event_detail(event_id):
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
-    # Grabs the event_id passed via query parameters from the previous page
     event_id = request.args.get('event_id')
-    
     if not event_id:
         return "Missing event tracking identifier", 400
         
-    return render_template('form.html', event_id=event_id)
+    # Autofill logic: Get current logged-in user profile info
+    username = session.get('user')
+    user_data = None
+    
+    if username:
+        conn = get_db_connection()
+        # Row factory handles dictionary key lookups seamlessly
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        
+        try:
+            # Fetch only guaranteed columns to avoid phone/faculty column mismatch crashes
+            cursor.execute("""
+                SELECT student_id, name, email 
+                FROM users_general WHERE username = ?
+            """, (username,))
+            user_data = cursor.fetchone()
+        except sqlite3.OperationalError:
+            # Fallback to empty form data if a database structure issue occurs
+            user_data = None
+        finally:
+            conn.close()
+
+    return render_template('form.html', event_id=event_id, user=user_data)
+
 
 @app.route('/register_event', methods=['POST'])
 def register_event():
-
     data = request.get_json(silent=True)
-
     if not data:
-        return jsonify({
-            "status": "error",
-            "message": "No JSON data received"
-        }), 400
+        return jsonify({"status": "error", "message": "No JSON data received"}), 400
         
     conn = get_db_connection()
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # 1. Save registration
-    cursor.execute("""
-        INSERT INTO event_registrations
-        (name, student_id, student_email, personal_email, phone_number, faculty, event_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    """, (
-        data.get('name'),
-        data.get('studentId'),
-        data.get('studentEmail'),
-        data.get('personalEmail'),
-        data.get('phone'),
-        data.get('faculty'),
-        data.get('event_id')
-))
-    # 2. Create notification
-    cursor.execute("""
-        INSERT INTO notifications (student_id, message, type)
-        VALUES (?, ?, ?)
-    """, (
-        data.get('studentId'),
-        "You have successfully registered for an event.",
-        "confirmation"
-    ))
-    # ========================================================
-    # 3. NEW: Fetch Event Details & Build .ics File If Requested
-    # ========================================================
-    response_data = {
-        "status": "success",
-        "message": "Registration successful"
-    }
+    try:
+        # Get Event Name for personalized dashboard notification matching
+        cursor.execute("SELECT event_name FROM events WHERE event_id = ?", (data.get('event_id'),))
+        event_row = cursor.fetchone()
+        event_name = event_row['event_name'] if event_row else "an event"
 
-    if data.get('outlook_calendar'):
-        # Query event timing and location tracking from database
+        # 1. Save registration (Matched directly to your 7 event_registrations schema columns)
         cursor.execute("""
-            SELECT event_name, event_description, start_date, end_date, 
-                   start_time, end_time, main_location, general_location, 
-                   faculty_wing, specific_location 
-            FROM events WHERE event_id = ?
-        """, (data.get('event_id'),))
-        event = cursor.fetchone()
+            INSERT INTO event_registrations
+            (event_id, name, student_id, email, phone_number, faculty)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (
+            data.get('event_id'),
+            data.get('name'),
+            data.get('studentId'),
+            data.get('studentEmail'), # Maps frontend studentEmail to 'email' column
+            data.get('phone'),        # Maps frontend phone to 'phone_number' column
+            data.get('faculty')       # Captured from the manual frontend drop-down choice
+        ))
 
-        if event:
-            # Consolidate location fields accurately
-            if event['main_location'] == 'General':
-                location = event['general_location'] or "Online/General"
-            else:
-                parts = [event['main_location'], event['faculty_wing'], event['specific_location']]
-                location = ", ".join([p for p in parts if p])
+        # 2. Dynamic Dashboard Notification creation
+        cursor.execute("""
+            INSERT INTO notifications (student_id, message, type)
+            VALUES (?, ?, ?)
+        """, (
+            data.get('studentId'),
+            f"You have successfully registered for the event: {event_name}.",
+            "confirmation"
+        ))
 
-            # Formatting Dates/Times to match Outlook rules (YYYYMMDDTHHMMSSZ)
-            # Stripping hyphens and colons from database entries
-            clean_start_date = event['start_date'].replace("-", "")
-            clean_end_date = event['end_date'].replace("-", "")
-            clean_start_time = event['start_time'].replace(":", "")
-            clean_end_time = event['end_time'].replace(":", "")
+        response_data = {
+            "status": "success",
+            "message": "Registration successful"
+        }
 
-            # Adjust seconds syntax format if database saves them short
-            if len(clean_start_time) == 4: clean_start_time += "00"
-            if len(clean_end_time) == 4: clean_end_time += "00"
+        # 3. Calendar Data Construction Package (.ics generation for Outlook)
+        if data.get('outlook_calendar'):
+            cursor.execute("""
+                SELECT event_name, event_description, start_date, end_date, 
+                       start_time, end_time, main_location, general_location, 
+                       faculty_wing, specific_location 
+                FROM events WHERE event_id = ?
+            """, (data.get('event_id'),))
+            event = cursor.fetchone()
 
-            # Combine elements. (Note: Using floating time configurations 
-            # to default match user local device system runtime setting)
-            dtstart = f"{clean_start_date}T{clean_start_time}"
-            dtend = f"{clean_end_date}T{clean_end_time}"
-            dtstamp = datetime.now().strftime('%Y%m%dT%H%M%S')
+            if event:
+                if event['main_location'] == 'General':
+                    location = event['general_location'] or "Online/General"
+                else:
+                    parts = [event['main_location'], event['faculty_wing'], event['specific_location']]
+                    location = ", ".join([p for p in parts if p])
 
-            # Clean plaintext description (Outlook string rules)
-            description = event['event_description'].replace('\n', ' ').replace('\r', '')
+                # Clean date/time formats for standard vCalendar specifications
+                clean_start_date = event['start_date'].replace("-", "")
+                clean_end_date = event['end_date'].replace("-", "")
+                clean_start_time = event['start_time'].replace(":", "")
+                clean_end_time = event['end_time'].replace(":", "")
 
-            # Construct explicit .ics formatting package
+                if len(clean_start_time) == 4: clean_start_time += "00"
+                if len(clean_end_time) == 4: clean_end_time += "00"
+
+                dtstart = f"{clean_start_date}T{clean_start_time}"
+                dtend = f"{clean_end_date}T{clean_end_time}"
+                dtstamp = datetime.now().strftime('%Y%m%dT%H%M%S')
+
             ics_template = (
-                "BEGIN:VCALENDAR\n"
-                "VERSION:2.0\n"
-                "PRODID:-//UniSphere//Event Management System//EN\n"
-                "BEGIN:VEVENT\n"
-                f"UID:event_{'event_id'}_{'student_id'}@unisphere.edu\n"
-                f"DTSTAMP:{dtstamp}\n"
-                f"DTSTART:{dtstart}\n"
-                f"DTEND:{dtend}\n"
-                f"SUMMARY:{event['event_name']}\n"
-                f"DESCRIPTION:{event['event_description']}\n"
-                f"LOCATION:{location}\n"
-                "END:VEVENT\n"
-                "END:VCALENDAR"
-            )
+                    "BEGIN:VCALENDAR\n"
+                        "VERSION:2.0\n"
+                        "PRODID:-//UniSphere//Event Management//EN\n"
+                        "BEGIN:VEVENT\n"
+                        f"UID:event_{data.get('event_id')}_{data.get('studentId')}@unisphere.edu\n"
+                        f"DTSTAMP:{dtstamp}\n"
+                        # Added TZID parameter so Outlook knows this is strictly Malaysia Time
+                        f"DTSTART;TZID=Asia/Kuala_Lumpur:{dtstart}\n"
+                        f"DTEND;TZID=Asia/Kuala_Lumpur:{dtend}\n"
+                        f"SUMMARY:{event['event_name']}\n"
+                        f"DESCRIPTION:{event['event_description']}\n"
+                        f"LOCATION:{location}\n"
+                        "END:VEVENT\n"
+                        "END:VCALENDAR"
+                    )
 
             response_data["download_calendar"] = True
             response_data["ics_content"] = ics_template
+            response_data["filename"] = f"event_{data.get('event_id')}.ics"
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        return jsonify(response_data)
 
-    return jsonify(response_data)
-
+    except Exception as e:
+        conn.rollback()
+        print("Registration Error Details:", str(e)) # Server terminal diagnostic log
+        return jsonify({"status": "error", "message": str(e)}), 500
+    finally:
+        conn.close()
+        
 @app.route('/createevent', methods=['GET', 'POST'])
 def create_event():
 
@@ -822,63 +842,90 @@ def dashboard():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
+    
+    # 1. Fetch logged-in user profile information
+    cursor.execute("""
+        SELECT * FROM users_general 
+        LEFT JOIN user_details ON users_general.student_id = user_details.student_id 
+        WHERE users_general.username = ?
+    """, (username,))
     user = cursor.fetchone()
-    conn.close()
 
     if not user:
+        conn.close()
         return "User not found"
 
-    return render_template('user_dashboard1.html', user=user)
-
-@app.route('/cancel_event/<int:event_id>')
-def cancel_event(event_id):
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # delete registration
-    cursor.execute(
-        "DELETE FROM event_registrations WHERE event_id = ?",
-        (event_id,)
-    )
-
-    conn.commit()
+   # 2. Query only the events that THIS specific student has registered for using an INNER JOIN
+    # Fixed: Matched exactly to the schema columns found in EventRegSys.html
+    cursor.execute("""
+        SELECT e.event_id, e.event_name, e.event_description, 
+               e.start_date, e.end_date, e.start_time, e.end_time, 
+               e.main_location, e.event_mode
+        FROM events e
+        INNER JOIN event_registrations er ON e.event_id = er.event_id
+        WHERE er.student_id = ?
+    """, (user["student_id"],))
+    
+    events = cursor.fetchall()
     conn.close()
 
-    flash("Registration cancelled successfully.")
+    # 3. Pass both 'user' object and 'events' list to the HTML template layout dashboard
+    return render_template('user_dashboard1.html', user=user, events=events)
 
-    # redirect back to dashboard
-    return redirect(url_for('dashboard'))
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
     username = session.get('user')
-
     if not username:
         return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # get student_id
-    cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
-    user = cursor.fetchone()
+    try:
+        # 1. Fetch the unique student_id based on the active session username
+        cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+        user = cursor.fetchone()
 
-    if not user:
-        return "User not found"
+        if not user:
+            return "User not found"
 
-    student_id = user["student_id"]
+        student_id = user["student_id"]
 
-    cursor.execute("""
-        DELETE FROM event_registrations
-        WHERE event_id = ?
-        AND student_id = ?
-    """, (event_id, student_id))
+        # 2. Fetch the event name before deleting to generate a personalized notification log entry
+        cursor.execute("SELECT event_name FROM events WHERE event_id = ?", (event_id,))
+        event_data = cursor.fetchone()
+        event_name = event_data["event_name"] if event_data else "an Event"
 
-    conn.commit()
-    conn.close()
+        # 3. Securely delete ONLY this particular student's specific registration record
+        cursor.execute("""
+            DELETE FROM event_registrations
+            WHERE event_id = ?
+            AND student_id = ?
+        """, (event_id, student_id))
 
+        # 4. Insert a new cancellation entry with the required 'type' field included
+        notification_msg = f"You have successfully cancelled your registration for '{event_name}'."
+        
+        # Added 'type' column to satisfy the database NOT NULL constraint
+        cursor.execute("""
+            INSERT INTO notifications (student_id, message, type)
+            VALUES (?, ?, ?)
+        """, (student_id, notification_msg, 'Cancellation'))
+
+        # Commit all changes to the database safely
+        conn.commit()
+        flash("Registration cancelled successfully.")
+
+    except sqlite3.OperationalError as e:
+        print(f"Database Error encountered: {e}")
+        conn.rollback() 
+        return "The database is currently busy. Please try again in a few seconds."
+        
+    finally:
+        conn.close()
+
+    # Clean redirect back to the main user profile dashboard page view
     return redirect(url_for("dashboard"))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -985,25 +1032,24 @@ def notifications():
     """, (username,))
     user = cursor.fetchone()
     
-    # =========================================
-    # CREATE EVENT REMINDERS
-    # =========================================
-    create_event_reminders(user["student_id"])
-
     if not user:
         conn.close()
         return "User not found"
 
+    # Preserving your original structure system function logic framework layer
+    create_event_reminders(user["student_id"])
+
+    # 5. Fetch all user notifications sorted chronologically, including the fresh cancellation text row log entry
     cursor.execute("""
         SELECT * FROM notifications
         WHERE student_id = ?
         ORDER BY created_at DESC
     """, (user["student_id"],))
 
-    notifications = cursor.fetchall()
+    notifications_list = cursor.fetchall()
     conn.close()
 
-    return render_template("notifications.html", notifications=notifications)
+    return render_template("notifications.html", notifications=notifications_list)
 
 @app.route('/change_email', methods=['POST'])
 def change_email():

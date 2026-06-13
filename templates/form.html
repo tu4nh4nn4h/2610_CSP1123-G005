@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Registration</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
         * {
             margin: 0;
@@ -36,7 +34,6 @@
             align-items: center;
             padding: 10px 20px;
             border-bottom: 1px solid #ddd;
-            transition: top 0.3s;
             z-index: 1000;
         }
 
@@ -54,8 +51,7 @@
             gap: 20px;
         }
 
-        .nav-links li a,
-        .profile a {
+        .nav-links li a, .profile a {
             color: black;
             text-decoration: none;
             font-size: 16px;
@@ -63,8 +59,7 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        .nav-links li a:hover,
-        .profile a:hover {
+        .nav-links li a:hover, .profile a:hover {
             background-color: #f0f0f0;
             border-radius: 4px;
         }
@@ -116,8 +111,7 @@
             color: #444;
         }
 
-        .form-group input,
-        .form-group select {
+        .form-group input, .form-group select {
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 10px;
@@ -126,8 +120,7 @@
             transition: 0.2s;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: #7c3aed;
             box-shadow: 0 0 5px rgba(124,58,237,0.3);
         }
@@ -226,26 +219,21 @@
                 gap: 15px;
                 padding: 18px;
             }
-
             .nav-links {
                 flex-direction: column;
                 gap: 10px;
                 align-items: center;
             }
-
             .profile {
                 margin-left: 0;
             }
-
             body {
                 padding-top: 220px;
             }
-
             .form-card {
                 width: 100%;
                 max-width: 420px;
             }
-
             .form-row {
                 flex-direction: column;
                 gap: 0;
@@ -259,12 +247,10 @@
     <div class="logo">
         <a href="#">UniSphere</a>
     </div>
-
     <ul class="nav-links">
         <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
         <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
     </ul>
-
     <div class="profile">
         <a href="{{ url_for('dashboard') }}">Profile</a>
     </div>
@@ -272,7 +258,6 @@
 
 <div class="main-wrapper">
     <div class="form-card">
-
         <div class="header">
             <h2>Event Registration</h2>
             <p>Please fill in your details carefully</p>
@@ -283,49 +268,45 @@
 
             <div class="form-group">
                 <label>Full Name</label>
-                <input type="text" id="name" required>
+                <input type="text" id="name" value="{{ user['name'] if user else '' }}" required>
             </div>
 
             <div class="form-group">
                 <label>Student ID</label>
-                <input type="text" id="studentId" required>
+                <input type="text" id="studentId" value="{{ user['student_id'] if user else '' }}" required>
             </div>
 
             <div class="form-group">
                 <label>Student Email</label>
-                <input type="email" id="studentEmail" required>
+                <input type="email" id="studentEmail" value="{{ user['email'] if user else '' }}" required>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>Phone Number</label>
-                    <input type="text" id="phone" required>
-                </div>
-
+    <label>Phone Number</label>
+    <input type="text" id="phone_number" placeholder="example: 0123456789" required>
+</div>
                 <div class="form-group">
                     <label>Faculty</label>
                     <select id="faculty" required>
                         <option value="">Select faculty</option>
-                        <option value="FCI">FCI</option>
-                        <option value="FAIE">FAIE</option>
-                        <option value="FOM">FOM</option>
-                        <option value="FAC">FAC</option>
-                        <option value="FCM">FCM</option>
-                        <option value="FCA">FCA</option>
+                        <option value="FCI" {% if user and user['faculty'] == 'FCI' %}selected{% endif %}>FCI</option>
+                        <option value="FAIE" {% if user and user['faculty'] == 'FAIE' %}selected{% endif %}>FAIE</option>
+                        <option value="FOM" {% if user and user['faculty'] == 'FOM' %}selected{% endif %}>FOM</option>
+                        <option value="FAC" {% if user and user['faculty'] == 'FAC' %}selected{% endif %}>FAC</option>
+                        <option value="FCM" {% if user and user['faculty'] == 'FCM' %}selected{% endif %}>FCM</option>
+                        <option value="FCA" {% if user and user['faculty'] == 'FCA' %}selected{% endif %}>FCA</option>
                     </select>
                 </div>
             </div>
 
             <div class="checkbox-group">
                 <input type="checkbox" id="outlookCalendar">
-                <label for="outlookCalendar">
-                    Add this event to my Outlook Calendar
-                </label>
+                <label for="outlookCalendar">Add this event to my Outlook Calendar</label>
             </div>
 
             <button type="submit">Register</button>
         </form>
-
     </div>
 </div>
 
@@ -333,12 +314,8 @@
     <div class="modal-box">
         <div class="icon-circle">✓</div>
         <h2>Successful</h2>
-        <p style="margin:10px 0 20px; color:#666;">
-            You have registered.
-        </p>
-        <button onclick="closeModal()" class="modal-btn">
-            Back to Event Page
-        </button>
+        <p style="margin:10px 0 20px; color:#666;">You have registered successfully.</p>
+        <button onclick="closeModal()" class="modal-btn">Back to Event Page</button>
     </div>
 </div>
 
@@ -351,7 +328,8 @@ document.getElementById("regForm").addEventListener("submit", function(e){
         name: document.getElementById('name').value,
         studentId: document.getElementById('studentId').value,
         studentEmail: document.getElementById('studentEmail').value,
-        phone: document.getElementById('phone').value,
+        personalEmail: '', // Kept empty to coordinate backend parameters cleanly
+        phone: document.getElementById('phone_number').value,
         faculty: document.getElementById('faculty').value,
         outlook_calendar: document.getElementById('outlookCalendar').checked 
     };
@@ -364,16 +342,35 @@ document.getElementById("regForm").addEventListener("submit", function(e){
     .then(response => response.json())
     .then(data => {
         if (data.status === 'success') {
+            // Process downloaded .ics for Outlook if requested
+            if (data.download_calendar && data.ics_content) {
+                downloadICSFile(data.ics_content, data.filename || 'event.ics');
+            }
+            // Display your customized popup modal layout directly
             document.getElementById("successModal").classList.remove("hidden");
         } else {
-            alert('Registration failed database storage: ' + data.message);
+            alert('Registration error: ' + data.message);
         }
     })
     .catch(error => {
-        console.error('Error during database storage:', error);
-        alert('An internal server connection error occurred.');
+        console.error('Submission Error:', error);
+        alert('An unexpected server communication issue occurred.');
     });
 });
+
+function downloadICSFile(content, filename) {
+    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8;' });
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
 
 function closeModal(){
     document.getElementById("successModal").classList.add("hidden");
@@ -381,6 +378,5 @@ function closeModal(){
     window.location.href = `/event/${eventId}`;
 }
 </script>
-
 </body>
 </html>

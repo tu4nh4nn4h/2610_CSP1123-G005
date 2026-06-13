@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Event Page</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Event Page - UniSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
       /* ==================================================
          GLOBAL
@@ -16,7 +21,7 @@
       body {
           min-height: 100vh;
           background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-          padding-top: 60px;
+          padding-top: 80px; /* Adjusted slightly to cleanly clear the updated navbar height */
 
           display: flex;
           justify-content: center;
@@ -24,55 +29,67 @@
       }
 
       /* ==================================================
-         NAVBAR
+         FIXED SYSTEM NAVBAR (Consistent with Dashboard)
       ================================================== */
       .navbar {
           position: fixed;
           top: 0;
           left: 0;
           width: 100%;
-
-          background: white;
+          height: 70px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(8px);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
           display: flex;
-          justify-content: space-between;
           align-items: center;
-
-          padding: 10px 20px;
-          border-bottom: 1px solid #ddd;
-
+          justify-content: space-between;
+          padding: 0 40px;
           z-index: 1000;
       }
 
-      .logo a {
-          font-size: 24px;
-          font-weight: bold;
-          color: black;
+      .navbar-brand {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #3f1b57;
           text-decoration: none;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
       }
 
-      .nav-links {
-          list-style: none;
+      .navbar-links {
           display: flex;
-          gap: 20px;
+          gap: 25px;
+          align-items: center;
       }
 
-      .nav-links li a,
-      .profile a {
-          color: black;
+      .navbar-links a {
+          color: #5c3576;
           text-decoration: none;
-          font-size: 16px;
-          padding: 5px 10px;
-          transition: 0.3s;
+          font-size: 0.95rem;
+          font-weight: 500;
+          transition: color 0.2s;
+          position: relative;
+          padding: 4px 0;
       }
 
-      .nav-links li a:hover,
-      .profile a:hover {
-          background-color: #f0f0f0;
-          border-radius: 4px;
+      .navbar-links a:hover {
+          color: #7b2cbf;
       }
 
-      .profile {
-          margin-left: auto;
+      /* Underline slider effect matching system application pages */
+      .navbar-links a::after {
+          content: '';
+          position: absolute;
+          width: 0;
+          height: 2px;
+          bottom: 0;
+          left: 0;
+          background-color: #7b2cbf;
+          transition: width 0.2s ease;
+      }
+
+      .navbar-links a:hover::after {
+          width: 100%;
       }
 
       /* ==================================================
@@ -83,7 +100,6 @@
           display: flex;
           justify-content: center;
           align-items: center;
-
           padding: 30px;
       }
 
@@ -93,14 +109,10 @@
       .event-card {
           width: 100%;
           max-width: 650px;
-
-          background: rgba(255,255,255,0.95);
-
+          background: rgba(255, 255, 255, 0.95);
           border-radius: 28px;
           padding: 35px;
-
-          box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
           animation: pop 0.3s ease;
       }
 
@@ -110,9 +122,7 @@
       .event-card h2 {
           font-size: 2.2rem;
           font-weight: 700;
-
           color: #3f1b57;
-
           margin-bottom: 12px;
       }
 
@@ -123,7 +133,6 @@
           font-size: 1rem;
           color: #555;
           line-height: 1.6;
-
           margin-bottom: 25px;
       }
 
@@ -134,16 +143,19 @@
           margin-top: 10px;
       }
 
-      .details p {
+      .details ul {
+          list-style: none; /* Cleans up standard browser bullet lists */
+      }
+
+      .details p, .details li {
           font-size: 1rem;
           color: #333;
-
           line-height: 1.8;
           margin-bottom: 12px;
       }
 
       .details strong {
-          color: #000;
+          color: #6d2e9c; /* Tint shift to cohesive purple palette */
           font-weight: 700;
       }
 
@@ -163,20 +175,15 @@
       .register-btn {
           background: #b37cd4;
           color: white;
-
           border: none;
           border-radius: 18px;
-
           padding: 14px 40px;
-
           font-size: 1rem;
           font-weight: 600;
           text-align: center;
           text-decoration: none;
-
           cursor: pointer;
           display: inline-block;
-
           transition: all 0.25s ease;
       }
 
@@ -193,17 +200,16 @@
          RESPONSIVE
       ================================================== */
       @media (max-width: 768px) {
-
           .event-card {
               width: 95%;
               padding: 25px;
           }
 
           .event-card h2 {
-              size: 1.8rem;
+              font-size: 1.8rem;
           }
 
-          .details p {
+          .details p, .details li {
               font-size: 0.95rem;
           }
 
@@ -220,7 +226,6 @@
               opacity: 0;
               transform: scale(0.95);
           }
-
           to {
               opacity: 1;
               transform: scale(1);
@@ -232,16 +237,12 @@
   <body>
 
     <nav class="navbar">
-      <div class="logo">
-        <a href="#">UniSphere</a>
-      </div>
-      <ul class="nav-links">
-        <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-        <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
-      </ul>
-      <div class="profile">
-        <a href="{{ url_for('dashboard') }}">Profile</a>
-      </div>
+        <a class="navbar-brand" href="{{ url_for('dashboard') if d_flag else '/dashboard' }}">UniSphere</a>
+        <div class="navbar-links">
+            <a href="{{ url_for('eventbrowsing') }}">Browse Events</a>
+            <a href="{{ url_for('createevent') if c_flag else '/createevent' }}">Create Event</a>
+            <a href="{{ url_for('user_dashboard1') if u_flag else '/user_dashboard1' }}">Profile</a>
+        </div>
     </nav>
 
     <div class="container">
@@ -263,7 +264,9 @@
         </div>
       </div>
       {% else %}
-      <p>Event not found.</p>
+      <div class="event-card" style="text-align: center;">
+         <p style="color: #555;">Event not found.</p>
+      </div>
       {% endif %}
     </div>
 
