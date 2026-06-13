@@ -93,6 +93,8 @@
         📧
     {% elif n['type'] == 'Password Changed' %}
         🔐
+    {% elif n['type'] == 'Event Created' %}
+        🎉
     {% endif %}
 
     {{ n['message'] }}
