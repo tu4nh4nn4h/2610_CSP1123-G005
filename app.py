@@ -574,10 +574,8 @@ def register_event():
 def create_event():
 
     username = session.get('user')
-
     conn = get_db_connection()
     cursor = conn.cursor()
-
     cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
     user = cursor.fetchone()
 
@@ -654,14 +652,12 @@ def create_event():
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():
-
     username = session.get('user')
+    conn = get_db_connection()
+    cursor = conn.cursor()
 
     if not username:
         return redirect(url_for('signin'))
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
 
     # Get current user
     cursor.execute(""" SELECT student_id, role FROM users_general WHERE username = ?""", (username,))
@@ -703,6 +699,24 @@ def be_organizer():
             conn.close()
 
         return jsonify({"status": "become_organizer_success"})
+
+@app.route('/manageevent')
+def manage_event():
+    username = session.get('user')
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
+    user = cursor.fetchone()
+
+    if not user:
+        conn.close()
+        return redirect(url_for('signin'))
+
+    if user["role"] != "organizer":
+        conn.close()
+        flash("Only organizers can manage events. Please register as an organizer to manage events.")
+        return redirect(url_for('be_organizer'))
+
 
 @app.route('/user_dashboard1')
 def dashboard():
