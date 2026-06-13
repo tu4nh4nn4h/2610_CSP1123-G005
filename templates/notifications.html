@@ -2,121 +2,291 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Notifications</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - UniSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-  <style>
-    body {
-        margin: 0;
-        font-family: 'Times New Roman', Times, serif;
-        background: linear-gradient(to right, #fbc2eb, #a18cd1);
-        padding-top: 60px; /* for navbar consistency */
-    }
+        body {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            min-height: 100vh;
+            padding-top: 110px; /* Space clear of the global navigation bar layer */
+            padding-bottom: 40px;
+        }
 
-    .container {
-        max-width: 700px;
-        margin: auto;
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-    }
+        /* Fixed Global Navigation Navbar Layer */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+        }
 
-    h2 {
-        text-align: center;
-        font-size: 40px;
-        font-weight: 800;
-        color: #222;
-        margin-bottom: 20px;
-    }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3f1b57;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .notification {
-        border-bottom: 1px solid #ddd;
-        padding: 15px 10px;
-        transition: 0.3s ease;
-    }
+        /* Core application navigation action links */
+        .navbar-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
 
-    .notification:hover {
-        background: #f9f9f9;
-    }
+        .navbar-links a {
+            color: #5c3576;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+            padding: 4px 0;
+        }
 
-    .unread {
-        font-weight: bold;
-        background-color: #f0f8ff;
-        padding: 10px;
-        border-radius: 8px;
-    }
+        .navbar-links a:hover {
+            color: #7b2cbf;
+        }
 
-    .read {
-        color: #666;
-        padding: 10px;
-    }
+        /* Underline slider effect matching system application pages */
+        .navbar-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #7b2cbf;
+            transition: width 0.2s ease;
+        }
 
-    .mark-read {
-        float: right;
-        font-size: 13px;
-        text-decoration: none;
-        color: blue;
-    }
+        .navbar-links a:hover::after {
+            width: 100%;
+        }
 
-    .mark-read:hover {
-        text-decoration: underline;
-    }
+        /* Layout Container Base */
+        .container {
+            max-width: 750px;
+            width: 90%;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px 35px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
 
-    .empty {
-        text-align: center;
-        color: #888;
-        padding: 20px;
-    }
-</style>
+        /* Title block with integrated inline historical return arrow */
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3f1b57;
+        }
+
+        .inline-back-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background-color: #f3ebf7;
+            border-radius: 50%;
+            color: #7b2cbf;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .inline-back-arrow:hover {
+            background-color: #e2d4ea;
+            transform: translateX(-2px);
+        }
+
+        /* Individual Feed Rows Layout */
+        .notification {
+            border-bottom: 1px solid #eee;
+            padding: 20px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: background-color 0.2s;
+            border-radius: 12px;
+            margin-bottom: 5px;
+        }
+
+        .notification:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .notification:hover {
+            background: rgba(243, 235, 247, 0.4);
+        }
+
+        .unread {
+            background-color: #f6eeff;
+            border-left: 4px solid #b37cd4;
+        }
+
+        .unread .msg-text {
+            font-weight: 600;
+            color: #111;
+        }
+
+        .read {
+            background-color: transparent;
+        }
+
+        .read .msg-text {
+            font-weight: 400;
+            color: #555;
+        }
+
+        .notification-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .msg-text {
+            font-size: 0.98rem;
+            line-height: 1.5;
+        }
+
+        .mark-read {
+            font-size: 0.85rem;
+            text-decoration: none;
+            color: #7b2cbf;
+            font-weight: 600;
+            background: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #d1badf;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mark-read:hover {
+            background-color: #7b2cbf;
+            color: white;
+            border-color: #7b2cbf;
+        }
+
+        .notification-meta {
+            font-size: 0.8rem;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            color: #777;
+            padding: 40px 20px;
+            font-size: 1.05rem;
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="container">
-    <h2>Your Notifications 🔔</h2>
+    <nav class="navbar">
+        <a class="navbar-brand" href="/dashboard">UniSphere</a>
+        <div class="navbar-links">
+            <a href="/eventbrowsing">Browse Events</a>
+            <a href="/createevent">Create Event</a>
+            <a href="/user_dashboard1">Profile</a>
+        </div>
+    </nav>
 
-    {% if notifications %}
-        {% for n in notifications %}
-            <div class="notification {% if n['is_read'] == 0 %}unread{% else %}read{% endif %}">
+    <div class="container">
+        
+        <div class="title-wrapper">
+            <a href="/user_dashboard1" class="inline-back-arrow" title="Return to user dashboard">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </a>
+            <h2>Your Notifications 🔔</h2>
+        </div>
 
-                <span>
+        {% if notifications %}
+            {% for n in notifications %}
+                <div class="notification {% if n['is_read'] == 0 %}unread{% else %}read{% endif %}">
+                    
+                    <div class="notification-content">
+                        <span class="msg-text">
+                            {% if n['type'] == 'confirmation' %}
+                                ✅
+                            {% elif n['type'] == 'reminder' %}
+                                ⏰
+                            {% elif n['type'] == 'cancellation' %}
+                                ❌
+                            {% elif n['type'] == 'Profile Updated' %}
+                                👤
+                            {% elif n['type'] == 'Email Changed' %}
+                                📧
+                            {% elif n['type'] == 'Password Changed' %}
+                                🔐
+                            {% elif n['type'] == 'Event Created' %}
+                                🎉
+                            {% endif %}
+                            
+                            {{ n['message'] }}
+                        </span>
 
-    {% if n['type'] == 'confirmation' %}
-        ✅
-    {% elif n['type'] == 'reminder' %}
-        ⏰
-    {% elif n['type'] == 'cancellation' %}
-        ❌
-    {% elif n['type'] == 'Profile Updated' %}
-        👤
-    {% elif n['type'] == 'Email Changed' %}
-        📧
-    {% elif n['type'] == 'Password Changed' %}
-        🔐
-    {% endif %}
+                        {% if n['is_read'] == 0 %}
+                            <a class="mark-read" href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
+                                Mark as read
+                            </a>
+                        {% endif %}
+                    </div>
 
-    {{ n['message'] }}
+                    <div class="notification-meta">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.7;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        {{ n['created_at'] }}
+                    </div>
 
-</span>
-
-                {% if n['is_read'] == 0 %}
-                    <a class="mark-read"
-                       href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
-                        Mark as read
-                    </a>
-                {% endif %}
-
-                <div style="font-size: 12px; margin-top: 5px;">
-                    {{ n['created_at'] }}
                 </div>
-
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <p>✨ No notifications yet. You're completely caught up!</p>
             </div>
-        {% endfor %}
-    {% else %}
-        <div class="empty">No notifications yet.</div>
-    {% endif %}
+        {% endif %}
 
-</div>
+    </div>
 
 </body>
 </html>
