@@ -2,10 +2,173 @@
 <html>
   <head>
     <title>Event Browsing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== GLOBAL ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
 
-    
-    <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            padding-top: 60px;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3f1b57;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .navbar-links a {
+            color: #5c3576;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+            padding: 4px 0;
+        }
+
+        .navbar-links a:hover {
+            color: #7b2cbf;
+        }
+
+        .navbar-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #7b2cbf;
+            transition: width 0.2s ease;
+        }
+
+        .navbar-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ===== PAGE CONTAINER ===== */
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: auto;
+            padding: 40px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+        }
+
+        /* ===== TITLE ===== */
+        .title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        /* ===== EVENT GRID ===== */
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        /* Scrollbar */
+        .event-grid::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .event-grid::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .event-grid::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+        }
+
+        /* ===== EVENT CARD ===== */
+        /* Entire card wrapper acts as the link to eventregsys.html */
+        .event-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .event-card {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centers the text alignment inside the card */
+            text-align: center;
+            background: rgba(176, 106, 214, 0.4);
+            border-radius: 30px;
+            padding: 30px;
+            min-height: 140px;
+            transition: transform 0.25s ease, background-color 0.25s ease;
+        }
+
+        .event-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: white;
+            line-height: 1.4;
+        }
+
+        .event-card-link:hover .event-card {
+            transform: translateY(-5px);
+            background: rgba(176, 106, 214, 0.55);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .event-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
   </head>
 
   <body>
@@ -23,14 +186,15 @@
       <h1 class="title">Browse Events</h1>
 
       <div class="event-grid">
-           {% for event in events %}
-            <div class="event-card">
-                <h3>{{ event['event_name'] }}</h3>
-                <p>{{ event['event_description'][:120] }}...</p>
-                <p><strong>Location:</strong> {{ event['main_location'] }}</p>
-                <a href="{{ url_for('event_detail', event_id=event['event_id']) }}" class="btn">View Details</a>
-           </div>
-    {% endfor %}
-      </div></div>
+          {% for event in events %}
+            <a href="{{ url_for('event_detail', event_id=event['event_id']) }}" class="event-card-link">
+                <div class="event-card">
+                    <h3>{{ event['event_name'] }}</h3>
+                </div>
+            </a>
+          {% endfor %}
+      </div>
+    </div>
+
   </body>
 </html>
