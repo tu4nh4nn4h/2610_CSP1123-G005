@@ -269,8 +269,18 @@ def reset_password():
             "UPDATE users_general SET password = ? WHERE username = ?",
             (generate_password_hash(new_password), username)
         )
+        cursor.execute(
+            "SELECT student_id FROM users_general WHERE username = ?", (username,)
+        )
+        result = cursor.fetchone()
+        student_id = result[0] if result else None
         conn.commit()
         conn.close()
+        create_notification(
+            student_id,
+            "Your password has been changed successfully.",
+            "Password Changed"
+    )
 
         session.pop('reset_user', None)
         return redirect(url_for('signin'))
