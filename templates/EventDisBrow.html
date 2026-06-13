@@ -5,21 +5,18 @@
 
     
     <link rel="stylesheet" href="{{ url_for('static', filename='eventdisbrow.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   </head>
 
   <body>
 
     <nav class="navbar">
-      <div class="logo">
-        <a href="#">UniSphere</a>
-      </div>
-      <ul class="nav-links">
-        <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-        <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
-      </ul>
-      <div class="profile">
-        <a href="{{ url_for('dashboard') }}">Profile</a>
-      </div>
+        <a class="navbar-brand" href="/dashboard">UniSphere</a>
+        <div class="navbar-links">
+            <a href="/eventbrowsing">Browse Events</a>
+            <a href="/createevent">Create Event</a>
+            <a href="/user_dashboard1">Profile</a>
+        </div>
     </nav>
 
     <div class="container">

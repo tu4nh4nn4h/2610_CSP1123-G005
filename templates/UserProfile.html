@@ -25,51 +25,67 @@
             padding-top: 80px; /* Prevent content from hiding behind navbar */
         }
 
+        /* Fixed Global Navigation Navbar Layer */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            background-color: white;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            border-bottom: 1px solid #ddd;
+            justify-content: space-between;
+            padding: 0 40px;
             z-index: 1000;
         }
 
-        .logo a {
-            font-size: 24px;
-            font-weight: bold;
-            color: black;
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3f1b57;
             text-decoration: none;
-            padding-right: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .nav-links {
-            list-style: none;
+        /* Core application navigation action links */
+        .navbar-links {
             display: flex;
-            gap: 20px;
+            gap: 25px;
+            align-items: center;
         }
 
-        .nav-links li a,
-        .nav-profile a {
-            color: black;
+        .navbar-links a {
+            color: #5c3576;
             text-decoration: none;
-            font-size: 16px;
-            padding: 5px 10px;
-            transition: background-color 0.3s, color 0.3s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+            padding: 4px 0;
         }
 
-        .nav-links li a:hover,
-        .nav-profile a:hover {
-            background-color: #f0f0f0;
-            border-radius: 4px;
+        .navbar-links a:hover {
+            color: #7b2cbf;
         }
 
-        .nav-profile {
-            margin-left: auto;
+        /* Underline slider effect matching system application pages */
+        .navbar-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #7b2cbf;
+            transition: width 0.2s ease;
+        }
+
+        .navbar-links a:hover::after {
+            width: 100%;
         }
 
         /* Profile Glass Container matching dashboard */
@@ -196,15 +212,11 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo">
-            <a href="#">UniSphere</a>
-        </div>
-        <ul class="nav-links">
-            <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-            <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
-        </ul>
-        <div class="nav-profile">
-            <a href="#profile">Profile</a>
+        <a class="navbar-brand" href="/dashboard">UniSphere</a>
+        <div class="navbar-links">
+            <a href="/eventbrowsing">Browse Events</a>
+            <a href="/createevent">Create Event</a>
+            <a href="/user_dashboard1">Profile</a>
         </div>
     </nav>
 
