@@ -91,6 +91,8 @@
         👤
     {% elif n['type'] == 'Email Changed' %}
         📧
+    {% elif n['type'] == 'Password Changed' %}
+        🔐
     {% endif %}
 
     {{ n['message'] }}

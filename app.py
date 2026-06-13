@@ -496,7 +496,7 @@ def change_password():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT password FROM users_general WHERE username = ?", (username,))
+    cursor.execute("SELECT password, student_id FROM users_general WHERE username = ?", (username,))
     result = cursor.fetchone()
 
     if not result:
@@ -515,6 +515,11 @@ def change_password():
 
     conn.commit()
     conn.close()
+    create_notification(
+        result["student_id"],
+        "Your password has been changed successfully.",
+        "Password Changed"
+    )
 
     return "Password updated successfully"
 
