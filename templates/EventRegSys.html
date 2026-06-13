@@ -2,7 +2,231 @@
 <html>
   <head>
     <title>Event Page</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='eventregsys.css') }}">
+    <style>
+      /* ==================================================
+         GLOBAL
+      ================================================== */
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Poppins', sans-serif;
+      }
+
+      body {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+          padding-top: 60px;
+
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+
+      /* ==================================================
+         NAVBAR
+      ================================================== */
+      .navbar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+
+          background: white;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          padding: 10px 20px;
+          border-bottom: 1px solid #ddd;
+
+          z-index: 1000;
+      }
+
+      .logo a {
+          font-size: 24px;
+          font-weight: bold;
+          color: black;
+          text-decoration: none;
+      }
+
+      .nav-links {
+          list-style: none;
+          display: flex;
+          gap: 20px;
+      }
+
+      .nav-links li a,
+      .profile a {
+          color: black;
+          text-decoration: none;
+          font-size: 16px;
+          padding: 5px 10px;
+          transition: 0.3s;
+      }
+
+      .nav-links li a:hover,
+      .profile a:hover {
+          background-color: #f0f0f0;
+          border-radius: 4px;
+      }
+
+      .profile {
+          margin-left: auto;
+      }
+
+      /* ==================================================
+         MAIN CONTAINER
+      ================================================== */
+      .container {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          padding: 30px;
+      }
+
+      /* ==================================================
+         EVENT CARD
+      ================================================== */
+      .event-card {
+          width: 100%;
+          max-width: 650px;
+
+          background: rgba(255,255,255,0.95);
+
+          border-radius: 28px;
+          padding: 35px;
+
+          box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+
+          animation: pop 0.3s ease;
+      }
+
+      /* ==================================================
+         EVENT TITLE
+      ================================================== */
+      .event-card h2 {
+          font-size: 2.2rem;
+          font-weight: 700;
+
+          color: #3f1b57;
+
+          margin-bottom: 12px;
+      }
+
+      /* ==================================================
+         DESCRIPTION
+      ================================================== */
+      .desc {
+          font-size: 1rem;
+          color: #555;
+          line-height: 1.6;
+
+          margin-bottom: 25px;
+      }
+
+      /* ==================================================
+         EVENT DETAILS
+      ================================================== */
+      .details {
+          margin-top: 10px;
+      }
+
+      .details p {
+          font-size: 1rem;
+          color: #333;
+
+          line-height: 1.8;
+          margin-bottom: 12px;
+      }
+
+      .details strong {
+          color: #000;
+          font-weight: 700;
+      }
+
+      /* ==================================================
+         REGISTER BUTTON CONTAINER
+      ================================================== */
+      .event-btn-wrapper {
+          text-decoration: none;
+          display: flex;
+          justify-content: center;
+          margin-top: 25px;
+      }
+
+      /* ==================================================
+         REGISTER BUTTON
+      ================================================== */
+      .register-btn {
+          background: #b37cd4;
+          color: white;
+
+          border: none;
+          border-radius: 18px;
+
+          padding: 14px 40px;
+
+          font-size: 1rem;
+          font-weight: 600;
+          text-align: center;
+          text-decoration: none;
+
+          cursor: pointer;
+          display: inline-block;
+
+          transition: all 0.25s ease;
+      }
+
+      .register-btn:hover {
+          background: #9c5ec2;
+          transform: translateY(-2px);
+      }
+
+      .register-btn:active {
+          transform: translateY(0);
+      }
+
+      /* ==================================================
+         RESPONSIVE
+      ================================================== */
+      @media (max-width: 768px) {
+
+          .event-card {
+              width: 95%;
+              padding: 25px;
+          }
+
+          .event-card h2 {
+              size: 1.8rem;
+          }
+
+          .details p {
+              font-size: 0.95rem;
+          }
+
+          .register-btn {
+              width: 100%;
+          }
+      }
+
+      /* ==================================================
+         ANIMATION
+      ================================================== */
+      @keyframes pop {
+          from {
+              opacity: 0;
+              transform: scale(0.95);
+          }
+
+          to {
+              opacity: 1;
+              transform: scale(1);
+          }
+      }
+    </style>
   </head>
 
   <body>
@@ -24,19 +248,23 @@
       {% if event %}
       <div class="event-card">
         <h2>{{ event['event_name'] }}</h2>
-        <p>{{ event['event_description'] }}</p>
-        <ul>
-          <li><strong>Date:</strong> {{ event['start_date'] }} to {{ event['end_date'] }}</li>
-          <li><strong>Time:</strong> {{ event['start_time'] }} - {{ event['end_time'] }}</li>
-          <li><strong>Venue:</strong> {{ event['main_location'] }} ({{ event['event_mode'] }})</li>
-        </ul>
+        <p class="desc">{{ event['event_description'] }}</p>
+        
+        <div class="details">
+          <ul>
+            <li><strong>Date:</strong> {{ event['start_date'] }} to {{ event['end_date'] }}</li>
+            <li><strong>Time:</strong> {{ event['start_time'] }} - {{ event['end_time'] }}</li>
+            <li><strong>Venue:</strong> {{ event['main_location'] }} ({{ event['event_mode'] }})</li>
+          </ul>
+        </div>
 
-      <a href="{{ url_for('form', event_id=event['event_id']) }}" class="register-btn">Register for Event</a>
-
-    </div>
-    {% else %}
-    <p>Event not found.</p>
-    {% endif %}
+        <div class="event-btn-wrapper">
+          <a href="{{ url_for('form', event_id=event['event_id']) }}" class="register-btn">Register for Event</a>
+        </div>
+      </div>
+      {% else %}
+      <p>Event not found.</p>
+      {% endif %}
     </div>
 
   </body>
