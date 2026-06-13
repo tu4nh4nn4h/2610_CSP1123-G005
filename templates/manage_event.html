@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Organizer - Manage Event</title>
+        <title>Organizer - My Event</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,558 +16,128 @@
             }
 
             body {
+                /* Gradient background matching the image */
                 background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 min-height: 100vh;
                 padding: 20px;
-                padding-top: 80px; /* Prevent content from hiding behind navbar */
+                padding-top: 60px; /* prevent content from hiding behind navbar */
             }
 
-            .navbar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                background-color: white;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px 20px;
-                border-bottom: 1px solid #ddd;
-                z-index: 1000;
-            }
-
-            .logo a {
-                font-size: 24px;
-                font-weight: bold;
-                color: black;
-                text-decoration: none;
-                padding-right: 13px;
-            }
-
-            .nav-links {
-                list-style: none;
-                display: flex;
-                gap: 20px;
-            }
-
-            .nav-links li a,
-            .nav-profile a {
-                color: black;
-                text-decoration: none;
-                font-size: 16px;
-                padding: 5px 10px;
-                transition: background-color 0.3s, color 0.3s;
-            }
-
-            .nav-links li a:hover,
-            .nav-profile a:hover {
-                background-color: #f0f0f0;
-                border-radius: 4px;
-            }
-
-            .nav-profile {
-                margin-left: auto;
-            }
-
-            /* Profile Glass Container matching dashboard */
-            .dashboard-view {
+            .dashboard {
                 width: 95%;
-                max-width: 1100px;
+                max-width: 1400px;
                 padding: 40px;
                 border-radius: 25px;
+                /* Semi-transparent overlay to let the background peak through slightly */
                 background: rgba(255, 255, 255, 0.15);
                 backdrop-filter: blur(10px);
                 color: white;
-                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            }
+
+            .welcome {
+                font-size: 1.2rem;
+                margin-bottom: 5px;
             }
 
             .title {
                 font-size: 3.5rem;
                 font-weight: 700;
-                margin-bottom: 5px;
+                margin-bottom: 30px;
                 text-transform: uppercase;
             }
 
-            .subtitle {
-                font-size: 1.1rem;
-                margin-bottom: 30px;
-                opacity: 0.9;
-            }
-
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 25px;
-            }
-
-            .card {
-                background: rgba(176, 106, 214, 0.4);
-                border-radius: 25px;
-                padding: 35px;
-                min-height: 350px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-
-            /* Profile Layout */
-            .profile-header {
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
                 display: flex;
                 align-items: center;
-                gap: 25px;
-                margin-bottom: 20px;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
             }
 
-            .profile-picture {
-                width: 110px;
-                height: 110px;
-                border-radius: 50%;
-                object-fit: cover;
-                border: 4px solid white;
-            }
-
-            .profile-card h3 {
-                font-size: 1.6rem;
-                font-weight: 600;
-            }
-
-            .card p {
-                font-size: 1.1rem;
-                margin-bottom: 12px;
-                line-height: 1.5;
-            }
-
-            .card h3 {
-                margin-bottom: 20px;
+            .navbar-brand {
                 font-size: 1.5rem;
-                text-transform: uppercase;
-                border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-                padding-bottom: 8px;
-            }
-
-            /* Button configurations */
-            .profile-actions {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-                margin-top: 15px;
-            }
-
-            .btn {
-                padding: 12px 24px;
-                color: #7a1fa2;
-                background-color: white;
-                border: none;
-                border-radius: 12px;
-                cursor: pointer;
-                font-weight: 600;
-                font-size: 100%;
+                font-weight: 700;
+                color: #3f1b57;
                 text-decoration: none;
-                display: inline-block;
-                transition: transform 0.2s ease, background-color 0.3s ease;
-                text-align: center;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
 
-            .btn:hover {
-                transform: translateY(-3px);
-                background-color: #f3e5f5;
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
             }
 
-            .btn-secondary {
-                background-color: rgba(255, 255, 255, 0.2);
-                color: white;
-                border: 1px solid rgba(255, 255, 255, 0.4);
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
             }
 
-            .btn-secondary:hover {
-                background-color: rgba(255, 255, 255, 0.3);
+            .navbar-links a:hover {
+                color: #7b2cbf;
             }
 
-            /* Responsive Fix */
-            @media (max-width: 900px) {
-                .grid { grid-template-columns: 1fr; }
-                .title { font-size: 2.5rem; }
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
+
+            .navbar-links a:hover::after {
+                width: 100%;
             }
         </style>
     </head>
     <body>
+
+        <nav class="navbar">
+            <a class="navbar-brand" href="/dashboard">UniSphere</a>
+            <div class="navbar-links">
+                <a href="/eventbrowsing">Browse Events</a>
+                <a href="/createevent">Create Event</a>
+                <a href="/manageevent">My Event</a>
+                <a href="/user_dashboard1">Profile</a>
+            </div>
+        </nav>
+
         <div class="dashboard">
-        <p class="welcome">Welcome back, {{ user['name'] }}!</p>
-        <h1 class="title">User Dashboard</h1>
+            <h1 class="title">My Event</h1>
+            <p class="welcome">Organizer event management</p>
 
-        <div class="grid">
-            <a href="{{ url_for('user_profile') }}" class =" card profile-card clickable-card">
-                <!-- <div class="card profile-card"> -->
-                <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}"
-                class="dashboard-profile-picture">
-                <div class="profile-content">
-                    <p><b>Name :</b> {{ user['name'] }}</p>
-                    <p><b>Username :</b> {{ user['username'] }}</p>
-                    <p><b>Contact Details :</b> {{ user['email'] }}</p>
-                </div>
-            </a>
-
-            <div class="card calendar-card">
-                <div class="date-info">
-                    <p class="day">DAY</p>
-                    <p class="date">DATE</p>
-                </div>
-                <div class="calendar-grid">
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                </div>
-            </div>
-
-            <div class="card event-card">
-                <!-- ROW 1: REGISTERED EVENTS (Smaller clickable circles) -->
-               <!-- ROW 1: REGISTERED EVENTS -->
-<div class="event-row">
-    <p class="event-label">Registered Events :</p>
-<div class="circle circle-small" onclick="triggerActionMenu(1)"></div>
-    <div class="circles">
-
-        {% if events %}
-
-            {% for e in events %}
-    <div 
-        class="circle circle-small"
-
-       onclick='triggerActionMenu(
-    `{{ e["event_id"] }}`,
-    `{{ e["event_name"] }}`,
-    `{{ e["event_description"] }}`,
-    `{{ e["event_date"] }}`,
-    `{{ e["event_time"] }}`,
-    `{{ e["venue"] }}`,
-    `{{ e["event_image"] if e["event_image"] else "/static/default_event.jpg" }}`
-)'
-
-        title="{{ e['event_name'] }}">
-    </div>
-{% endfor %}
-
-        {% else %}
-
-            <!-- Fallback circles if no events from database -->
-            <div class="circle circle-small"></div>
-            <div class="circle circle-small"></div>
-            <div class="circle circle-small"></div>
-
-        {% endif %}
-
-    </div>
-</div>
-                
-                <!-- ROW 2: JOINED EVENTS (Standard template sizes) -->
-                <div class="event-row">
-                    <p class="event-label">Joined event :</p>
-                    <div class="circles">
-                        <div class="circle"></div>
-                        <div class="circle"></div>
-                        <div class="circle"></div>
-                        <div class="circle"></div>
-                    </div>
-                </div>
-                <div class="scroll-bar">
-                    <div class="scroll-fill"></div>
-                </div>
-            </div>
-
-            <a href="{{ url_for('notifications') }}" class="card inbox-card clickable-card">
-                <h2 class="inbox-title">Inbox 🔔</h2>
-            </a>
-        </div>
-    </div>
-
-
-    <!-- ==========================================================================
-       MODAL SYSTEM MARKUP
-       ========================================================================== -->
-
-    <!-- FIRST INTERACTION MODAL (From: pop up registered events.jpg) -->
-    <div id="optionsModal" class="modal-backdrop">
-        <div class="options-card">
-            <button id="goToCancelFlowBtn" class="btn-modal-option btn-gray">Cancel Registration</button>
-            <button id="viewDetailsBtn" class="btn-modal-option btn-purple">Details of the Event</button>
-        </div>
-    </div>
-
-    <!-- SECOND CONFIRMATION MODAL (From: modal cancel reg (not a page).png) -->
-    <div id="cancelConfirmationModal" class="modal-backdrop">
-        <div class="modal-card">
-            <span class="close-btn" id="closeCancelModalBtn">&times;</span>
-            <div class="modal-header-title">Registration cancellation</div>
-            
-            <div class="modal-body-wrapper">
-                <!-- Left Content Segment -->
-                <div class="modal-left-purple">
-                    <h2>We regret to see you leave</h2>
-                    <p>Your registration will be cancelled. Rest assured, you can still view and explore upcoming events on your dashboard.</p>
-                </div>
-                
-                <!-- Right Content Segment -->
-                <div class="modal-right-lavender">
-                    <div>
-                        <h3>Please note that:</h3>
-                        <ul>
-                            <li>Any paid commitment fees may be non-refundable, subject to the event's terms and conditions.</li>
-                            <li>A confirmation email regarding this cancellation will be sent to your registered email address shortly.</li>
-                        </ul>
-                    </div>
-                    <button id="finalDeleteSubmitBtn" class="confirm-btn">Confirm Cancellation</button>
-                </div>
+            <div class="events-container">
+                {% for event in events %}
+                <a href="{{ url_for('manage_event', event_id=event['event_id']) }}"class="event-card">
+                    <img src="{{ url_for('static',filename='eventPoster/' + event['event_poster']) }}">
+                    <h3>{{ event['event_name'] }}</h3>
+                    <p>{{ event['start_date'] }}</p>
+                </a>
+                {% endfor %}
             </div>
         </div>
-    </div>
-
-    <!-- THIRD MODAL : EVENT DETAILS -->
-<div id="eventDetailsModal" class="modal-backdrop">
-
-    <div class="details-modal-card">
-
-        <span class="close-details-btn" id="closeDetailsModalBtn">&times;</span>
-
-        <div class="details-content">
-
-            <!-- EVENT IMAGE -->
-            <div class="details-image">
-                <img id="detailsEventImage"
-                     src="https://via.placeholder.com/900x400"
-                     alt="Event Image">
-            </div>
-
-            <!-- EVENT TITLE -->
-            <h2 class="details-title" id="detailsEventTitle">
-                Event Title
-            </h2>
-
-            <!-- EVENT DETAILS -->
-            <div class="details-info">
-
-                <p>
-                    <strong>Event description :</strong>
-                    <span id="detailsEventDescription">
-                        Event description here.
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Date :</strong>
-                    <span id="detailsEventDate">
-                        10 June 2026
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Time :</strong>
-                    <span id="detailsEventTime">
-                        8:00 PM
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Venue :</strong>
-                    <span id="detailsEventVenue">
-                        Main Hall
-                    </span>
-                </p>
-
-            </div>
-
-            <button class="details-back-btn" id="backToDashboardBtn">
-                Back To Dashboard
-            </button>
-
-        </div>
-    </div>
-</div>
-
-
-    <!-- ==========================================================================
-       MODAL FLOW JAVASCRIPT CONTROLLER
-       ========================================================================== -->
-   <script>
-
-            // =========================================================
-            // STORED EVENT DATA
-            // =========================================================
-
-            let selectedEventId = null;
-
-            let selectedEventData = {
-                title: "",
-                description: "",
-                date: "",
-                time: "",
-                venue: "",
-                image: ""
-            };
-
-            // =========================================================
-            // MODAL ELEMENTS
-            // =========================================================
-
-            const optionsModal = document.getElementById('optionsModal');
-            const cancelConfirmationModal = document.getElementById('cancelConfirmationModal');
-            const eventDetailsModal = document.getElementById('eventDetailsModal');
-
-            const goToCancelFlowBtn = document.getElementById('goToCancelFlowBtn');
-            const viewDetailsBtn = document.getElementById('viewDetailsBtn');
-
-            const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
-            const finalDeleteSubmitBtn = document.getElementById('finalDeleteSubmitBtn');
-
-            const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
-            const backToDashboardBtn = document.getElementById('backToDashboardBtn');
-
-            // =========================================================
-            // OPEN ACTION MENU
-            // =========================================================
-
-            function triggerActionMenu(
-                eventId,
-                title = "",
-                description = "",
-                date = "",
-                time = "",
-                venue = "",
-                image = ""
-            ) {
-
-                selectedEventId = eventId;
-
-                selectedEventData = {
-                    title,
-                    description,
-                    date,
-                    time,
-                    venue,
-                    image
-                };
-
-                optionsModal.classList.add('show');
-            }
-
-            // =========================================================
-            // CANCEL REGISTRATION FLOW
-            // =========================================================
-
-            goToCancelFlowBtn.addEventListener('click', () => {
-
-                optionsModal.classList.remove('show');
-
-                cancelConfirmationModal.classList.add('show');
-
-            });
-
-            // =========================================================
-            // VIEW EVENT DETAILS FLOW
-            // =========================================================
-
-            viewDetailsBtn.addEventListener('click', () => {
-
-                optionsModal.classList.remove('show');
-
-                // Insert dynamic data into modal
-                document.getElementById('detailsEventTitle').innerText =
-                    selectedEventData.title;
-
-                document.getElementById('detailsEventDescription').innerText =
-                    selectedEventData.description;
-
-                document.getElementById('detailsEventDate').innerText =
-                    selectedEventData.date;
-
-                document.getElementById('detailsEventTime').innerText =
-                    selectedEventData.time;
-
-                document.getElementById('detailsEventVenue').innerText =
-                    selectedEventData.venue;
-
-                document.getElementById('detailsEventImage').src =
-                    selectedEventData.image;
-
-                eventDetailsModal.classList.add('show');
-
-            });
-
-            // =========================================================
-            // CLOSE CANCEL MODAL
-            // =========================================================
-
-            closeCancelModalBtn.addEventListener('click', () => {
-
-                cancelConfirmationModal.classList.remove('show');
-
-                selectedEventId = null;
-
-            });
-
-            // =========================================================
-            // CLOSE DETAILS MODAL
-            // =========================================================
-
-            closeDetailsModalBtn.addEventListener('click', () => {
-
-                eventDetailsModal.classList.remove('show');
-
-            });
-
-            // =========================================================
-            // BACK TO DASHBOARD BUTTON
-            // =========================================================
-
-            backToDashboardBtn.addEventListener('click', () => {
-
-                eventDetailsModal.classList.remove('show');
-
-            });
-
-            // =========================================================
-            // FINAL CANCEL CONFIRMATION
-            // =========================================================
-
-            finalDeleteSubmitBtn.addEventListener('click', () => {
-
-                if (selectedEventId) {
-
-                    window.location.href =
-                        `/cancel_event/${selectedEventId}`;
-                }
-
-            });
-
-            // =========================================================
-            // CLICK OUTSIDE TO CLOSE
-            // =========================================================
-
-            window.addEventListener('click', (event) => {
-
-                if (event.target === optionsModal) {
-
-                    optionsModal.classList.remove('show');
-
-                }
-
-                if (event.target === cancelConfirmationModal) {
-
-                    cancelConfirmationModal.classList.remove('show');
-
-                }
-
-                if (event.target === eventDetailsModal) {
-
-                    eventDetailsModal.classList.remove('show');
-
-                }
-
-            });
-
-        </script>
     </body>
 </html>
