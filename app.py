@@ -675,7 +675,7 @@ def create_event():
             user["student_id"],
                 "Your event has been created successfully.",
                 "Event Created"
-        )
+            )
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():
