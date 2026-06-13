@@ -1,5 +1,4 @@
 from fileinput import filename
-
 from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
 from datetime import datetime, timedelta
 import sqlite3
@@ -11,6 +10,9 @@ import os
 import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
+import pandas as pd
+from flask import send_file
+import io
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -705,23 +707,112 @@ def be_organizer():
 
         return jsonify({"status": "become_organizer_success"})
 
-@app.route('/manageevent')
-def manage_event():
+@app.route('/myevent')
+def my_event():
+
     username = session.get('user')
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT student_id, role FROM users_general WHERE username = ?", (username,))
+
+    cursor.execute(
+        "SELECT student_id, role FROM users_general WHERE username = ?",
+        (username,)
+    )
+
     user = cursor.fetchone()
 
     if not user:
         conn.close()
         return redirect(url_for('signin'))
 
-    if user["role"] != "organizer":
+    # ONLY ORGANIZER CAN ACCESS
+    if user['role'] != 'organizer':
         conn.close()
-        flash("Only organizers can manage events. Please register as an organizer to manage events.")
-        return redirect(url_for('be_organizer'))
+        return redirect(url_for('dashboard'))
 
+    cursor.execute("""SELECT * FROM events WHERE student_id = ?""", (user['student_id'],))
+
+    events = cursor.fetchall()
+    conn.close()
+
+    return render_template('my_event.html',user=user, events=events)
+
+@app.route('/myevent/<int:event_id>')
+def my_event_manage(event_id):
+    # Fetch the specific event matching the ID from your database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    event = cursor.fetchone()
+
+    if not event:
+        conn.close()
+        return redirect(url_for('myevent'))
+    
+    cursor.execute("""SELECT * FROM event_registrations WHERE event_id = ?""", (event_id,))
+
+    participants = cursor.fetchall()
+    conn.close()
+
+    return render_template('my_event_manage.html',event=event,participants=participants)
+
+@app.route('/exportevent/<int:event_id>')
+def export_event(event_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECTname,student_id,email,phone_number,faculty FROM event_registrations WHERE event_id = ?""", (event_id,))
+
+    participants = cursor.fetchall()
+    conn.close()
+
+    df = pd.DataFrame(participants,columns=['Name','Student ID','Email','Phone Number','Faculty'])
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer: df.to_excel(writer, index=False, sheet_name='Participants Analysis')
+    output.seek(0)
+
+    return send_file(output,as_attachment=True,download_name=f'event_{event_id}_participants.xlsx',mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+@app.route('/deleteevent/<int:event_id>', methods=['POST'])
+def delete_event(event_id):
+
+    username = session.get('user')
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECT event_name FROM events WHERE event_id = ?""", (event_id,))
+    event = cursor.fetchone()
+
+    if not event:
+        conn.close()
+        return redirect(url_for('myevent'))
+
+    # Get all participants
+    cursor.execute("""SELECT student_id FROM event_registrations WHERE event_id = ?""", (event_id,))
+    participants = cursor.fetchall()
+
+    # # Send notification
+    # for participant in participants:
+
+    #     cursor.execute("""INSERT INTO notifications (student_id, message, type) VALUES (?, ?, ?)""",
+    #     (participant['student_id'], f"The event '{event['event_name']}' has been cancelled by the organizer.",'event_cancelled'))
+
+    # Delete registrations first
+    cursor.execute("""DELETE FROM event_registrations WHERE event_id = ?""", (event_id,))
+
+    # # Delete tag mapping
+    # cursor.execute("""DELETE FROM event_tag_map WHERE event_id = ?""", (event_id,))
+
+    # Delete event
+    cursor.execute("""DELETE FROM events WHERE event_id = ?""", (event_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('myevent'))
 
 @app.route('/user_dashboard1')
 def dashboard():
