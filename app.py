@@ -559,25 +559,26 @@ def register_event():
                 dtend = f"{clean_end_date}T{clean_end_time}"
                 dtstamp = datetime.now().strftime('%Y%m%dT%H%M%S')
 
-                ics_template = (
+            ics_template = (
                     "BEGIN:VCALENDAR\n"
-                    "VERSION:2.0\n"
-                    "PRODID:-//UniSphere//Event Management//EN\n"
-                    "BEGIN:VEVENT\n"
-                    f"UID:event_{data.get('event_id')}_{data.get('studentId')}@unisphere.edu\n"
-                    f"DTSTAMP:{dtstamp}\n"
-                    f"DTSTART:{dtstart}\n"
-                    f"DTEND:{dtend}\n"
-                    f"SUMMARY:{event['event_name']}\n"
-                    f"DESCRIPTION:{event['event_description']}\n"
-                    f"LOCATION:{location}\n"
-                    "END:VEVENT\n"
-                    "END:VCALENDAR"
-                )
+                        "VERSION:2.0\n"
+                        "PRODID:-//UniSphere//Event Management//EN\n"
+                        "BEGIN:VEVENT\n"
+                        f"UID:event_{data.get('event_id')}_{data.get('studentId')}@unisphere.edu\n"
+                        f"DTSTAMP:{dtstamp}\n"
+                        # Added TZID parameter so Outlook knows this is strictly Malaysia Time
+                        f"DTSTART;TZID=Asia/Kuala_Lumpur:{dtstart}\n"
+                        f"DTEND;TZID=Asia/Kuala_Lumpur:{dtend}\n"
+                        f"SUMMARY:{event['event_name']}\n"
+                        f"DESCRIPTION:{event['event_description']}\n"
+                        f"LOCATION:{location}\n"
+                        "END:VEVENT\n"
+                        "END:VCALENDAR"
+                    )
 
-                response_data["download_calendar"] = True
-                response_data["ics_content"] = ics_template
-                response_data["filename"] = f"event_{data.get('event_id')}.ics"
+            response_data["download_calendar"] = True
+            response_data["ics_content"] = ics_template
+            response_data["filename"] = f"event_{data.get('event_id')}.ics"
 
         conn.commit()
         return jsonify(response_data)
