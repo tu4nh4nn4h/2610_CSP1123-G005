@@ -167,6 +167,22 @@
             .toggle-password:hover {
                 color: #b37cd4;
             }
+            .login-redirect {
+                margin-top: 20px;
+                text-align: center;
+                font-size: 0.88rem;
+                color: #666;
+            }
+        
+            .login-redirect a {
+                color: #7b2cbf;
+                text-decoration: none;
+                font-weight: 500;
+            }
+            
+            .login-redirect a:hover {
+                text-decoration: underline;
+            }
         </style>
 
     </head>
@@ -234,6 +250,9 @@
 
                     <button type="submit" onclick="register()" class="button">Register</button>
                 </form>
+                <div class="login-redirect">
+                    <p>Already registered? <a href="{{ url_for('signin') }}">Sign in here</a></p>
+                </div>
             </div>
             <div id="otpForm" style="display:none;">
                 <h3 style="text-align: center;">Verify Your Email</h3>

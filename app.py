@@ -341,38 +341,34 @@ def verify_email(token):
 
 @app.route('/register_organizer', methods=['GET', 'POST'])
 def register_organizer():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
     if request.method == 'POST':
-        name = request.form['Name']
-        email = request.form['Email']
-        username = request.form['Username']
-        student_id = request.form['Student_id']
-        password = request.form['Password']
-        confirm_password = request.form['confirmPassword']
-        club_body = request.form['Club_body']
-        position_title = request.form['Position_title']
+        name = request.form.get('Name')
+        email = request.form.get('Email')
+        username = request.form.get('Username')
+        student_id = request.form.get('Student_id')
+        club_body = request.form.get('Club_body')
+        position_title = request.form.get('Position/title')
+        password = request.form.get('Password')
+        confirm_password = request.form.get('confirmPassword')
         keyword = request.form.get('keyword')
+        security_question = request.form.get('security_question')
 
         if password != confirm_password:
             return "Passwords do not match"
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
-
         try:
-            cursor.execute("""
-                INSERT INTO users_general
-                (student_id, name, username, email, password, keyword, role)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (student_id, name, username, email,
-                  generate_password_hash(password), keyword, 'organizer'))
-
-            cursor.execute("""
-                INSERT INTO organizer_details
-                (student_id, club_body, position_title)
-                VALUES (?, ?, ?)
-            """, (student_id, club_body, position_title))
-
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'organizer', 0))
+            cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)",
+                            (student_id, club_body, position_title))
             conn.commit()
+
+            token = s.dumps(email, salt='email-confirm')
+
+            send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
             return "Username or email already exists"
