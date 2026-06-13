@@ -737,63 +737,90 @@ def dashboard():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users_general LEFT JOIN user_details ON users_general.student_id = user_details.student_id WHERE users_general.username = ?", (username,))
+    
+    # 1. Fetch logged-in user profile information
+    cursor.execute("""
+        SELECT * FROM users_general 
+        LEFT JOIN user_details ON users_general.student_id = user_details.student_id 
+        WHERE users_general.username = ?
+    """, (username,))
     user = cursor.fetchone()
-    conn.close()
 
     if not user:
+        conn.close()
         return "User not found"
 
-    return render_template('user_dashboard1.html', user=user)
-
-@app.route('/cancel_event/<int:event_id>')
-def cancel_event(event_id):
-
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # delete registration
-    cursor.execute(
-        "DELETE FROM event_registrations WHERE event_id = ?",
-        (event_id,)
-    )
-
-    conn.commit()
+   # 2. Query only the events that THIS specific student has registered for using an INNER JOIN
+    # Fixed: Matched exactly to the schema columns found in EventRegSys.html
+    cursor.execute("""
+        SELECT e.event_id, e.event_name, e.event_description, 
+               e.start_date, e.end_date, e.start_time, e.end_time, 
+               e.main_location, e.event_mode
+        FROM events e
+        INNER JOIN event_registrations er ON e.event_id = er.event_id
+        WHERE er.student_id = ?
+    """, (user["student_id"],))
+    
+    events = cursor.fetchall()
     conn.close()
 
-    flash("Registration cancelled successfully.")
+    # 3. Pass both 'user' object and 'events' list to the HTML template layout dashboard
+    return render_template('user_dashboard1.html', user=user, events=events)
 
-    # redirect back to dashboard
-    return redirect(url_for('dashboard'))
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
     username = session.get('user')
-
     if not username:
         return redirect(url_for('signin'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # get student_id
-    cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
-    user = cursor.fetchone()
+    try:
+        # 1. Fetch the unique student_id based on the active session username
+        cursor.execute("SELECT student_id FROM users_general WHERE username = ?", (username,))
+        user = cursor.fetchone()
 
-    if not user:
-        return "User not found"
+        if not user:
+            return "User not found"
 
-    student_id = user["student_id"]
+        student_id = user["student_id"]
 
-    cursor.execute("""
-        DELETE FROM event_registrations
-        WHERE event_id = ?
-        AND student_id = ?
-    """, (event_id, student_id))
+        # 2. Fetch the event name before deleting to generate a personalized notification log entry
+        cursor.execute("SELECT event_name FROM events WHERE event_id = ?", (event_id,))
+        event_data = cursor.fetchone()
+        event_name = event_data["event_name"] if event_data else "an Event"
 
-    conn.commit()
-    conn.close()
+        # 3. Securely delete ONLY this particular student's specific registration record
+        cursor.execute("""
+            DELETE FROM event_registrations
+            WHERE event_id = ?
+            AND student_id = ?
+        """, (event_id, student_id))
 
+        # 4. Insert a new cancellation entry with the required 'type' field included
+        notification_msg = f"You have successfully cancelled your registration for '{event_name}'."
+        
+        # Added 'type' column to satisfy the database NOT NULL constraint
+        cursor.execute("""
+            INSERT INTO notifications (student_id, message, type)
+            VALUES (?, ?, ?)
+        """, (student_id, notification_msg, 'Cancellation'))
+
+        # Commit all changes to the database safely
+        conn.commit()
+        flash("Registration cancelled successfully.")
+
+    except sqlite3.OperationalError as e:
+        print(f"Database Error encountered: {e}")
+        conn.rollback() 
+        return "The database is currently busy. Please try again in a few seconds."
+        
+    finally:
+        conn.close()
+
+    # Clean redirect back to the main user profile dashboard page view
     return redirect(url_for("dashboard"))
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
@@ -900,25 +927,24 @@ def notifications():
     """, (username,))
     user = cursor.fetchone()
     
-    # =========================================
-    # CREATE EVENT REMINDERS
-    # =========================================
-    create_event_reminders(user["student_id"])
-
     if not user:
         conn.close()
         return "User not found"
 
+    # Preserving your original structure system function logic framework layer
+    create_event_reminders(user["student_id"])
+
+    # 5. Fetch all user notifications sorted chronologically, including the fresh cancellation text row log entry
     cursor.execute("""
         SELECT * FROM notifications
         WHERE student_id = ?
         ORDER BY created_at DESC
     """, (user["student_id"],))
 
-    notifications = cursor.fetchall()
+    notifications_list = cursor.fetchall()
     conn.close()
 
-    return render_template("notifications.html", notifications=notifications)
+    return render_template("notifications.html", notifications=notifications_list)
 
 @app.route('/change_email', methods=['POST'])
 def change_email():

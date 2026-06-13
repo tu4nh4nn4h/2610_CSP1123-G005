@@ -114,7 +114,13 @@
             margin-bottom: 10px;
         }
 
-        /* Main event circles */
+        .circles {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* Main event circles (Standard size for Joined Events) */
         .circle {
             width: 70px;
             height: 70px;
@@ -122,6 +128,7 @@
             border-radius: 50%;
             cursor: pointer;
             transition: transform 0.2s ease;
+            flex-shrink: 0;
         }
 
         /* Smaller circles for Registered Events */
@@ -245,7 +252,6 @@
         .navbar-links a:hover::after {
             width: 100%;
         }
-
 
         /* ==========================================================================
            MODAL SYSTEM STYLES (Aesthetic Purple & Soft Lavender Tint Theme)
@@ -437,120 +443,116 @@
             .modal-right-lavender { padding: 30px; }
             .options-card { flex-direction: column; gap: 15px; padding: 30px; }
         }
+
         /* ==========================================================================
-   EVENT DETAILS MODAL (3RD MODAL)
-   ========================================================================== */
-/* ==========================================================================
-   EVENT DETAILS MODAL (3RD MODAL)
-   ========================================================================== */
+           EVENT DETAILS MODAL (3RD MODAL)
+           ========================================================================== */
+        .details-modal-card {
+            width: 580px;
+            max-width: 90%;
+            background: #f4eef8;
+            border-radius: 28px;
+            padding: 24px;
+            position: relative;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+            animation: popupFade 0.25s ease;
+        }
 
-.details-modal-card {
-    width: 580px;
-    max-width: 90%;
-    background: #f4eef8;
-    border-radius: 28px;
-    padding: 24px;
-    position: relative;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-    animation: popupFade 0.25s ease;
-}
+        /* Smooth popup animation */
+        @keyframes popupFade {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
-/* Smooth popup animation */
-@keyframes popupFade {
-    from {
-        opacity: 0;
-        transform: scale(0.92);
-    }
+        .details-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
+        /* Event image */
+        .details-image {
+            width: 100%;
+            height: 210px;
+            background: #d3d3d3;
+            border-radius: 22px;
+            overflow: hidden;
+            margin-bottom: 22px;
+        }
 
-.details-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+        .details-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-/* Event image */
-.details-image {
-    width: 100%;
-    height: 210px;
-    background: #d3d3d3;
-    border-radius: 22px;
-    overflow: hidden;
-    margin-bottom: 22px;
-}
+        /* Event title */
+        .details-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #3f1b57;
+            margin-bottom: 18px;
+            text-align: center;
+        }
 
-.details-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        /* Event details text */
+        .details-info {
+            width: 100%;
+            font-size: 0.98rem;
+            color: #333;
+            line-height: 1.8;
+            padding: 0 8px;
+        }
 
-/* Event title */
-.details-title {
-    font-size: 1.7rem;
-    font-weight: 700;
-    color: #3f1b57;
-    margin-bottom: 18px;
-    text-align: center;
-}
+        .details-info p {
+            margin-bottom: 10px;
+        }
 
-/* Event details text */
-.details-info {
-    width: 100%;
-    font-size: 0.98rem;
-    color: #333;
-    line-height: 1.8;
-    padding: 0 8px;
-}
+        .details-info strong {
+            color: #6d2e9c;
+        }
 
-.details-info p {
-    margin-bottom: 10px;
-}
+        /* Button */
+        .details-back-btn {
+            margin-top: 20px;
+            background: #b37cd4;
+            color: white;
+            border: none;
+            border-radius: 18px;
+            padding: 12px 30px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s ease;
+            text-transform: uppercase;
+        }
 
-.details-info strong {
-    color: #6d2e9c;
-}
+        .details-back-btn:hover {
+            background: #9c5ec2;
+            transform: translateY(-2px);
+        }
 
-/* Button */
-.details-back-btn {
-    margin-top: 20px;
-    background: #b37cd4;
-    color: white;
-    border: none;
-    border-radius: 18px;
-    padding: 12px 30px;
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s ease;
-    text-transform: uppercase;
-}
+        /* Close button */
+        .close-details-btn {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7b2cbf;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
 
-.details-back-btn:hover {
-    background: #9c5ec2;
-    transform: translateY(-2px);
-}
-
-/* Close button */
-.close-details-btn {
-    position: absolute;
-    top: 14px;
-    right: 18px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #7b2cbf;
-    font-weight: 700;
-    transition: 0.2s ease;
-}
-
-.close-details-btn:hover {
-    transform: scale(1.1);
-}
+        .close-details-btn:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -568,10 +570,8 @@
         <h1 class="title">User Dashboard</h1>
 
         <div class="grid">
-            <a href="{{ url_for('user_profile') }}" class =" card profile-card clickable-card">
-                <!-- <div class="card profile-card"> -->
-                <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}"
-                class="dashboard-profile-picture">
+            <a href="{{ url_for('user_profile') }}" class="card profile-card clickable-card">
+                <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="dashboard-profile-picture">
                 <div class="profile-content">
                     <p><b>Name :</b> {{ user['name'] }}</p>
                     <p><b>Username :</b> {{ user['username'] }}</p>
@@ -593,55 +593,58 @@
             </div>
 
             <div class="card event-card">
-                <!-- ROW 1: REGISTERED EVENTS (Smaller clickable circles) -->
-               <!-- ROW 1: REGISTERED EVENTS -->
-<div class="event-row">
-    <p class="event-label">Registered Events :</p>
-<div class="circle circle-small" onclick="triggerActionMenu(1)"></div>
-    <div class="circles">
-
-        {% if events %}
-
-            {% for e in events %}
-    <div 
-        class="circle circle-small"
-
-       onclick='triggerActionMenu(
-    `{{ e["event_id"] }}`,
-    `{{ e["event_name"] }}`,
-    `{{ e["event_description"] }}`,
-    `{{ e["event_date"] }}`,
-    `{{ e["event_time"] }}`,
-    `{{ e["venue"] }}`,
-    `{{ e["event_image"] if e["event_image"] else "/static/default_event.jpg" }}`
-)'
-
-        title="{{ e['event_name'] }}">
-    </div>
-{% endfor %}
-
-        {% else %}
-
-            <!-- Fallback circles if no events from database -->
-            <div class="circle circle-small"></div>
-            <div class="circle circle-small"></div>
-            <div class="circle circle-small"></div>
-
-        {% endif %}
-
-    </div>
-</div>
-                
-                <!-- ROW 2: JOINED EVENTS (Standard template sizes) -->
                 <div class="event-row">
-                    <p class="event-label">Joined event :</p>
+                    <p class="event-label">Registered Events :</p>
                     <div class="circles">
-                        <div class="circle"></div>
-                        <div class="circle"></div>
-                        <div class="circle"></div>
-                        <div class="circle"></div>
+                        {% if events %}
+                            {% for e in events %}
+                                <div class="circle circle-small"
+                                     onclick='triggerActionMenu(
+                                         `{{ e["event_id"] }}`,
+                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
+                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
+                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
+                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
+                                         `{{ e["main_location"] }} ({{ e["event_mode"] }})`,
+                                         `{{ url_for("static", filename="uploads/" + e["event_poster"]) if e["event_poster"] else "" }}`
+                                     )'
+                                     title="{{ e['event_name'] }}">
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="circle circle-small"></div>
+                            <div class="circle circle-small"></div>
+                            <div class="circle circle-small"></div>
+                        {% endif %}
                     </div>
                 </div>
+                
+                <div class="event-row">
+                    <p class="event-label">Joined Events :</p>
+                    <div class="circles">
+                        {% if joined_events %}
+                            {% for e in joined_events %}
+                                <div class="circle"
+                                     onclick='triggerActionMenu(
+                                         `{{ e["event_id"] }}`,
+                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
+                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
+                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
+                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
+                                         `{{ e["main_location"] }} ({{ e["event_mode"] }})`,
+                                         `{{ url_for("static", filename="uploads/" + e["event_poster"]) if e["event_poster"] else "" }}`
+                                     )'
+                                     title="{{ e['event_name'] }}">
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;" title="No events joined"></div>
+                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
+                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <div class="scroll-bar">
                     <div class="scroll-fill"></div>
                 </div>
@@ -653,12 +656,6 @@
         </div>
     </div>
 
-
-    <!-- ==========================================================================
-       MODAL SYSTEM MARKUP
-       ========================================================================== -->
-
-    <!-- FIRST INTERACTION MODAL (From: pop up registered events.jpg) -->
     <div id="optionsModal" class="modal-backdrop">
         <div class="options-card">
             <button id="goToCancelFlowBtn" class="btn-modal-option btn-gray">Cancel Registration</button>
@@ -666,20 +663,17 @@
         </div>
     </div>
 
-    <!-- SECOND CONFIRMATION MODAL (From: modal cancel reg (not a page).png) -->
     <div id="cancelConfirmationModal" class="modal-backdrop">
         <div class="modal-card">
             <span class="close-btn" id="closeCancelModalBtn">&times;</span>
             <div class="modal-header-title">Registration cancellation</div>
             
             <div class="modal-body-wrapper">
-                <!-- Left Content Segment -->
                 <div class="modal-left-purple">
                     <h2>We regret to see you leave</h2>
                     <p>Your registration will be cancelled. Rest assured, you can still view and explore upcoming events on your dashboard.</p>
                 </div>
                 
-                <!-- Right Content Segment -->
                 <div class="modal-right-lavender">
                     <div>
                         <h3>Please note that:</h3>
@@ -694,249 +688,99 @@
         </div>
     </div>
 
-    <!-- THIRD MODAL : EVENT DETAILS -->
-<div id="eventDetailsModal" class="modal-backdrop">
+    <div id="eventDetailsModal" class="modal-backdrop">
+        <div class="details-modal-card">
+            <span class="close-details-btn" id="closeDetailsModalBtn">&times;</span>
+            <div class="details-content">
+                <div class="details-image">
+                    <img id="detailsEventImage" src="https://via.placeholder.com/900x400" alt="Event Image">
+                </div>
 
-    <div class="details-modal-card">
+                <h2 class="details-title" id="detailsEventTitle">Event Title</h2>
 
-        <span class="close-details-btn" id="closeDetailsModalBtn">&times;</span>
+                <div class="details-info">
+                    <p><strong>Event description :</strong> <span id="detailsEventDescription">Event description here.</span></p>
+                    <p><strong>Date :</strong> <span id="detailsEventDate">10 June 2026</span></p>
+                    <p><strong>Time :</strong> <span id="detailsEventTime">8:00 PM</span></p>
+                    <p><strong>Venue :</strong> <span id="detailsEventVenue">Main Hall</span></p>
+                </div>
 
-        <div class="details-content">
-
-            <!-- EVENT IMAGE -->
-            <div class="details-image">
-                <img id="detailsEventImage"
-                     src="https://via.placeholder.com/900x400"
-                     alt="Event Image">
+                <button class="details-back-btn" id="backToDashboardBtn">Back To Dashboard</button>
             </div>
-
-            <!-- EVENT TITLE -->
-            <h2 class="details-title" id="detailsEventTitle">
-                Event Title
-            </h2>
-
-            <!-- EVENT DETAILS -->
-            <div class="details-info">
-
-                <p>
-                    <strong>Event description :</strong>
-                    <span id="detailsEventDescription">
-                        Event description here.
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Date :</strong>
-                    <span id="detailsEventDate">
-                        10 June 2026
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Time :</strong>
-                    <span id="detailsEventTime">
-                        8:00 PM
-                    </span>
-                </p>
-
-                <p>
-                    <strong>Venue :</strong>
-                    <span id="detailsEventVenue">
-                        Main Hall
-                    </span>
-                </p>
-
-            </div>
-
-            <button class="details-back-btn" id="backToDashboardBtn">
-                Back To Dashboard
-            </button>
-
         </div>
     </div>
-</div>
 
+    <form id="hiddenCancelForm" method="POST" action="" style="display: none;"></form>
 
-    <!-- ==========================================================================
-       MODAL FLOW JAVASCRIPT CONTROLLER
-       ========================================================================== -->
-   <script>
+    <script>
+        let selectedEventId = null;
+        let selectedEventData = { title: "", description: "", date: "", time: "", venue: "", image: "" };
 
-    // =========================================================
-    // STORED EVENT DATA
-    // =========================================================
+        const optionsModal = document.getElementById('optionsModal');
+        const cancelConfirmationModal = document.getElementById('cancelConfirmationModal');
+        const eventDetailsModal = document.getElementById('eventDetailsModal');
 
-    let selectedEventId = null;
+        const goToCancelFlowBtn = document.getElementById('goToCancelFlowBtn');
+        const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+        const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
+        const finalDeleteSubmitBtn = document.getElementById('finalDeleteSubmitBtn');
+        const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
+        const backToDashboardBtn = document.getElementById('backToDashboardBtn');
 
-    let selectedEventData = {
-        title: "",
-        description: "",
-        date: "",
-        time: "",
-        venue: "",
-        image: ""
-    };
-
-    // =========================================================
-    // MODAL ELEMENTS
-    // =========================================================
-
-    const optionsModal = document.getElementById('optionsModal');
-    const cancelConfirmationModal = document.getElementById('cancelConfirmationModal');
-    const eventDetailsModal = document.getElementById('eventDetailsModal');
-
-    const goToCancelFlowBtn = document.getElementById('goToCancelFlowBtn');
-    const viewDetailsBtn = document.getElementById('viewDetailsBtn');
-
-    const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
-    const finalDeleteSubmitBtn = document.getElementById('finalDeleteSubmitBtn');
-
-    const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
-    const backToDashboardBtn = document.getElementById('backToDashboardBtn');
-
-    // =========================================================
-    // OPEN ACTION MENU
-    // =========================================================
-
-    function triggerActionMenu(
-        eventId,
-        title = "",
-        description = "",
-        date = "",
-        time = "",
-        venue = "",
-        image = ""
-    ) {
-
-        selectedEventId = eventId;
-
-        selectedEventData = {
-            title,
-            description,
-            date,
-            time,
-            venue,
-            image
-        };
-
-        optionsModal.classList.add('show');
-    }
-
-    // =========================================================
-    // CANCEL REGISTRATION FLOW
-    // =========================================================
-
-    goToCancelFlowBtn.addEventListener('click', () => {
-
-        optionsModal.classList.remove('show');
-
-        cancelConfirmationModal.classList.add('show');
-
-    });
-
-    // =========================================================
-    // VIEW EVENT DETAILS FLOW
-    // =========================================================
-
-    viewDetailsBtn.addEventListener('click', () => {
-
-        optionsModal.classList.remove('show');
-
-        // Insert dynamic data into modal
-        document.getElementById('detailsEventTitle').innerText =
-            selectedEventData.title;
-
-        document.getElementById('detailsEventDescription').innerText =
-            selectedEventData.description;
-
-        document.getElementById('detailsEventDate').innerText =
-            selectedEventData.date;
-
-        document.getElementById('detailsEventTime').innerText =
-            selectedEventData.time;
-
-        document.getElementById('detailsEventVenue').innerText =
-            selectedEventData.venue;
-
-        document.getElementById('detailsEventImage').src =
-            selectedEventData.image;
-
-        eventDetailsModal.classList.add('show');
-
-    });
-
-    // =========================================================
-    // CLOSE CANCEL MODAL
-    // =========================================================
-
-    closeCancelModalBtn.addEventListener('click', () => {
-
-        cancelConfirmationModal.classList.remove('show');
-
-        selectedEventId = null;
-
-    });
-
-    // =========================================================
-    // CLOSE DETAILS MODAL
-    // =========================================================
-
-    closeDetailsModalBtn.addEventListener('click', () => {
-
-        eventDetailsModal.classList.remove('show');
-
-    });
-
-    // =========================================================
-    // BACK TO DASHBOARD BUTTON
-    // =========================================================
-
-    backToDashboardBtn.addEventListener('click', () => {
-
-        eventDetailsModal.classList.remove('show');
-
-    });
-
-    // =========================================================
-    // FINAL CANCEL CONFIRMATION
-    // =========================================================
-
-    finalDeleteSubmitBtn.addEventListener('click', () => {
-
-        if (selectedEventId) {
-
-            window.location.href =
-                `/cancel_event/${selectedEventId}`;
+        function triggerActionMenu(eventId, eventName, description, dateRange, timeRange, locationDetails, eventImage) {
+            selectedEventId = eventId; 
+            selectedEventData.title = eventName;
+            selectedEventData.description = description;
+            selectedEventData.date = dateRange;
+            selectedEventData.time = timeRange;
+            selectedEventData.venue = locationDetails;
+            selectedEventData.image = eventImage ? eventImage : "https://via.placeholder.com/900x400";
+            
+            optionsModal.classList.add('show');
         }
 
-    });
-
-    // =========================================================
-    // CLICK OUTSIDE TO CLOSE
-    // =========================================================
-
-    window.addEventListener('click', (event) => {
-
-        if (event.target === optionsModal) {
-
+        goToCancelFlowBtn.addEventListener('click', () => {
             optionsModal.classList.remove('show');
+            cancelConfirmationModal.classList.add('show');
+        });
 
-        }
+        viewDetailsBtn.addEventListener('click', () => {
+            optionsModal.classList.remove('show');
+            document.getElementById('detailsEventTitle').innerText = selectedEventData.title;
+            document.getElementById('detailsEventDescription').innerText = selectedEventData.description;
+            document.getElementById('detailsEventDate').innerText = selectedEventData.date;
+            document.getElementById('detailsEventTime').innerText = selectedEventData.time;
+            document.getElementById('detailsEventVenue').innerText = selectedEventData.venue;
+            document.getElementById('detailsEventImage').src = selectedEventData.image;
+            eventDetailsModal.classList.add('show');
+        });
 
-        if (event.target === cancelConfirmationModal) {
-
+        closeCancelModalBtn.addEventListener('click', () => {
             cancelConfirmationModal.classList.remove('show');
+            selectedEventId = null;
+        });
 
-        }
-
-        if (event.target === eventDetailsModal) {
-
+        closeDetailsModalBtn.addEventListener('click', () => {
             eventDetailsModal.classList.remove('show');
+        });
 
-        }
+        backToDashboardBtn.addEventListener('click', () => {
+            eventDetailsModal.classList.remove('show');
+        });
 
-    });
+        finalDeleteSubmitBtn.addEventListener('click', () => {
+            if (selectedEventId) {
+                const form = document.getElementById('hiddenCancelForm');
+                form.action = `/cancel_registration/${selectedEventId}`;
+                form.submit();
+            }
+        });
 
-</script>
+        window.addEventListener('click', (event) => {
+            if (event.target === optionsModal) optionsModal.classList.remove('show');
+            if (event.target === cancelConfirmationModal) cancelConfirmationModal.classList.remove('show');
+            if (event.target === eventDetailsModal) eventDetailsModal.classList.remove('show');
+        });
+    </script>
 </body>
 </html>
