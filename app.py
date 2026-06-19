@@ -30,9 +30,6 @@ app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
-print("EMAIL_ADDRESS:", EMAIL_ADDRESS)
-print("EMAIL_PASSWORD exists:", EMAIL_PASSWORD is not None)
-
 def send_verification_email(to_email, token):
     verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
 
@@ -312,6 +309,10 @@ def register():
         confirm_password = request.form.get('confirmPassword')
         keyword = request.form.get('keyword')
         security_question = request.form.get('security_question')
+
+        print("REQUEST FORM:", request.form)
+        print("PASSWORD:", repr(request.form.get('Password')))
+        print("CONFIRM:", repr(request.form.get('confirmPassword')))
 
         if password != confirm_password:
             return "Passwords do not match"
