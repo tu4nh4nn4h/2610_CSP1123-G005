@@ -61,7 +61,7 @@ def send_email_change_verification(to_email, token):
     msg['To'] = to_email
 
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 587, timeout=20)
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.send_message(msg)
 
