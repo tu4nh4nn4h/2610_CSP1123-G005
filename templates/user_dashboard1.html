@@ -1,118 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>User Dashboard - UniSphere</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>User Dashboard - UniSphere</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
 
-        body {
-            /* Gradient background matching the image */
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            padding-top: 60px; /* prevent content from hiding behind navbar */
-        }
+            body {
+                /* Gradient background matching the image */
+                background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+                padding-top: 60px; /* prevent content from hiding behind navbar */
+            }
 
-        .dashboard {
-            width: 95%;
-            max-width: 1400px;
-            padding: 40px;
-            border-radius: 25px;
-            /* Semi-transparent overlay to let the background peak through slightly */
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-        }
+            .dashboard {
+                width: 95%;
+                max-width: 1400px;
+                padding: 40px;
+                border-radius: 25px;
+                /* Semi-transparent overlay to let the background peak through slightly */
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                color: white;
+            }
 
-        .welcome {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
+            .dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
-        .title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
+            .welcome {
+                font-size: 1.2rem;
+                margin-bottom: 5px;
+            }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Two equal columns */
-            gap: 25px;
-        }
+            .title {
+                font-size: 3.5rem;
+                font-weight: 700;
+                margin-bottom: 30px;
+                text-transform: uppercase;
+            }
 
-        .card {
-            background: rgba(176, 106, 214, 0.4);
-            border-radius: 40px;
-            padding: 30px;
-            min-height: 280px;
-        }
+            .myEvent-btn-container {
+                margin-bottom: 30px; /* same as title margin */
+                margin-right: 50px;
+            }
 
-        /* Profile Card Styles */
-        .profile-card {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
+            #myEvent-btn {
+                background-color: #bb00ff;
+                color: white;
+                font-size: 1rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                transition: background-color 0.2s, transform 0.1s;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 10px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
 
-        .dashboard-profile-picture {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            flex-shrink: 0;
-        }
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Two equal columns */
+                gap: 25px;
+            }
 
-        .profile-content p {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
+            .card {
+                background: rgba(176, 106, 214, 0.4);
+                border-radius: 40px;
+                padding: 30px;
+                min-height: 280px;
+            }
 
-        /* Calendar Card Styles */
-        .calendar-card {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            /* Profile Card Styles */
+            .profile-card {
+                display: flex;
+                align-items: center;
+                gap: 30px;
+            }
 
-        .date-info .day { font-size: 1.2rem; }
-        .date-info .date { font-size: 3rem; font-weight: 700; }
+            .dashboard-profile-picture {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 4px solid white;
+                flex-shrink: 0;
+            }
 
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            width: 200px;
-            height: 120px;
-        }
+            .profile-content p {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
 
-        .calendar-grid div {
-            border: 1px solid rgba(255, 255, 255, 0.5);
-        }
+            /* Calendar Card Styles */
+            .calendar-card {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
-        /* Events Card Styles */
-        .event-row {
-            margin-bottom: 20px;
-        }
+            .date-info .day { font-size: 1.2rem; }
+            .date-info .date { font-size: 3rem; font-weight: 700; }
 
-        .event-label {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
+            .calendar-grid {
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                width: 200px;
+                height: 120px;
+            }
+
+            .calendar-grid div {
+                border: 1px solid rgba(255, 255, 255, 0.5);
+            }
+
+            /* Events Card Styles */
+            .event-row {
+                margin-bottom: 20px;
+            }
+
+            .event-label {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+            }
 
         .circles {
             display: flex;
@@ -131,310 +156,310 @@
             flex-shrink: 0;
         }
 
-        /* Smaller circles for Registered Events */
-        .circle-small {
-            width: 45px;
-            height: 45px;
-            background: #7a1fa2;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
+            /* Smaller circles for Registered Events */
+            .circle-small {
+                width: 45px;
+                height: 45px;
+                background: #7a1fa2;
+                border-radius: 50%;
+                flex-shrink: 0;
+            }
 
-        .circle:hover,
-        .circle-small:hover {
-            transform: scale(1.08);
-        }
+            .circle:hover,
+            .circle-small:hover {
+                transform: scale(1.08);
+            }
 
-        .scroll-bar {
-            width: 100%;
-            height: 12px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+            .scroll-bar {
+                width: 100%;
+                height: 12px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+                margin-top: 20px;
+            }
 
-        .scroll-fill {
-            width: 40%;
-            height: 100%;
-            background: #e0f2f1;
-            border-radius: 10px;
-        }
+            .scroll-fill {
+                width: 40%;
+                height: 100%;
+                background: #e0f2f1;
+                border-radius: 10px;
+            }
 
-        /* Inbox Card Styles */
-        .inbox-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
+            /* Inbox Card Styles */
+            .inbox-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
 
-        .clickable-card {
-            text-decoration: none; /* Removes underline */
-            color: inherit;        /* Keeps text white/original color */
-            display: flex;         /* Maintains your original layout */
-            cursor: pointer;
-            transition: transform 0.2s ease, background 0.3s ease;
-        }
+            .clickable-card {
+                text-decoration: none; /* Removes underline */
+                color: inherit;        /* Keeps text white/original color */
+                display: flex;         /* Maintains your original layout */
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.3s ease;
+            }
 
-        .clickable-card:hover {
-            transform: translateY(-5px); /* Lift effect on hover */
-            background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
-        }
+            .clickable-card:hover {
+                transform: translateY(-5px); /* Lift effect on hover */
+                background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
+            }
 
-        .clickable-card:active {
-            transform: translateY(0); /* "Press" effect when clicked */
-        }
+            .clickable-card:active {
+                transform: translateY(0); /* "Press" effect when clicked */
+            }
 
-        /* Responsive Fix */
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
-            .title { font-size: 2.5rem; }
-        }
+            /* Responsive Fix */
+            @media (max-width: 900px) {
+                .grid { grid-template-columns: 1fr; }
+                .title { font-size: 2.5rem; }
+            }
 
-        /* Fixed Global Navigation Navbar Layer */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 1000;
-        }
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3f1b57;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        /* Core application navigation action links */
-        .navbar-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
+            }
 
-        .navbar-links a {
-            color: #5c3576;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            position: relative;
-            padding: 4px 0;
-        }
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
+            }
 
-        .navbar-links a:hover {
-            color: #7b2cbf;
-        }
+            .navbar-links a:hover {
+                color: #7b2cbf;
+            }
 
-        /* Underline slider effect matching system application pages */
-        .navbar-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #7b2cbf;
-            transition: width 0.2s ease;
-        }
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
 
         .navbar-links a:hover::after {
             width: 100%;
         }
 
-        /* ==========================================================================
-           MODAL SYSTEM STYLES (Aesthetic Purple & Soft Lavender Tint Theme)
-           ========================================================================== */
-        
-        /* Global Modal Backdrop Mask Overlay */
-        .modal-backdrop {
-            display: none; 
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4); 
-            z-index: 2000; 
-            justify-content: center;
-            align-items: center;
-        }
+            /* ==========================================================================
+            MODAL SYSTEM STYLES (Aesthetic Purple & Soft Lavender Tint Theme)
+            ========================================================================== */
+            
+            /* Global Modal Backdrop Mask Overlay */
+            .modal-backdrop {
+                display: none; 
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.4); 
+                z-index: 2000; 
+                justify-content: center;
+                align-items: center;
+            }
 
-        .modal-backdrop.show {
-            display: flex;
-        }
+            .modal-backdrop.show {
+                display: flex;
+            }
 
-        /* --- 1st Modal: Options Customization --- */
-        .options-card {
-            background-color: #fdf2ff; /* Soft pastel pinkish-white background */
-            padding: 35px 50px;
-            border-radius: 30px;
-            display: flex;
-            gap: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
+            /* --- 1st Modal: Options Customization --- */
+            .options-card {
+                background-color: #fdf2ff; /* Soft pastel pinkish-white background */
+                padding: 35px 50px;
+                border-radius: 30px;
+                display: flex;
+                gap: 25px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
 
-        .btn-modal-option {
-            border: none;
-            padding: 16px 32px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: transform 0.1s ease, filter 0.2s ease;
-            text-transform: uppercase;
-        }
+            .btn-modal-option {
+                border: none;
+                padding: 16px 32px;
+                font-size: 1rem;
+                font-weight: 600;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: transform 0.1s ease, filter 0.2s ease;
+                text-transform: uppercase;
+            }
 
-        .btn-modal-option:hover {
-            filter: brightness(0.95);
-        }
+            .btn-modal-option:hover {
+                filter: brightness(0.95);
+            }
 
-        .btn-modal-option:active {
-            transform: scale(0.98);
-        }
+            .btn-modal-option:active {
+                transform: scale(0.98);
+            }
 
-        .btn-gray {
-            background-color: #cccccc; /* Neutral muted gray */
-            color: #ffffff;
-        }
+            .btn-gray {
+                background-color: #cccccc; /* Neutral muted gray */
+                color: #ffffff;
+            }
 
-        .btn-purple {
-            background-color: #b37cd4; /* Vibrant lavender purple accent */
-            color: #ffffff;
-        }
+            .btn-purple {
+                background-color: #b37cd4; /* Vibrant lavender purple accent */
+                color: #ffffff;
+            }
 
-        /* --- 2nd Modal: Detailed Confirmation Customization --- */
-        .modal-card {
-            width: 900px;
-            max-width: 95%;
-            background: #fdf2ff; /* Outer layout container frame color */
-            border-radius: 30px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-        }
+            /* --- 2nd Modal: Detailed Confirmation Customization --- */
+            .modal-card {
+                width: 900px;
+                max-width: 95%;
+                background: #fdf2ff; /* Outer layout container frame color */
+                border-radius: 30px;
+                overflow: hidden;
+                position: relative;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+                display: flex;
+                flex-direction: column;
+            }
 
-        /* Close window corner controller */
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 25px;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: #7b2cbf;
-            font-weight: 700;
-            z-index: 10;
-        }
+            /* Close window corner controller */
+            .close-btn {
+                position: absolute;
+                top: 15px;
+                right: 25px;
+                font-size: 1.8rem;
+                cursor: pointer;
+                color: #7b2cbf;
+                font-weight: 700;
+                z-index: 10;
+            }
 
-        .modal-header-title {
-            padding: 20px 35px 10px 35px;
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: #7b2cbf;
-            background: #fdf2ff;
-        }
+            .modal-header-title {
+                padding: 20px 35px 10px 35px;
+                font-size: 1.2rem;
+                font-weight: 500;
+                color: #7b2cbf;
+                background: #fdf2ff;
+            }
 
-        .modal-body-wrapper {
-            display: flex;
-            flex: 1;
-        }
+            .modal-body-wrapper {
+                display: flex;
+                flex: 1;
+            }
 
-        /* Left Side Panel Layout */
-        .modal-left-purple {
-            background-color: #b37cd4; /* Bold Purple core panel */
-            flex: 1.1;
-            padding: 50px 40px;
-            border-radius: 0 40px 40px 0; /* Distinct outward reverse rounding */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+            /* Left Side Panel Layout */
+            .modal-left-purple {
+                background-color: #b37cd4; /* Bold Purple core panel */
+                flex: 1.1;
+                padding: 50px 40px;
+                border-radius: 0 40px 40px 0; /* Distinct outward reverse rounding */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
 
-        .modal-left-purple h2 {
-            font-size: 2.8rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
+            .modal-left-purple h2 {
+                font-size: 2.8rem;
+                font-weight: 700;
+                line-height: 1.2;
+                margin-bottom: 20px;
+                color: #ffffff;
+            }
 
-        .modal-left-purple p {
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #ffffff;
-            opacity: 0.95;
-        }
+            .modal-left-purple p {
+                font-size: 1rem;
+                line-height: 1.5;
+                color: #ffffff;
+                opacity: 0.95;
+            }
 
-        /* Right Side Content Layout */
-        .modal-right-lavender {
-            background-color: #fdf2ff; /* Matching base tone */
-            flex: 1;
-            padding: 50px 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: #4a148c; /* Uniform contrasting tone */
-        }
+            /* Right Side Content Layout */
+            .modal-right-lavender {
+                background-color: #fdf2ff; /* Matching base tone */
+                flex: 1;
+                padding: 50px 40px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                color: #4a148c; /* Uniform contrasting tone */
+            }
 
-        .modal-right-lavender h3 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 15px;
-        }
+            .modal-right-lavender h3 {
+                font-size: 1.1rem;
+                font-weight: 500;
+                margin-bottom: 15px;
+            }
 
-        .modal-right-lavender ul {
-            list-style: none;
-            margin-bottom: 30px;
-        }
+            .modal-right-lavender ul {
+                list-style: none;
+                margin-bottom: 30px;
+            }
 
-        .modal-right-lavender ul li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
+            .modal-right-lavender ul li {
+                position: relative;
+                padding-left: 20px;
+                margin-bottom: 15px;
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
 
-        /* Custom Bullet Points */
-        .modal-right-lavender ul li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: #7b2cbf;
-            font-size: 1.2rem;
-            top: -2px;
-        }
+            /* Custom Bullet Points */
+            .modal-right-lavender ul li::before {
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: #7b2cbf;
+                font-size: 1.2rem;
+                top: -2px;
+            }
 
-        .confirm-btn {
-            background-color: #b37cd4;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 25px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            align-self: center;
-            text-transform: uppercase;
-            transition: background-color 0.2s;
-        }
+            .confirm-btn {
+                background-color: #b37cd4;
+                color: white;
+                border: none;
+                padding: 14px 28px;
+                border-radius: 25px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                align-self: center;
+                text-transform: uppercase;
+                transition: background-color 0.2s;
+            }
 
-        .confirm-btn:hover {
-            background-color: #9c5ec2;
-        }
+            .confirm-btn:hover {
+                background-color: #9c5ec2;
+            }
 
         /* Responsive handle for nested split content viewports */
         @media (max-width: 768px) {
@@ -579,18 +604,18 @@
                 </div>
             </a>
 
-            <div class="card calendar-card">
-                <div class="date-info">
-                    <p class="day">DAY</p>
-                    <p class="date">DATE</p>
+                <div class="card calendar-card">
+                    <div class="date-info">
+                        <p class="day">DAY</p>
+                        <p class="date">DATE</p>
+                    </div>
+                    <div class="calendar-grid">
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                        <div></div><div></div><div></div><div></div><div></div><div></div>
+                    </div>
                 </div>
-                <div class="calendar-grid">
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                    <div></div><div></div><div></div><div></div><div></div><div></div>
-                </div>
-            </div>
 
             <div class="card event-card">
                 <div class="event-row">
@@ -650,11 +675,11 @@
                 </div>
             </div>
 
-            <a href="{{ url_for('notifications') }}" class="card inbox-card clickable-card">
-                <h2 class="inbox-title">Inbox 🔔</h2>
-            </a>
+                <a href="{{ url_for('notifications') }}" class="card inbox-card clickable-card">
+                    <h2 class="inbox-title">Inbox 🔔</h2>
+                </a>
+            </div>
         </div>
-    </div>
 
     <div id="optionsModal" class="modal-backdrop">
         <div class="options-card">
