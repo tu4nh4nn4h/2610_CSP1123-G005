@@ -43,8 +43,12 @@ def send_verification_email(to_email, token):
 
     try: 
 
-        server = smtplib.SMTP('smtp-relay.brevo.com', 587, timeout=20)  # Use your email provider's SMTP server and port
+        server = smtplib.SMTP('smtp-relay.brevo.com', 587)  # Use your email provider's SMTP server and port
+
+        server.ehlo()
         server.starttls()
+        server.ehlo()
+        
         server.login(BREVO_ADDRESS, BREVO_PASSWORD)
         server.send_message(msg)
 
@@ -67,8 +71,12 @@ def send_email_change_verification(to_email, token):
     msg['To'] = to_email
 
     try:
-        server = smtplib.SMTP('smtp-relay.brevo.com', 587, timeout=20)
+        server = smtplib.SMTP('smtp-relay.brevo.com', 587)
+
+        server.ehlo()
         server.starttls()
+        server.ehlo()
+
         server.login(BREVO_ADDRESS, BREVO_PASSWORD)
         server.send_message(msg)
 
