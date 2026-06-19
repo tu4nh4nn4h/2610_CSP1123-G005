@@ -48,7 +48,7 @@ def send_verification_email(to_email, token):
         server.ehlo()
         server.starttls()
         server.ehlo()
-        
+
         server.login(BREVO_ADDRESS, BREVO_PASSWORD)
         server.send_message(msg)
 
@@ -324,6 +324,10 @@ def register():
         confirm_password = request.form.get('confirmPassword')
         keyword = request.form.get('keyword')
         security_question = request.form.get('security_question')
+
+        print("REQUEST FORM:", request.form)
+        print("PASSWORD TYPE:", type(password))
+        print("PASSWORD VALUE:", repr(password))
 
         if password != confirm_password:
             return "Passwords do not match"
