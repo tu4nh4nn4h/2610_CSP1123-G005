@@ -31,7 +31,7 @@ EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 def send_verification_email(to_email, token):
-    verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
+    verify_url = f"http://unisphere-e8ut.onrender.com/verify_email/{token}"
 
     msg = MIMEText(f"Please click the link to verify your email:\n{verify_url}")
     msg['Subject'] = 'Email Verification'
@@ -41,17 +41,16 @@ def send_verification_email(to_email, token):
     try: 
 
         server = smtplib.SMTP_SSL('smtp.gmail.com', 587, timeout=20)  # Use your email provider's SMTP server and port
-        server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.send_message(msg)
     except Exception as e:
         print(f"Error sending email: {e}")
     finally:
-        if server:
+        if server is not None:
             server.quit()
 
 def send_email_change_verification(to_email, token):
-    verify_url = f"http://127.0.0.1:5000/verify_new_email/{token}"
+    verify_url = f"http://unisphere-e8ut.onrender.com/verify_new_email/{token}"
 
     msg = MIMEText(
         f"Click the link below to verify your new email:\n\n{verify_url}"
