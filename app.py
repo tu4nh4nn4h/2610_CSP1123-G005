@@ -217,14 +217,15 @@ def signin():
               
             if check_password_hash(stored_password, password):
                 if is_verified == 0:
-                    return "Please verify your email before logging in."
+                    flash("Please verify your email before logging in.")
+                    return redirect(url_for('signin'))
                 
                 session['user'] = username  # Assuming the first column is user ID
                 return redirect(url_for('eventbrowsing'))
             else:
-                return "Invalid username or password"
+                flash("Invalid username or password")
         else:
-            return "Invalid username or password"
+            flash("Invalid username or password")
         
         
      

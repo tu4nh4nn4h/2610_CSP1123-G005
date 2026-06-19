@@ -215,6 +215,14 @@
                 color: #b37cd4;
             }
 
+            .error {
+                background: #ffebee;
+                color: #c62828;
+                padding: 12px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
+
         </style>
      </head>
      <body>
@@ -238,6 +246,13 @@
                             <i class="fa-solid fa-eye toggle-password" onclick="togglePassword('password', this)"></i>
                         </div>
                     </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% for category, message in messages %}
+                            <div class="{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endwith %}
                     <input type="submit" value="Log In">
                 </form>
                 <div class="links-container">
