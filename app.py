@@ -27,8 +27,8 @@ EVENT_POSTER_FOLDER = 'static/eventPoster'
 ALLOWED_POSTER_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
 
-EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
-EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+BREVO_ADDRESS = os.environ.get('BREVO_ADDRESS')
+BREVO_PASSWORD = os.environ.get('BREVO_PASSWORD')
 
 def send_verification_email(to_email, token):
 
@@ -37,15 +37,15 @@ def send_verification_email(to_email, token):
     verify_url = f"http://unisphere-e8ut.onrender.com/verify_email/{token}"
 
     msg = MIMEText(f"Please click the link to verify your email:\n{verify_url}")
-    msg['Subject'] = 'Email Verification'
-    msg['From'] = EMAIL_ADDRESS
+    msg['Subject'] = 'UniSphere - New Account Email Verification'
+    msg['From'] = BREVO_ADDRESS
     msg['To'] = to_email
 
     try: 
 
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=20)  # Use your email provider's SMTP server and port
+        server = smtplib.SMTP('smtp-relay.brevo.com', 587, timeout=20)  # Use your email provider's SMTP server and port
         server.starttls()
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.login(BREVO_ADDRESS, BREVO_PASSWORD)
         server.send_message(msg)
 
     except Exception as e:
@@ -62,14 +62,14 @@ def send_email_change_verification(to_email, token):
         f"Click the link below to verify your new email:\n\n{verify_url}"
     )
 
-    msg['Subject'] = 'Verify New Email Address'
-    msg['From'] = EMAIL_ADDRESS
+    msg['Subject'] = 'UniSphere - Verify New Email Address'
+    msg['From'] = BREVO_ADDRESS
     msg['To'] = to_email
 
     try:
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=20)
+        server = smtplib.SMTP('smtp-relay.brevo.com', 587, timeout=20)
         server.starttls()
-        server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        server.login(BREVO_ADDRESS, BREVO_PASSWORD)
         server.send_message(msg)
 
     except Exception as e:
