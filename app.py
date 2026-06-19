@@ -13,6 +13,8 @@ from functools import wraps
 import pandas as pd
 from flask import send_file
 import io
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
