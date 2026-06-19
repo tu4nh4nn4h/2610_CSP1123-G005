@@ -13,8 +13,8 @@ from functools import wraps
 import pandas as pd
 from flask import send_file
 import io
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
@@ -29,6 +29,10 @@ app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
 
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
+
+print("EMAIL_ADDRESS:", EMAIL_ADDRESS)
+print("EMAIL_PASSWORD exists:", EMAIL_PASSWORD is not None)
+
 def send_verification_email(to_email, token):
     verify_url = f"http://127.0.0.1:5000/verify_email/{token}"
 
