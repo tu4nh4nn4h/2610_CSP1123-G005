@@ -310,10 +310,6 @@ def register():
         keyword = request.form.get('keyword')
         security_question = request.form.get('security_question')
 
-        print("REQUEST FORM:", request.form)
-        print("PASSWORD:", repr(request.form.get('Password')))
-        print("CONFIRM:", repr(request.form.get('confirmPassword')))
-
         if password != confirm_password:
             return "Passwords do not match"
 
