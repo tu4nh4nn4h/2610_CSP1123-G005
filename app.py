@@ -40,7 +40,8 @@ def send_verification_email(to_email, token):
 
     try: 
 
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)  # Use your email provider's SMTP server and port
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 587, timeout=20)  # Use your email provider's SMTP server and port
+        server.starttls()
         server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         server.send_message(msg)
     except Exception as e:
