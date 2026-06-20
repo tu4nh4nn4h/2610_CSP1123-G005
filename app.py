@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
-import smtplib
-from email.mime.text import MIMEText
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
 import os
 import uuid
 from werkzeug.utils import secure_filename
@@ -19,6 +19,7 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = "your_secret_key"
 s = URLSafeTimedSerializer("your-secret-key")
+
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -27,64 +28,78 @@ EVENT_POSTER_FOLDER = 'static/eventPoster'
 ALLOWED_POSTER_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
 
-BREVO_ADDRESS = os.environ.get('BREVO_ADDRESS')
-BREVO_PASSWORD = os.environ.get('BREVO_PASSWORD')
+# EMAIL CONFIGURATION #
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY') # FROM .ENV FILE #
+BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL') # FROM .ENV FILE #
+
+configuration = sib_api_v3_sdk.Configuration()
+configuration.api_key['api-key'] = BREVO_API_KEY
 
 def send_verification_email(to_email, token):
 
-    server = None
+    verify_url = f"https://unisphere-e8ut.onrender.com/verify_email/{token}"
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    sender = {"name": "UniSphere", "email": BREVO_SENDER_EMAIL}
 
-    verify_url = f"http://unisphere-e8ut.onrender.com/verify_email/{token}"
+    html_content_new_account = f"""
+    <h2>Welcome to UniSphere</h2>
+    <p>Please verify your email address by clicking the button below:</p>
+    <a href="{verify_url}">Verify Email</a>
+    """
 
-    msg = MIMEText(f"Please click the link to verify your email:\n{verify_url}")
-    msg['Subject'] = 'UniSphere - New Account Email Verification'
-    msg['From'] = BREVO_ADDRESS
-    msg['To'] = to_email
-
-    try: 
-
-        server = smtplib.SMTP('smtp-relay.brevo.com', 587)  # Use your email provider's SMTP server and port
-
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-
-        server.login(BREVO_ADDRESS, BREVO_PASSWORD)
-        server.send_message(msg)
-
-    except Exception as e:
-        print(f"Error sending email: {e}")
-
-    finally:
-        if server is not None:
-            server.quit()
-
-def send_email_change_verification(to_email, token):
-    verify_url = f"http://unisphere-e8ut.onrender.com/verify_new_email/{token}"
-
-    msg = MIMEText(
-        f"Click the link below to verify your new email:\n\n{verify_url}"
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender=sender,
+        subject="UniSphere - Email Verification",
+        html_content=html_content_new_account
     )
 
-    msg['Subject'] = 'UniSphere - Verify New Email Address'
-    msg['From'] = BREVO_ADDRESS
-    msg['To'] = to_email
+    try:
+        api_instance.send_transac_email(send_smtp_email)
+        print("Verification email sent successfully")
+
+    except ApiException as e:
+        print("Brevo Error:", e)
+
+
+def send_email_change_verification(to_email, token):
+
+    verify_url = f"https://unisphere-e8ut.onrender.com/verify_new_email/{token}"
+    api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+    sender = {"name": "UniSphere", "email": BREVO_SENDER_EMAIL}
+
+    html_content_new_email = f"""
+    <h2>Verify Your New Email Address</h2>
+    <p>You requested to change your email address for your UniSphere account.</p>
+    <p>Please click the button below to verify your new email address:</p>
+
+    <a href="{verify_url}"
+       style="
+       background-color:#2563eb;
+       color:white;
+       padding:10px 20px;
+       text-decoration:none;
+       border-radius:5px;
+       display:inline-block;">
+       Verify New Email
+    </a>
+
+    <p>If you did not request this change, please ignore this email.</p>
+    """
+
+    send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+        to=[{"email": to_email}],
+        sender=sender,
+        subject="UniSphere - Verify New Email Address",
+        html_content=html_content_new_email
+    )
 
     try:
-        server = smtplib.SMTP('smtp-relay.brevo.com', 587)
+        api_instance.send_transac_email(send_smtp_email)
+        print("New email verification sent successfully")
 
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-
-        server.login(BREVO_ADDRESS, BREVO_PASSWORD)
-        server.send_message(msg)
-
-    except Exception as e:
-        print(f"Error sending email: {e}")
-
-    finally:
-        server.quit()
+    except ApiException as e:
+        print("Brevo Error:", e)
 
 def get_db_connection():
     conn = sqlite3.connect('database.db')
@@ -338,7 +353,6 @@ def register():
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
-
             send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
@@ -489,8 +503,6 @@ def form():
     
     if username:
         conn = get_db_connection()
-        # Row factory handles dictionary key lookups seamlessly
-        conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
         try:
@@ -516,7 +528,6 @@ def register_event():
         return jsonify({"status": "error", "message": "No JSON data received"}), 400
         
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     try:
