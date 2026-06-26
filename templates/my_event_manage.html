@@ -114,26 +114,22 @@
                 display:flex;
                 gap:30px;
                 align-items:center;
-
                 background:rgba(255,255,255,0.12);
-
                 border-radius:20px;
                 padding:25px;
-
                 margin-bottom:30px;
             }
 
             .event-poster{
                 width:220px;
                 height:220px;
-
                 object-fit:cover;
-
                 border-radius:15px;
             }
 
             .event-info{
                 flex:1;
+                color:#3f1b57;
             }
 
             .event-info h2{
@@ -184,9 +180,8 @@
 
             .stat-card{
                 background:rgba(255,255,255,0.12);
-
+                color:#3f1b57;
                 border-radius:15px;
-
                 padding:25px;
                 text-align:center;
             }
@@ -197,7 +192,7 @@
 
             .participants-section{
                 background:rgba(255,255,255,0.12);
-
+                color:#3f1b57;
                 border-radius:20px;
                 padding:25px;
             }
@@ -261,6 +256,7 @@
                 border: none;
                 padding: 10px 18px;
                 border-radius: 8px;
+                cursor: pointer;
             }
 
             .delete-cancel {
@@ -269,6 +265,7 @@
                 border: none;
                 padding: 10px 18px;
                 border-radius: 8px;
+                cursor: pointer;
             }
 
         </style>
@@ -276,11 +273,24 @@
 
     <body>
         <nav class="navbar">
-            <a class="navbar-brand" href="/dashboard">UniSphere</a>
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
             <div class="navbar-links">
-                <a href="/eventbrowsing">Browse Events</a>
-                <a href="/createevent">Create Event</a>
-                <a href="/user_dashboard1">Profile</a>
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
             </div>
         </nav>
 

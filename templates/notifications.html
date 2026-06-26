@@ -218,18 +218,31 @@
 <body>
 
     <nav class="navbar">
-        <a class="navbar-brand" href="/dashboard">UniSphere</a>
+        <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
         <div class="navbar-links">
-            <a href="/eventbrowsing">Browse Events</a>
-            <a href="/createevent">Create Event</a>
-            <a href="/user_dashboard1">Profile</a>
+            {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
         </div>
     </nav>
 
     <div class="container">
         
         <div class="title-wrapper">
-            <a href="/user_dashboard1" class="inline-back-arrow" title="Return to user dashboard">
+            <a href="/user_dashboard" class="inline-back-arrow" title="Return to user dashboard">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>

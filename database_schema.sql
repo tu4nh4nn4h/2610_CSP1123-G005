@@ -24,11 +24,14 @@ CREATE TABLE IF NOT EXISTS user_details (
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
+
+
 -- 3. Organizer Details
 CREATE TABLE IF NOT EXISTS organizer_details (
     student_id VARCHAR(10) PRIMARY KEY,
     club_body TEXT NOT NULL,
     position_title TEXT NOT NULL,
+    approved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
@@ -51,25 +54,11 @@ CREATE TABLE IF NOT EXISTS events (
     limited_max_participants INTEGER,    -- optional, only for limited participation
     event_link TEXT,
     student_id varchar(10) NOT NULL,
+    event_status TEXT DEFAULT 'Pending' CHECK(event_status IN ('Pending', 'Approved', 'Rejected')),
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );
 
--- 5. Event Tags (No change needed here)
-CREATE TABLE IF NOT EXISTS event_tags (
-    tag_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tag_name TEXT UNIQUE NOT NULL
-);
-
--- 6. Event Tag Mapping (No change needed here)
-CREATE TABLE IF NOT EXISTS event_tag_map (
-    event_id INTEGER NOT NULL,
-    tag_id INTEGER NOT NULL,
-    FOREIGN KEY (event_id) REFERENCES events(event_id),
-    FOREIGN KEY (tag_id) REFERENCES event_tags(tag_id),
-    PRIMARY KEY(event_id, tag_id)
-);
-
--- 7. Event Registrations
+-- 5. Event Registrations
 CREATE TABLE IF NOT EXISTS event_registrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     event_id INTEGER NOT NULL,
@@ -82,7 +71,7 @@ CREATE TABLE IF NOT EXISTS event_registrations (
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
-
+-- 6. Notifications triggered by user action
 CREATE TABLE IF NOT EXISTS notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     student_id varchar(10) NOT NULL,
@@ -90,6 +79,18 @@ CREATE TABLE IF NOT EXISTS notifications (
     type TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (student_id) REFERENCES users_general(student_id)
+);
+
+-- 7. Organizer applications
+CREATE TABLE IF NOT EXISTS organizer_applications (
+    application_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id VARCHAR(10) NOT NULL,
+    club_body TEXT NOT NULL,
+    position_title TEXT NOT NULL,
+    proof_document TEXT NOT NULL,
+    application_status TEXT NOT NULL DEFAULT 'Pending' CHECK(application_status IN ('Pending', 'Approved', 'Rejected')),
+    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
@@ -102,3 +103,4 @@ SELECT * FROM event_tags;
 SELECT * FROM event_tag_map;
 SELECT * FROM event_registrations;
 SELECT * FROM notifications;
+SELECT * FROM organizer_applications;

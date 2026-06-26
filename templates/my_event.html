@@ -208,7 +208,7 @@
                 display: flex;
                 flex-direction: column;
                 gap: 8px;
-
+                color:#3f1b57;
                 font-size: 1rem;
             }
 
@@ -263,11 +263,24 @@
     <body>
 
         <nav class="navbar">
-            <a class="navbar-brand" href="/dashboard">UniSphere</a>
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
             <div class="navbar-links">
-                <a href="/eventbrowsing">Browse Events</a>
-                <a href="/createevent">Create Event</a>
-                <a href="/user_dashboard1">Profile</a>
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
             </div>
         </nav>
 
@@ -289,6 +302,10 @@
                                 {% if event['general_location'] %}
 
                                     <p>📍{{ event['general_location'] }}</p>
+
+                                {% elif event['clc_hall'] %}
+
+                                    <p>📍{{event['main_location']}}, {{ event['faculty_wing'] }} - {{ event['specific_location'] }}</p>
 
                                 {% else %}
 

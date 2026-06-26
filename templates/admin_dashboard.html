@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Admin Dashboard - UniSphere</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
+
+            body {
+                /* Gradient background matching the image */
+                background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+                padding-top: 60px; /* prevent content from hiding behind navbar */
+            }
+
+            .admin_dashboard {
+                width: 95%;
+                max-width: 1400px;
+                padding: 40px;
+                border-radius: 25px;
+
+                background: rgba(255,255,255,0.15);
+                backdrop-filter: blur(10px);
+
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                color: #351649;
+            }
+
+            .admin_dashboard-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .title{
+                font-size:4rem;
+                font-weight:700;
+                text-transform:uppercase;
+                margin-bottom:5px;
+                color:#3f1b57;
+            }
+
+            .subtitle{
+                font-size:1.2rem;
+                opacity:0.9;
+                margin-bottom:40px;
+                color:#3f1b57;
+            }
+
+            .grid{
+                width:100%;
+                max-width:1200px;
+                display:grid;
+                grid-template-columns:1fr 1fr;
+                gap:25px;
+            }
+
+            .card{
+                background: rgba(176,106,214,0.35);
+                border-radius:25px;
+                padding:25px 30px;
+                transition:all 0.3s ease;
+                min-height:220px;
+            }
+
+            .card:hover{
+                transform:translateY(-6px);
+                background:rgba(176,106,214,0.5);
+                box-shadow:0 12px 30px rgba(0,0,0,0.15);
+            }
+
+            /* Profile Card Styles */
+            .profile-card {
+                display: flex;
+                align-items: center;
+                gap: 30px;
+            }
+
+            .admin_dashboard-profile-picture {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 4px solid white;
+                flex-shrink: 0;
+            }
+
+            .card h2, .profile-content p {
+                color:#3f1b57;
+            }
+
+            .profile-content p {
+                font-size: 1.1rem;
+                margin-bottom: 5px;
+            }
+
+            .scroll-bar {
+                width: 100%;
+                height: 12px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+                margin-top: 20px;
+            }
+
+            .scroll-fill {
+                width: 40%;
+                height: 100%;
+                background: #e0f2f1;
+                border-radius: 10px;
+            }
+
+            .clickable-card {
+                text-decoration: none; /* Removes underline */
+                color: inherit;        /* Keeps text white/original color */
+                display: flex;         /* Maintains your original layout */
+                cursor: pointer;
+                transition: transform 0.2s ease, background 0.3s ease;
+            }
+
+            .clickable-card:hover {
+                transform: translateY(-5px); /* Lift effect on hover */
+                background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
+            }
+
+            .clickable-card:active {
+                transform: translateY(0); /* "Press" effect when clicked */
+            }
+
+            /* Responsive Fix */
+            @media (max-width: 900px) {
+                .grid { grid-template-columns: 1fr; }
+                .title { font-size: 2.5rem; }
+            }
+
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
+            }
+
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
+            }
+
+            .navbar-links a:hover {
+                color: #7b2cbf;
+            }
+
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
+
+        .navbar-links a:hover::after {
+            width: 100%;
+        }
+
+            /* ==========================================================================
+            MODAL SYSTEM STYLES (Aesthetic Purple & Soft Lavender Tint Theme)
+            ========================================================================== */
+            
+            /* Global Modal Backdrop Mask Overlay */
+            .modal-backdrop {
+                display: none; 
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.4); 
+                z-index: 2000; 
+                justify-content: center;
+                align-items: center;
+            }
+
+            .modal-backdrop.show {
+                display: flex;
+            }
+
+            /* --- 1st Modal: Options Customization --- */
+            .options-card {
+                background-color: #fdf2ff; /* Soft pastel pinkish-white background */
+                padding: 35px 50px;
+                border-radius: 30px;
+                display: flex;
+                gap: 25px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            }
+
+            .btn-modal-option {
+                border: none;
+                padding: 16px 32px;
+                font-size: 1rem;
+                font-weight: 600;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: transform 0.1s ease, filter 0.2s ease;
+                text-transform: uppercase;
+            }
+
+            .btn-modal-option:hover {
+                filter: brightness(0.95);
+            }
+
+            .btn-modal-option:active {
+                transform: scale(0.98);
+            }
+
+            .btn-gray {
+                background-color: #cccccc; /* Neutral muted gray */
+                color: #ffffff;
+            }
+
+            .btn-purple {
+                background-color: #b37cd4; /* Vibrant lavender purple accent */
+                color: #ffffff;
+            }
+
+            /* --- 2nd Modal: Detailed Confirmation Customization --- */
+            .modal-card {
+                width: 900px;
+                max-width: 95%;
+                background: #fdf2ff; /* Outer layout container frame color */
+                border-radius: 30px;
+                overflow: hidden;
+                position: relative;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Close window corner controller */
+            .close-btn {
+                position: absolute;
+                top: 15px;
+                right: 25px;
+                font-size: 1.8rem;
+                cursor: pointer;
+                color: #7b2cbf;
+                font-weight: 700;
+                z-index: 10;
+            }
+
+            .modal-header-title {
+                padding: 20px 35px 10px 35px;
+                font-size: 1.2rem;
+                font-weight: 500;
+                color: #7b2cbf;
+                background: #fdf2ff;
+            }
+
+            .modal-body-wrapper {
+                display: flex;
+                flex: 1;
+            }
+
+            /* Left Side Panel Layout */
+            .modal-left-purple {
+                background-color: #b37cd4; /* Bold Purple core panel */
+                flex: 1.1;
+                padding: 50px 40px;
+                border-radius: 0 40px 40px 0; /* Distinct outward reverse rounding */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            .modal-left-purple h2 {
+                font-size: 2.8rem;
+                font-weight: 700;
+                line-height: 1.2;
+                margin-bottom: 20px;
+                color: #ffffff;
+            }
+
+            .modal-left-purple p {
+                font-size: 1rem;
+                line-height: 1.5;
+                color: #ffffff;
+                opacity: 0.95;
+            }
+
+            /* Right Side Content Layout */
+            .modal-right-lavender {
+                background-color: #fdf2ff; /* Matching base tone */
+                flex: 1;
+                padding: 50px 40px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                color: #4a148c; /* Uniform contrasting tone */
+            }
+
+            .modal-right-lavender h3 {
+                font-size: 1.1rem;
+                font-weight: 500;
+                margin-bottom: 15px;
+            }
+
+            .modal-right-lavender ul {
+                list-style: none;
+                margin-bottom: 30px;
+            }
+
+            .modal-right-lavender ul li {
+                position: relative;
+                padding-left: 20px;
+                margin-bottom: 15px;
+                font-size: 0.95rem;
+                line-height: 1.4;
+            }
+
+            /* Custom Bullet Points */
+            .modal-right-lavender ul li::before {
+                content: "•";
+                position: absolute;
+                left: 0;
+                color: #7b2cbf;
+                font-size: 1.2rem;
+                top: -2px;
+            }
+
+            .confirm-btn {
+                background-color: #b37cd4;
+                color: white;
+                border: none;
+                padding: 14px 28px;
+                border-radius: 25px;
+                font-size: 0.95rem;
+                font-weight: 600;
+                cursor: pointer;
+                align-self: center;
+                text-transform: uppercase;
+                transition: background-color 0.2s;
+            }
+
+            .confirm-btn:hover {
+                background-color: #9c5ec2;
+            }
+
+            /* Responsive handle for nested split content viewports */
+            @media (max-width: 768px) {
+                .modal-body-wrapper { flex-direction: column; }
+                .modal-left-purple { border-radius: 0 0 30px 30px; padding: 30px; }
+                .modal-right-lavender { padding: 30px; }
+                .options-card { flex-direction: column; gap: 15px; padding: 30px; }
+            }
+
+            /* ==========================================================================
+            EVENT DETAILS MODAL (3RD MODAL)
+            ========================================================================== */
+            .details-modal-card {
+                width: 580px;
+                max-width: 90%;
+                background: #f4eef8;
+                border-radius: 28px;
+                padding: 24px;
+                position: relative;
+                box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+                animation: popupFade 0.25s ease;
+            }
+
+            /* Smooth popup animation */
+            @keyframes popupFade {
+                from {
+                    opacity: 0;
+                    transform: scale(0.92);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            .details-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* Event image */
+            .details-image {
+                width: 100%;
+                height: 210px;
+                background: #d3d3d3;
+                border-radius: 22px;
+                overflow: hidden;
+                margin-bottom: 22px;
+            }
+
+            .details-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            /* Event title */
+            .details-title {
+                font-size: 1.7rem;
+                font-weight: 700;
+                color: #3f1b57;
+                margin-bottom: 18px;
+                text-align: center;
+            }
+
+            /* Event details text */
+            .details-info {
+                width: 100%;
+                font-size: 0.98rem;
+                color: #333;
+                line-height: 1.8;
+                padding: 0 8px;
+            }
+
+            .details-info p {
+                margin-bottom: 10px;
+            }
+
+            .details-info strong {
+                color: #6d2e9c;
+            }
+
+            /* Button */
+            .details-back-btn {
+                margin-top: 20px;
+                background: #b37cd4;
+                color: white;
+                border: none;
+                border-radius: 18px;
+                padding: 12px 30px;
+                font-size: 0.95rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: 0.2s ease;
+                text-transform: uppercase;
+            }
+
+            .details-back-btn:hover {
+                background: #9c5ec2;
+                transform: translateY(-2px);
+            }
+
+            /* Close button */
+            .close-details-btn {
+                position: absolute;
+                top: 14px;
+                right: 18px;
+                font-size: 1.5rem;
+                cursor: pointer;
+                color: #7b2cbf;
+                font-weight: 700;
+                transition: 0.2s ease;
+            }
+
+            .close-details-btn:hover {
+                transform: scale(1.1);
+            }
+
+            .big-number{
+                font-size:70px;
+                font-weight:700;
+                margin-top:20px;
+                color:#1d0131;
+            }
+
+            .request-item{
+                background:rgba(255,255,255,0.12);
+                padding:15px;
+                border-radius:15px;
+                margin-top:12px;
+                cursor:pointer;
+                transition:0.2s;
+                color:#3f1b57;
+            }
+
+            .request-item:hover{
+                background:rgba(255,255,255,0.22);
+                transform:translateY(-2px);
+            }
+
+            .action-buttons{
+                display:flex;
+                gap:15px;
+                justify-content:center;
+            }
+
+            .approve-btn{
+                background:#22c55e;
+                color:white;
+                border:none;
+                padding:14px 24px;
+                border-radius:25px;
+                font-size:0.95rem;
+                font-weight:600;
+                cursor:pointer;
+                transition:0.2s;
+            }
+
+            .approve-btn:hover{
+                background:#16a34a;
+            }
+
+            .reject-btn{
+                background:#ef4444;
+                color:white;
+                border:none;
+                padding:14px 24px;
+                border-radius:25px;
+                font-size:0.95rem;
+                font-weight:600;
+                cursor:pointer;
+                transition:0.2s;
+            }
+
+            .reject-btn:hover{
+                background:#dc2626;
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="admin_dashboard">
+            <h1 class="title">Admin Dashboard</h1>
+            <p class="subtitle">Event & Organizer Approval Management</p>
+
+            <div class="grid">
+
+                <!-- Pending Organizer -->
+                <div class="card">
+                    <h2>Pending Organizer Applications</h2>
+                    <div class="big-number">{{ organizer_applications|length }}</div>
+                </div>
+
+                <!-- Pending Events -->
+                <div class="card">
+                    <h2>Pending Event Approvals</h2>
+                    <div class="big-number">{{ pending_events|length }}</div>
+                </div>
+
+                <!-- Organizer Queue -->
+                <div class="card">
+                    <h2>Organizer Queue</h2>
+                    {% for application in organizer_applications %}
+                    <div class="request-item"
+                        onclick="openOrganizerModal(
+                        '{{ application.application_id }}',
+                        '{{ application.student_id }}',
+                        '{{ application.name }}',
+                        '{{ application.username }}',
+                        '{{ application.email }}',
+                        '{{ application.club_body }}',
+                        '{{ application.position_title }}',
+                        '{{ application.proof_document }}'
+                        )">
+                        {{ application.name }} - {{ application.club_body }}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Event Queue -->
+                <div class="card">
+                    <h2>Event Queue</h2>
+                    {% for event in pending_events %}
+                    <div class="request-item"
+                    onclick="openEventModal(
+                    '{{event.event_id}}',
+                    '{{event.event_name}}',
+                    '{{event.event_description}}',
+                    '{{event.start_date}}',
+                    '{{event.end_date}}',
+                    '{{event.start_time}}',
+                    '{{event.end_time}}',
+                    '{{event.event_mode}}',
+                    '{{event.main_location}}',
+                    '{{event.participation_option}}',
+                    '{{event.limited_max_participants}}'
+                    )">{{event.event_name}}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+
+        <div id="organizerModal" class="modal-backdrop">
+
+            <div class="modal-card">
+                <span class="close-btn" onclick="closeOrganizerModal()">&times;</span>
+
+                <div class="modal-header-title">Organizer Application Review</div>
+
+                <div class="modal-body-wrapper">
+
+                    <div class="modal-left-purple">
+                        <h2>Organizer Application</h2>
+
+                        <p>
+                            Review the submitted club information and
+                            supporting document before approving
+                            organizer privileges.
+                        </p>
+                    </div>
+
+                    <div class="modal-right-lavender">
+                        <div>
+                            <h3>Application Details</h3>
+                            <ul>
+                                <li>
+                                    <strong>Student ID:</strong>
+                                    <span id="orgStudentId"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Name:</strong>
+                                    <span id="orgName"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Username:</strong>
+                                    <span id="orgUsername"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Email:</strong>
+                                    <span id="orgEmail"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Club Body:</strong>
+                                    <span id="orgClub"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Position:</strong>
+                                    <span id="orgPosition"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Supporting Document:</strong>
+                                    <a id="orgFileLink" target="_blank">
+                                        View Submitted File
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="approve-btn" onclick="approveOrganizer()">
+                                Approve
+                            </button>
+
+                            <button class="reject-btn" onclick="rejectOrganizer()">
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="eventModal" class="modal-backdrop">
+
+            <div class="modal-card">
+                <span class="close-btn" onclick="closeEventModal()">&times;</span>
+
+                <div class="modal-header-title">
+                    Event Approval Review
+                </div>
+
+                <div class="modal-body-wrapper">
+
+                    <div class="modal-left-purple">
+                        <h2>Event Review</h2>
+                        <p>
+                            Verify event information before publishing
+                            the event to the UniSphere platform.
+                        </p>
+                    </div>
+
+                    <div class="modal-right-lavender">
+                        <div>
+                            <h3>Event Details</h3>
+                            <ul>
+                                <li>
+                                    <strong>Event Name:</strong>
+                                    <span id="eventName"></span>
+                                </li>
+                                <li>
+                                    <strong>Description:</strong>
+                                    <span id="eventDescription"></span>
+                                </li>
+                                <li>
+                                    <strong>Date:</strong>
+                                    <span id="eventDate"></span>
+                                </li>
+                                <li>
+                                    <strong>Venue:</strong>
+                                    <span id="eventVenue"></span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="action-buttons">
+
+                            <button class="approve-btn" onclick="approveEvent()">
+                                Approve
+                            </button>
+
+                            <button class="reject-btn" onclick="rejectEvent()">
+                                Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="approveOrganizerForm" method="POST" style="display:none;"></form>
+        <form id="rejectOrganizerForm" method="POST" style="display:none;"></form>
+        <form id="approveEventForm" method="POST" style="display:none;"></form>
+        <form id="rejectEventForm" method="POST" style="display:none;"></form>
+
+        <script>
+
+            let selectedOrganizerId = null;
+            let selectedEventId = null;
+
+            /* ORGANIZER */
+
+            function openOrganizerModal(
+                applicationId,
+                studentId,
+                OrgName,
+                username,
+                email,
+                clubBody,
+                position,
+                file
+            ){
+
+                selectedOrganizerId = applicationId;
+                document.getElementById("orgStudentId").textContent = studentId;
+                document.getElementById("orgName").textContent = OrgName;
+                document.getElementById("orgUsername").textContent = username;
+                document.getElementById("orgEmail").textContent = email;
+                document.getElementById("orgClub").textContent = clubBody;
+                document.getElementById("orgPosition").textContent = position;
+                document.getElementById("orgFileLink").href = "/uploads/" + file;
+
+                document.getElementById("organizerModal")
+                    .classList.add("show");
+            }
+
+            function closeOrganizerModal(){
+                document.getElementById("organizerModal")
+                    .classList.remove("show");
+            }
+
+            function approveOrganizer(){
+                const form = document.getElementById("approveOrganizerForm");
+                form.action = `/approve_organizer/${selectedOrganizerId}`;
+                form.submit();
+            }
+
+            function rejectOrganizer(){
+                const form = document.getElementById("rejectOrganizerForm");
+                form.action = `/reject_organizer/${selectedOrganizerId}`;
+                form.submit();
+            }
+
+            /* EVENT */
+
+            function openEventModal(
+                eventId,
+                eventName,
+                description,
+                date,
+                venue
+            ){
+
+                selectedEventId = eventId;
+                document.getElementById("eventName").textContent = eventName;
+                document.getElementById("eventDescription").textContent = description;
+                document.getElementById("eventDate").textContent = date;
+                document.getElementById("eventVenue").textContent = venue;
+                document.getElementById("eventModal")
+                    .classList.add("show");
+            }
+
+            function closeEventModal(){
+                document.getElementById("eventModal")
+                    .classList.remove("show");
+            }
+
+            function approveEvent(){
+                const form = document.getElementById("approveEventForm");
+                form.action = `/approve_event/${selectedEventId}`;
+                form.submit();
+            }
+
+            function rejectEvent(){
+                const form = document.getElementById("rejectEventForm");
+                form.action = `/reject_event/${selectedEventId}`;
+                form.submit();
+            }
+        </script>
+    </body>
+</html>

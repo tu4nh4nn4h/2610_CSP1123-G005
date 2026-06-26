@@ -25,8 +25,12 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 EVENT_POSTER_FOLDER = 'static/eventPoster'
-ALLOWED_POSTER_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['EVENT_POSTER_FOLDER'] = EVENT_POSTER_FOLDER
+
+SUPPORTING_DOCS_FOLDER = 'static/supportingDocs'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+app.config['SUPPORTING_DOCS_FOLDER'] = SUPPORTING_DOCS_FOLDER
 
 # EMAIL CONFIGURATION #
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY') # FROM .ENV FILE #
@@ -34,6 +38,13 @@ BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL') # FROM .ENV FILE #
 
 configuration = sib_api_v3_sdk.Configuration()
 configuration.api_key['api-key'] = BREVO_API_KEY
+
+
+def get_db_connection():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = 1")
+    return conn
 
 def send_verification_email(to_email, token):
 
@@ -100,12 +111,6 @@ def send_email_change_verification(to_email, token):
 
     except ApiException as e:
         print("Brevo Error:", e)
-
-def get_db_connection():
-    conn = sqlite3.connect('database.db')
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = 1")
-    return conn
 
 # =========================================
 # EVENT REMINDER NOTIFICATION FUNCTION
@@ -202,10 +207,6 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def allowed_poster_file(filename):
-    return '.' in filename and \
-            filename.rsplit('.', 1)[1].lower() in ALLOWED_POSTER_EXTENSIONS
-
 def create_notification(student_id, message, type):
 
     conn = get_db_connection()
@@ -226,13 +227,115 @@ def setup_database():
 
     conn.commit()
     conn.close()
-    
+
+def create_default_admin():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    admins = [("0000000001", "Admin@UniSphere", "unisphere_admin", "admins.unisphere@gmail.com", "admin123", "CYBERJAYA", "city")]
+
+    for student_id, name, username, email, password, keyword, security_question in admins:
+        cursor.execute("SELECT * FROM users_general WHERE student_id = ?",(student_id,))
+
+        if cursor.fetchone() is None:
+
+            cursor.execute("""INSERT INTO users_general (student_id, name, username, email, password, keyword, security_question, role, is_verified) VALUES (?,?,?,?,?,?,?,?,?)""",
+            (student_id, name, username, email, generate_password_hash(password), keyword, security_question, "admin", 1))
+
+    conn.commit()
+    conn.close()
+
 @app.route('/')
 def home():
     setup_database()
+    create_default_admin() #auto generate admin credential everytime the project reset/redeploy
     return render_template('home.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if request.method == 'POST':
+        name = request.form.get('Name')
+        email = request.form.get('Email')
+        username = request.form.get('Username')
+        student_id = request.form.get('Student_id')
+        password = request.form.get('Password')
+        confirm_password = request.form.get('confirmPassword')
+        keyword = request.form.get('keyword')
+        security_question = request.form.get('security_question')
 
+        print("REQUEST FORM:", request.form)
+        print("PASSWORD TYPE:", type(password))
+        print("PASSWORD VALUE:", repr(password))
+
+        if password != confirm_password:
+            return "Passwords do not match"
+
+        try:
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'user', 0))
+            conn.commit()
+
+            token = s.dumps(email, salt='email-confirm')
+            send_verification_email(email, token)  # Implement this function to send the email
+
+        except sqlite3.IntegrityError:
+            return "Username or email already exists"
+
+        finally:
+            conn.close()
+
+        return redirect(url_for('signin'))
+    return render_template('register.html')
+
+@app.route('/register_organizer', methods=['GET', 'POST'])
+def register_organizer():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    if request.method == 'POST':
+        name = request.form.get('Name')
+        email = request.form.get('Email')
+        username = request.form.get('Username')
+        student_id = request.form.get('Student_id')
+        club_body = request.form.get('Club_body')
+        position_title = request.form.get('Position/title')
+        uploaded_file = request.files['proof_document']
+        password = request.form.get('Password')
+        confirm_password = request.form.get('confirmPassword')
+        keyword = request.form.get('keyword')
+        security_question = request.form.get('security_question')
+
+        filename = secure_filename(uploaded_file.filename)
+        uploaded_file.save(os.path.join(app.config['SUPPORTING_DOCS_FOLDER'], filename))
+
+        if password != confirm_password:
+            return "Passwords do not match"
+
+        try:
+            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'user', 0))
+            cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title, proof_document, application_status) VALUES (?, ?, ?, ?, ?)",
+                            (student_id, club_body, position_title, filename, 'Pending'))
+            conn.commit()
+
+            token = s.dumps(email, salt='email-confirm')
+
+            send_verification_email(email, token)  # Implement this function to send the email
+
+        except sqlite3.IntegrityError:
+            return "Username or email already exists"
+
+        finally:
+            conn.close()
+
+        return redirect(url_for('signin'))
+
+    return render_template('register_organizer.html')
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -240,32 +343,45 @@ def signin():
         username = request.form['username']
         password = request.form['password']
 
-
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users_general WHERE username = ?", (username,))
         user = cursor.fetchone()
         conn.close()
+
         if user:
-            stored_password = user[4]  # Assuming password is the 5th column
-            is_verified = user[7]  # Assuming is_verified is the 8th column
+            stored_password = user["password"]  # Assuming password is the 5th column
+            is_verified = user["is_verified"]  # Assuming is_verified is the 8th column
+            role = user["role"] # Assuming role is the 7th column
               
             if check_password_hash(stored_password, password):
                 if is_verified == 0:
                     flash("Please verify your email before logging in.")
                     return redirect(url_for('signin'))
-                
+
                 session['user'] = username  # Assuming the first column is user ID
-                return redirect(url_for('eventbrowsing'))
+                session['role'] = role
+                
+                return redirect(url_for('dashboard'))
             else:
                 flash("Invalid username or password")
         else:
             flash("Invalid username or password")
         
-        
-     
     return render_template('signin.html')
 
+@app.route('/verify_email/<token>')
+def verify_email(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=3600)  # Token expires in 1 hour
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
+        conn.commit()
+        conn.close()
+        return "Email verified successfully! You can now log in."
+    except:
+        return "The verification link is invalid or has expired."
 
 @app.route('/verify_keyword', methods=['POST'])
 def verify_keyword():
@@ -323,103 +439,6 @@ def reset_password():
 
     return render_template('ResetPassword.html')
 
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    if request.method == 'POST':
-        name = request.form.get('Name')
-        email = request.form.get('Email')
-        username = request.form.get('Username')
-        student_id = request.form.get('Student_id')
-        password = request.form.get('Password')
-        confirm_password = request.form.get('confirmPassword')
-        keyword = request.form.get('keyword')
-        security_question = request.form.get('security_question')
-
-        print("REQUEST FORM:", request.form)
-        print("PASSWORD TYPE:", type(password))
-        print("PASSWORD VALUE:", repr(password))
-
-        if password != confirm_password:
-            return "Passwords do not match"
-
-        try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'user', 0))
-            conn.commit()
-
-            token = s.dumps(email, salt='email-confirm')
-            send_verification_email(email, token)  # Implement this function to send the email
-
-        except sqlite3.IntegrityError:
-            return "Username or email already exists"
-
-        finally:
-            conn.close()
-
-        return redirect(url_for('signin'))
-
-    return render_template('register.html')
-
-@app.route('/verify_email/<token>')
-def verify_email(token):
-    try:
-        email = s.loads(token, salt='email-confirm', max_age=3600)  # Token expires in 1 hour
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
-        conn.commit()
-        conn.close()
-        return "Email verified successfully! You can now log in."
-    except:
-        return "The verification link is invalid or has expired."
-
-@app.route('/register_organizer', methods=['GET', 'POST'])
-def register_organizer():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    if request.method == 'POST':
-        name = request.form.get('Name')
-        email = request.form.get('Email')
-        username = request.form.get('Username')
-        student_id = request.form.get('Student_id')
-        club_body = request.form.get('Club_body')
-        position_title = request.form.get('Position/title')
-        password = request.form.get('Password')
-        confirm_password = request.form.get('confirmPassword')
-        keyword = request.form.get('keyword')
-        security_question = request.form.get('security_question')
-
-        if password != confirm_password:
-            return "Passwords do not match"
-
-        try:
-            cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                            (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'organizer', 0))
-            cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)",
-                            (student_id, club_body, position_title))
-            conn.commit()
-
-            token = s.dumps(email, salt='email-confirm')
-
-            send_verification_email(email, token)  # Implement this function to send the email
-
-        except sqlite3.IntegrityError:
-            return "Username or email already exists"
-
-        finally:
-            conn.close()
-
-        return redirect(url_for('signin'))
-
-    return render_template('register_organizer.html')
-
-
 @app.route('/change_password', methods=['POST'])
 def change_password():
     current = request.form['current_password']
@@ -464,7 +483,7 @@ def eventbrowsing():
     # Fetch all events from the real SQLite database
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT event_id, event_name, event_description, start_date, main_location FROM events")
+    cursor.execute("SELECT event_id, event_name, event_description, start_date, main_location FROM events WHERE event_status = 'Approved'")
     db_events = cursor.fetchall()
     conn.close()
     
@@ -480,7 +499,7 @@ def event_detail(event_id):
     # Fetch the specific event matching the ID from your database
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM events WHERE event_id = ?", (event_id,))
+    cursor.execute("SELECT * FROM events WHERE event_id = ? AND event_status = 'Approved'", (event_id,))
     event = cursor.fetchone()
     conn.close()
     
@@ -509,12 +528,11 @@ def form():
             # Fetch only guaranteed columns to avoid phone/faculty column mismatch crashes
             cursor.execute("""
                 SELECT student_id, name, email 
-                FROM users_general WHERE username = ?
-            """, (username,))
+                FROM users_general WHERE username = ?""", (username,))
             user_data = cursor.fetchone()
+
         except sqlite3.OperationalError:
-            # Fallback to empty form data if a database structure issue occurs
-            user_data = None
+            user_data = None # Fallback to empty form data if a database structure issue occurs
         finally:
             conn.close()
 
@@ -689,9 +707,11 @@ def create_event():
         try:
             cursor.execute("""
                 INSERT INTO events
-                (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, student_id)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, user['student_id']))
+                (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, 
+                general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, student_id, event_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, 
+                general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, user['student_id'], 'Pending'))
 
             conn.commit()
             return jsonify({"status": "create_event_success"})
@@ -741,14 +761,16 @@ def be_organizer():
         data=request.get_json()
         club_body = data.get('club_body')
         position_title = data.get('position_title')
+        uploaded_file = request.files['proof_document']
+
+        filename = secure_filename(uploaded_file.filename)
+
+        uploaded_file.save(os.path.join(app.config['SUPPORTING_DOCS_FOLDER'], filename))
 
         try:
             # Insert organizer details
-            cursor.execute(""" INSERT INTO organizer_details (student_id, club_body, position_title) VALUES (?, ?, ?)""", 
-                (user['student_id'], club_body,position_title))
-
-            # Update role
-            cursor.execute("""UPDATE users_general SET role = 'organizer' WHERE student_id = ?""", (user['student_id'],))
+            cursor.execute("""INSERT INTO organizer_applications (student_id, club_body, position_title, proof_document)
+            VALUES (?, ?, ?, ?)""", (user['student_id'], club_body, position_title, filename))
 
             conn.commit()
 
@@ -817,17 +839,24 @@ def export_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""SELECTname,student_id,email,phone_number,faculty FROM event_registrations WHERE event_id = ?""", (event_id,))
+    cursor.execute("SELECT event_name FROM events WHERE event_id=?",(event_id,))
+    event = cursor.fetchone()
 
-    participants = cursor.fetchall()
+    if not event:
+        return "Event not found", 404
+
+    event_name = event['event_name']
+
+    cursor.execute("SELECT name,student_id,email,phone_number,faculty FROM event_registrations WHERE event_id = ?", (event_id,))
+    participants = [dict(row) for row in cursor.fetchall()]
     conn.close()
 
-    df = pd.DataFrame(participants,columns=['Name','Student ID','Email','Phone Number','Faculty'])
+    df = pd.DataFrame(participants)
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='openpyxl') as writer: df.to_excel(writer, index=False, sheet_name='Participants Analysis')
     output.seek(0)
 
-    return send_file(output,as_attachment=True,download_name=f'event_{event_id}_participants.xlsx',mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return send_file(output, as_attachment=True, download_name=f'{event_name}_participants.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @app.route('/deleteevent/<int:event_id>', methods=['POST'])
 def delete_event(event_id):
@@ -848,17 +877,13 @@ def delete_event(event_id):
     cursor.execute("""SELECT student_id FROM event_registrations WHERE event_id = ?""", (event_id,))
     participants = cursor.fetchall()
 
-    # # Send notification
-    # for participant in participants:
-
-    #     cursor.execute("""INSERT INTO notifications (student_id, message, type) VALUES (?, ?, ?)""",
-    #     (participant['student_id'], f"The event '{event['event_name']}' has been cancelled by the organizer.",'event_cancelled'))
+    # Send notification
+    for participant in participants:
+        cursor.execute("""INSERT INTO notifications (student_id, message, type) VALUES (?, ?, ?)""",
+        (participant['student_id'], f"The event '{event['event_name']}' has been cancelled by the organizer.",'event_cancelled'))
 
     # Delete registrations first
-    cursor.execute("""DELETE FROM event_registrations WHERE event_id = ?""", (event_id,))
-
-    # # Delete tag mapping
-    # cursor.execute("""DELETE FROM event_tag_map WHERE event_id = ?""", (event_id,))
+    cursor.execute("""DELETE * FROM event_registrations WHERE event_id = ?""", (event_id,))
 
     # Delete event
     cursor.execute("""DELETE FROM events WHERE event_id = ?""", (event_id,))
@@ -868,7 +893,7 @@ def delete_event(event_id):
 
     return redirect(url_for('myevent'))
 
-@app.route('/user_dashboard1')
+@app.route('/user_dashboard')
 def dashboard():
     username = session.get('user')
     if not username:
@@ -904,7 +929,7 @@ def dashboard():
     conn.close()
 
     # 3. Pass both 'user' object and 'events' list to the HTML template layout dashboard
-    return render_template('user_dashboard1.html', user=user, events=events)
+    return render_template('user_dashboard.html', user=user, events=events)
 
 
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
@@ -1166,6 +1191,7 @@ def verify_new_email(token):
     except Exception:
         return "Verification link is invalid or expired."
     
+
 @app.route('/mark_notification_read/<int:notification_id>')
 def mark_notification_read(notification_id):
 
@@ -1183,6 +1209,69 @@ def mark_notification_read(notification_id):
 
     return redirect(url_for('notifications'))
 
+
+@app.route('/admin_dashboard')
+def admin_dashboard():
+
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('signin'))
+    
+    if session.get('role') != 'admin':
+        flash("Access denied.")
+        return redirect(url_for('user_dashboard'))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""SELECT * FROM users_general WHERE username = ?""", (username,))
+    user = cursor.fetchone()
+
+    if user is None:
+        conn.close()
+        return redirect(url_for('signin'))
+
+    cursor.execute("""SELECT organizer_applications.*, users_general.name, users_general.username, users_general.email,
+    users_general.keyword FROM organizer_applications JOIN users_general ON organizer_applications.student_id = users_general.student_id
+    WHERE organizer_applications.application_status = ?""", ("Pending",))
+    organizer_applications = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM events WHERE event_status = ?", ('Pending',))
+    pending_events = cursor.fetchall()
+
+    conn.close()
+
+    return render_template('admin_dashboard.html', user=user, organizer_applications=organizer_applications, pending_events=pending_events)
+
+
+@app.route('/approve_event/<int:event_id>', methods=['POST'])
+def approve_event(event_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""UPDATE events SET status='Approved' WHERE event_id=?""", (event_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/reject_event/<int:event_id>', methods=['POST'])
+def reject_event(event_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""UPDATE events SET status='Rejected' WHERE event_id=?""", (event_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('admin_dashboard'))
+
+# FLASK RUN WHEN CALLED #
 if __name__ == "__main__":
     setup_database()
     app.run(debug=True)

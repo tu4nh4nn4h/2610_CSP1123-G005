@@ -239,9 +239,22 @@
     <nav class="navbar">
         <a class="navbar-brand" href="{{ url_for('dashboard') if d_flag else '/dashboard' }}">UniSphere</a>
         <div class="navbar-links">
-            <a href="{{ url_for('eventbrowsing') }}">Browse Events</a>
-            <a href="{{ url_for('createevent') if c_flag else '/createevent' }}">Create Event</a>
-            <a href="{{ url_for('user_dashboard1') if u_flag else '/user_dashboard1' }}">Profile</a>
+            {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
         </div>
     </nav>
 

@@ -29,35 +29,18 @@
                 width: 100%;
                 max-width: 450px;
             }
+
             .becomeOrganizerForm {
                 margin-bottom: 18px;
             }
+
             .userToOrganizer-form {
                 width: 100%;
-                max-width: 450px;
+                max-width: 600px;
                 background-color: #fff;
                 padding: 40px 35px;
                 border-radius: 24px;
                 box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
-            }
-
-            .header {
-                 text-align: center;
-                 margin-bottom: 30px;
-                 color: #fff;
-                 text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .header h1 {
-                font-size: 2.5rem;
-                font-weight: 700;
-                margin-bottom: 5px;
-            }
-
-            .header h2 {
-                font-size: 1rem;
-                font-weight: 300;
-                opacity: 0.9;
             }
 
             .userToOrganizer-form label {
@@ -167,54 +150,175 @@
                 width: 100%;
             }
 
-            .profile a {
-                color: black;
-                text-decoration: none;
-                font-size: 16px;
-                padding: 5px 10px;
-                transition: background-color 0.3s, color 0.3s;
+            .popup-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.35);
+                backdrop-filter: blur(4px);
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
             }
 
-            .profile a:hover {
-                background-color: #f0f0f0;
-                border-radius: 4px;
+            .popup-box {
+                width: 90%;
+                max-width: 420px;
+                background: rgba(255,255,255,0.97);
+                border-radius: 24px;
+                padding: 35px;
+                text-align: center;
+                box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+                animation: popupShow 0.25s ease;
             }
 
-            .profile {
-                margin-left: auto;
+            .popup-box h3 {
+                color: #3f1b57;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
             }
+
+            .popup-box p {
+                color: #555;
+                font-size: 1rem;
+                line-height: 1.6;
+                margin-bottom: 25px;
+            }
+
+            .popup-btn {
+                background: #7b2cbf;
+                color: white;
+                border: none;
+                padding: 12px 28px;
+                border-radius: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.2s;
+            }
+
+            .popup-btn:hover {
+                background: #6920a8;
+            }
+
+            @keyframes popupShow {
+                from {
+                    opacity: 0;
+                    transform: translateY(15px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+        .file-upload-wrapper{
+            display:flex;
+            align-items:center;
+            gap:15px;
+            margin-top:8px;
+            margin-bottom:20px;
+        }
+
+        .file-upload-wrapper input[type="file"]{
+            display:none;
+        }
+
+        .custom-file-upload{
+            background:#b37cd4;
+            color:white !important;
+            padding:12px 20px;
+            border-radius:12px;
+            cursor:pointer;
+            font-weight:600;
+            transition:0.25s ease;
+        }
+
+        #fileName{
+            color:#666;
+            font-size:0.95rem;
+            font-weight:500;
+        }
         </style>
     </head>
     <body>
         <nav class="navbar">
-            <a class="navbar-brand" href="/dashboard">UniSphere</a>
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
             <div class="navbar-links">
-                <a href="/eventbrowsing">Browse Events</a>
-                <a href="/createevent">Create Event</a>
-                <a href="/user_dashboard1">Profile</a>
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
             </div>
         </nav>
         <div class = "be_org-container">
-            <div class="header">
-                <h1>Become an Organizer</h1>
-                <h2>Create, manage and host amazing events!</h2>
-            </div>
 
             <div class="userToOrganizer-form">
                 <div id="becomeOrganizerForm">
-                    <form id="becomeOrganizerForm" action="/be_organizer" method="post">
+                    <form id="becomeOrganizerForm" action="/be_organizer" method="post" enctype="multipart/form-data">
                         <label for="Club_body">Club / Body:</label>
                         <input type="text" id="Club_body" name="Club_body" required><br>
 
                         <label for="Position_title">Position Title:</label>
                         <input type="text" id="Position_title" name="Position_title" required><br>
 
+                        <label for="proof_document">Supporting Document:</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="proof_document" name="proof_document" accept=".pdf,.jpg,.jpeg,.png" 
+                            onchange= "updateFileName()" required>
+
+                            <label for="proof_document" class="custom-file-upload">Choose File</label>
+                            <span id="fileName">No file selected</span>
+                        </div><br>
+
                         <button type="button" onclick="becomeOrganizer()" class="button">Become Organizer</button>
                     </form>
                 </div>
             </div>
+
+            <div id="errorPopup" class="popup-overlay">
+                <div class="popup-box">
+                    <h3>Error ⚠️</h3>
+                    <p id="popupMessage">Please fill in all required fields before continuing.</p>
+                    <button onclick="closePopup()" class="popup-btn">OKAY</button>
+                </div>
+            </div>
+
+            <div id="successPopup" class="popup-overlay">
+                <div class="popup-box">
+                    <h3>Application Submitted ✅</h3>
+                    <p id="successMessage">
+                        Thank you for applying to become an organizer.
+                        Your application has been submitted successfully and is now under review by the administrator.
+                        You will be notified once a decision has been made.
+                    </p>
+
+                    <button onclick="closeSuccessButton()" class="popup-btn">OKAY</button>
+                </div>
+            </div>
+
             <script>
                 function becomeOrganizer() {
+                    const clubBody = document.getElementById('Club_body').value.trim();
+                    const positionTitle = document.getElementById('Position_title').value.trim();
+                    const supportDocument = document.getElementById('proof_document').value.trim();
+
+                    if (!clubBody || !positionTitle || !supportDocument) {
+                        showPopup("Please fill in all required fields before continuing.");
+                        return;
+                    }
+
                     fetch('/be_organizer', {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
@@ -226,11 +330,48 @@
                     .then(res => res.json())
                     .then(data => {
                         if (data.status === "become_organizer_success") {
-                            window.location.href = "/createevent";
+                            showSuccessPopup(
+                            "Thank you for applying to become an organizer. \
+                            Your application has been submitted successfully and will be reviewed by administrators. \
+                            You will be notified once the review process is completed.");
                         } else {
-                            alert("Failed to become an organizer. Please try again.");
+                            showPopup("Failed to become an organizer. Please try again.");
                         }
+                    })
+                    .catch(error => {
+                        showPopup("An unexpected error occurred. Please try again later.");
+                        console.error(error);
                     });
+                }
+
+                function showPopup(message) {
+                    document.getElementById("popupMessage").textContent = message;
+                    document.getElementById("errorPopup").style.display = "flex";
+                }
+
+                function closePopup() {
+                    document.getElementById("errorPopup").style.display = "none";
+                }
+
+                function showSuccessPopup(message) {
+                    document.getElementById("successMessage").textContent = message;
+                    document.getElementById("successPopup").style.display = "flex";
+                }
+
+                function closeSuccessButton() {
+                    window.location.href = "/eventbrowsing";
+                }
+
+                function updateFileName() {
+                    const input = document.getElementById("proof_document");
+                    const fileName = document.getElementById("fileName");
+
+                    if(input.files.length > 0){
+                        fileName.textContent = input.files[0].name;
+                    }
+                    else{
+                        fileName.textContent = "No file selected";
+                    }
                 }
             </script>
         </div>

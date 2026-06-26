@@ -10,11 +10,24 @@
     <body>
 
         <nav class="navbar">
-            <a class="navbar-brand" href="/dashboard">UniSphere</a>
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
             <div class="navbar-links">
-                <a href="/eventbrowsing">Browse Events</a>
-                <a href="/createevent">Create Event</a>
-                <a href="/user_dashboard1">Profile</a>
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
             </div>
         </nav>
 
@@ -24,7 +37,6 @@
                     <h2>Create Event</h2>
                     <p id="step-indicator">Step 1 of 2: Basic Details</p>
                 </div>
-
                 <form method="POST" id="createEventForm" enctype="multipart/form-data">
                     <!-- SECTION 1: BASIC DETAILS -->
                     <div class="form-step" id="step1">
@@ -91,6 +103,7 @@
                             <select id="mainloc" name="mainLocation" onchange="updateMainLocations()" required>
                                 <option value="">Select location</option>
                                 <option value="General">General Campus Area</option>
+                                <option value="CLC">CLC</option>
                                 <option value="FCI">FCI</option>
                                 <option value="FAIE">FAIE</option>
                                 <option value="FCM">FCM</option>
@@ -103,6 +116,13 @@
                         <div class="form-group" id="general_location_container" style="display: none;">
                             <label>Venue:</label>
                             <select id="general_location" name="generalLocation" onchange="updateSpecificLocations()" required>
+                                <option value="">Select Venue</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="clc_hall_container" style="display: none;">
+                            <label>Venue:</label>
+                            <select id="clc_hall" name="clcHall" onchange="updateSpecificLocations()" required>
                                 <option value="">Select Venue</option>
                             </select>
                         </div>
@@ -150,8 +170,345 @@
             </div>
         </div>
 
+        <div id="eventSuccessPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Event Submitted ✅</h3>
 
-        <script src="{{ url_for('static', filename='create_event.js') }}"></script>
+                <p>
+                    Your event has been submitted successfully.
+                    It is currently pending approval by the administrator.
+                    You will be notified once your event has been reviewed and approved.
+                </p>
+
+                <button onclick="closeEventSuccessPopup()" class="popup-btn">
+                    OKAY
+                </button>
+            </div>
+        </div>
+
+        <div id="timeErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid Time ❌⏰</h3>
+
+                <p>
+                    End time must be at least 5 minutes later than start time.
+                    Please select a valid end time.
+                </p>
+
+                <button onclick="closeTimeErrorPopup()" class="popup-btn">
+                    OKAY
+                </button>
+            </div>
+        </div>
+
+        <script>
+            const locationData = {
+            "General": [
+                "Central Plaza",
+                "MMU Stadium",
+                "Surau Al-Hidayah",
+                "Tun Dr. Hasmah Mohd Ali Digital Library",
+                "Dewan Tun Canselor",
+                "Annex Hall",
+                "MMU Hostel"
+            ],
+
+            "CLC": [
+                "CNMX 1001",
+                "CNMX 1002",
+                "CNMX 1003",
+                "CNMX 1004",
+                "CNMX 1005",
+            ],
+
+            "FCI": {
+                "Wing A": ["Smart Lab 1", "FCI Lecture Hall 1"],
+                "Wing B": ["Meeting Room Level 3", "Computing Lab 5"],
+                "Wing C": ["Innovation Hub", "FCI Seminar Room"]
+            },
+
+            "FAIE": {
+                "Wing A": ["e-Theater", "Sound Studio"],
+                "Wing B": ["Main Gallery", "FAIE Workshop"],
+                "Wing C": ["Media Lab", "FAIE Conference Room"]
+            },
+
+            "FCM": {
+                "Wing A": ["e-Theater", "Sound Studio"],
+                "Wing B": ["Main Gallery", "FCM Workshop"],
+                "Wing C": ["Media Lab", "FCM Conference Room"]
+            },
+
+            "FOM": {
+                "Wing A": ["FOM Exam Hall"],
+                "Wing B": ["Case Study Room 1", "Management Suite"],
+                "Wing C": ["FOM Seminar Room", "Strategy Lab"]
+            },
+
+            "FAC": {
+                "Wing A": ["FAC Lecture Room 2"],
+                "Wing B": ["Accounting Seminar Room", "Level 1 Lounge"]
+            },
+
+            "FCA": {
+                "Wing A": ["FCA Main Auditorium"],
+                "Wing B": ["FCA Art Studio", "Design Lab"],
+                "Wing C": ["FCA Gallery", "Creative Workshop"]
+            }
+        };
+
+        function updateMainLocations() {
+            const mainlocSelect = document.getElementById('mainloc');
+
+            const wingContainer = document.getElementById('faculty_wing_container');
+            const wingSelect = document.getElementById('faculty_wing');
+
+            const generalContainer = document.getElementById('general_location_container');
+            const generalSelect = document.getElementById('general_location');
+
+            const clcHallContainer = document.getElementById('clc_hall_container');
+            const clcHallSelect = document.getElementById('clc_hall');
+
+            const specificContainer = document.getElementById('specific_location_container');
+            const specificSelect = document.getElementById('specific_location');
+
+            const selectedLocation = mainlocSelect.value;
+
+            // Clear previous options
+            generalSelect.innerHTML = '<option value="">Select Venue</option>';
+            clcHallSelect.innerHTML = '<option value="">Select Venue</option>';
+            wingSelect.innerHTML = '<option value="">Select Wing</option>';
+            specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
+
+            // Hide everything first
+            generalContainer.style.display = 'none';
+            clcHallContainer.style.display = 'none';
+            wingContainer.style.display = 'none';
+            specificContainer.style.display = 'none';
+
+            if (selectedLocation === "General") {
+                generalContainer.style.display = 'block';
+                Object.values(locationData["General"]).forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    generalSelect.appendChild(option);
+                });
+            }
+            else if (selectedLocation === "CLC") {
+                clcHallContainer.style.display = 'block';
+                locationData["CLC"].forEach(hall => {
+                    const option = document.createElement('option');
+                    option.value = hall;
+                    option.textContent = hall;
+                    clcHallSelect.appendChild(option);
+                });
+
+            }
+            else if (selectedLocation && locationData[selectedLocation]) {
+                // Show the second dropdown and populate it based on selected location
+            wingContainer.style.display = 'block';
+
+                Object.keys(locationData[selectedLocation]).forEach(wing => {
+                    const option = document.createElement('option');
+                    option.value = wing;
+                    option.textContent = wing;
+                    wingSelect.appendChild(option);
+                });
+
+            } else {
+                // Selected a general spot or no faculty, hide the second dropdown
+                clcHallContainer.style.display = 'none';
+                wingContainer.style.display = 'none';
+                specificContainer.style.display = 'none';
+            }
+        }
+
+        function updateSpecificLocations() {
+
+            const mainLocation = document.getElementById('mainloc').value;
+            const generalLocation = document.getElementById('general_location').value;
+            const clcHall = document.getElementById('clc_hall').value;
+            const facultyWing = document.getElementById('faculty_wing').value;
+
+            const generalContainer = document.getElementById('general_location_container');
+
+            const clcHallContainer = document.getElementById('clc_hall_container');
+            const clcHallSelect = document.getElementById('clc_hall');
+
+            const specificContainer = document.getElementById('specific_location_container');
+            const specificSelect = document.getElementById('specific_location');
+
+            // Reset options
+            clcHallSelect.innerHTML = '<option value="">Select Venue</option>';
+            specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
+            if (mainLocation === "General") {
+                generalContainer.style.display = 'block';
+            }
+            else if (mainLocation && facultyWing) {
+                specificContainer.style.display = 'block';
+                locationData[mainLocation][facultyWing].forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    specificSelect.appendChild(option);
+                });
+            }
+            else if (mainLocation === "CLC") {
+                clcHallContainer.style.display = 'block';
+            }
+            else {
+                clcHallContainer.style.display = 'none';
+                specificContainer.style.display = 'none';
+            }
+        }
+
+        function nextStep() {
+            // Basic validation before moving to next step
+            const eventName = document.getElementById('event_name').value;
+            const startDate = document.getElementById('start_date').value;
+            const endDate = document.getElementById('end_date').value;
+            const eventMode = document.getElementById('event_mode').value;
+
+            if (eventName && startDate && endDate && eventMode) {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('step2').style.display = 'block';
+                document.getElementById('step-indicator').innerText = "Step 2 of 2: Logistics";
+            } else {
+                alert("Please fill in the basic details first.");
+            }
+        }
+
+        function prevStep() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+            document.getElementById('step-indicator').innerText = "Step 1 of 2: Basic Details";
+        }
+
+        /* =========================
+        DATE & TIME VALIDATION
+        ========================= */
+
+        const startDate = document.getElementById("start_date");
+        const endDate = document.getElementById("end_date");
+
+        const startTime = document.getElementById("start_time");
+        const endTime = document.getElementById("end_time");
+
+        function validateDateTime() {
+
+
+            // End date cannot be earlier than start date
+            endDate.min = startDate.value;
+            if (endDate.value < startDate.value) {
+                endDate.value = startDate.value;
+            }
+
+            // If same day, end time cannot be earlier and cannot be the same
+            if (startDate.value === endDate.value) {
+
+                const [hours, minutes] = startTime.value.split(':').map(Number);
+                const minTime = new Date();
+                minTime.setHours(hours);
+                minTime.setMinutes(minutes + 5);
+                const minHours = String(minTime.getHours()).padStart(2, '0');
+                const minMinutes = String(minTime.getMinutes()).padStart(2, '0');
+                endTime.min = `${minHours}:${minMinutes}`;
+
+                 if (endTime.value && endTime.value < endTime.min) {
+                    endTime.value = "";
+                    showTimeErrorPopup();
+                }
+            }
+            else {
+                endTime.min = "";
+            }
+        }
+
+        function toggleEventLink() {
+            const eventMode = document.getElementById("event_mode").value;
+            const linkContainer = document.getElementById("event_link_container");
+            const eventLink = document.getElementById("event_link");
+
+            if (eventMode === "offline") {
+                linkContainer.style.display = "none";
+                eventLink.required = false;
+                eventLink.value = "";
+            } else {
+                linkContainer.style.display = "block";
+                eventLink.required = true;
+            }
+        }
+
+        function toggleMaxParticipants() {
+            const participationOption = document.getElementById("participation_option").value;
+            const maxParticipantsContainer = document.getElementById("limited_participants_container");
+            const participantsLimit = document.getElementById("limited_max_participants");
+
+            if (participationOption === "limited") {
+                maxParticipantsContainer.style.display = "block";
+                participantsLimit.required = true;
+            } else {
+                maxParticipantsContainer.style.display = "none";
+                participantsLimit.required = false;
+                participantsLimit.value = "";
+            }
+        }
+
+        // Event listeners
+        startDate.addEventListener("change", validateDateTime);
+        endDate.addEventListener("change", validateDateTime);
+        startTime.addEventListener("change", validateDateTime);
+        endTime.addEventListener("change", validateDateTime);
+
+        function submitEvent() {
+
+            const form = document.getElementById('createEventForm');
+            const formData = new FormData(form);
+
+            fetch('/createevent', {method: 'POST',body: formData})
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "create_event_success") {
+                    document.getElementById("eventSuccessPopup").style.display = "flex";
+                } else {
+                    alert("Failed to create event: " + (data.message || "Please try again."));
+                }
+            })
+            
+            .catch(error => {
+                console.error(error);
+                alert("An error occurred.");
+            });
+        }
+
+        function closeEventSuccessPopup() {
+            document.getElementById("eventSuccessPopup").style.display = "none";
+            window.location.href = "/eventbrowsing";
+        }
+
+        function showTimeErrorPopup() {
+            document.getElementById("timeErrorPopup").style.display = "flex";
+        }
+
+        function closeTimeErrorPopup() {
+            document.getElementById("timeErrorPopup").style.display = "none";
+        }
+
+        document.getElementById('event_poster').addEventListener('change', function() {
+
+            const file = this.files[0];
+
+            if (file) {
+                const preview = document.getElementById('posterPreview');
+
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+
+                document.querySelector('.upload-poster').style.display = 'none';
+            }
+        });
+        </script>
 
     </body>
 </html>
