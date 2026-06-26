@@ -99,8 +99,6 @@ SELECT * FROM users_general;
 SELECT * FROM user_details;
 SELECT * FROM organizer_details;
 SELECT * FROM events;
-SELECT * FROM event_tags;
-SELECT * FROM event_tag_map;
 SELECT * FROM event_registrations;
 SELECT * FROM notifications;
 SELECT * FROM organizer_applications;
