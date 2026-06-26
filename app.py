@@ -1243,6 +1243,47 @@ def admin_dashboard():
 
     return render_template('admin_dashboard.html', user=user, organizer_applications=organizer_applications, pending_events=pending_events)
 
+@app.route('/approve_organizer/<int:application_id>', methods=['POST'])
+def approve_organizer(application_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # ambil student_id daripada application
+    cursor.execute("SELECT student_id FROM organizer_applications WHERE application_id = ?",(application_id,))
+
+    application = cursor.fetchone()
+
+    if application:
+        student_id = application['student_id']
+
+        # update application status
+        cursor.execute(
+            "UPDATE organizer_applications SET application_status='Approved' WHERE application_id = ?",(application_id,))
+
+        # update role user
+        cursor.execute(
+            "UPDATE users_general SET role='organizer' WHERE student_id=?",(student_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('admin_dashboard'))
+
+
+@app.route('/reject_organizer/<int:application_id>', methods=['POST'])
+def reject_organizer(application_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE organizer_applications SET application_status='Rejected' WHERE application_id=?", (application_id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect(url_for('admin_dashboard'))
+
 
 @app.route('/approve_event/<int:event_id>', methods=['POST'])
 def approve_event(event_id):
@@ -1264,7 +1305,8 @@ def reject_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""UPDATE events SET status='Rejected' WHERE event_id=?""", (event_id,))
+    cursor.execute("""UPDATE events SET status='Pending' WHERE event_id=?""", (event_id,))
+
 
     conn.commit()
     conn.close()
