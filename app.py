@@ -691,6 +691,12 @@ def create_event():
             general_location = request.form.get('generalLocation')
             faculty_wing = None
             specific_location = None
+        
+        elif main_location == "CLC":
+            general_location = None
+            faculty_wing = None
+            specific_location = request.form.get("clcHall")
+
         else:
             general_location = None
             faculty_wing = request.form.get('facultyWing')

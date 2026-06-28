@@ -336,6 +336,17 @@
                 opacity: 0.95;
             }
 
+            .poster-container {
+                margin-top: 25px;
+                text-align: center;
+            }
+
+            .poster-container img {
+                max-width: 100%;
+                height: auto;
+                border-radius: 12px;
+            }
+
             /* Right Side Content Layout */
             .modal-right-lavender {
                 background-color: #fdf2ff; /* Matching base tone */
@@ -639,19 +650,25 @@
                     <h2>Event Queue</h2>
                     {% for event in pending_events %}
                     <div class="request-item"
-                    onclick="openEventModal(
-                    '{{event.event_id}}',
-                    '{{event.event_name}}',
-                    '{{event.event_description}}',
-                    '{{event.start_date}}',
-                    '{{event.end_date}}',
-                    '{{event.start_time}}',
-                    '{{event.end_time}}',
-                    '{{event.event_mode}}',
-                    '{{event.main_location}}',
-                    '{{event.participation_option}}',
-                    '{{event.limited_max_participants}}'
-                    )">{{event.event_name}}
+                        onclick="openEventModal(
+                        '{{event.event_id}}',
+                        '{{event.event_poster}}',
+                        '{{event.event_name}}',
+                        '{{event.event_description}}',
+                        '{{event.start_date}}',
+                        '{{event.end_date}}',
+                        '{{event.start_time}}',
+                        '{{event.end_time}}',
+                        '{{event.event_mode}}',
+                        '{{event.main_location}}',
+                        '{{event.general_location}}',
+                        '{{event.faculty_wing}}',
+                        '{{event.specific_location}}',
+                        '{{event.participation_option}}',
+                        '{{event.limited_max_participants}}',
+                        '{{event.event_link}}'
+                        )">
+                        {{event.event_name}}
                     </div>
                     {% endfor %}
                 </div>
@@ -752,30 +769,69 @@
                             Verify event information before publishing
                             the event to the UniSphere platform.
                         </p>
+
+                        <div class="poster-container">
+                            <img id="eventPoster" src="" width="250">
+                        </div>
                     </div>
 
                     <div class="modal-right-lavender">
                         <div>
                             <h3>Event Details</h3>
+
                             <ul>
                                 <li>
                                     <strong>Event Name:</strong>
                                     <span id="eventName"></span>
                                 </li>
+
                                 <li>
                                     <strong>Description:</strong>
                                     <span id="eventDescription"></span>
                                 </li>
+
                                 <li>
                                     <strong>Date:</strong>
                                     <span id="eventDate"></span>
                                 </li>
+
+                                <li>
+                                    <strong>Time:</strong>
+                                    <span id="eventTime"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Mode:</strong>
+                                    <span id="eventMode"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Main Location:</strong>
+                                    <span id="eventMainLocation"></span>
+                                </li>
+
                                 <li>
                                     <strong>Venue:</strong>
                                     <span id="eventVenue"></span>
                                 </li>
+
+                                <li>
+                                    <strong>Participation:</strong>
+                                    <span id="eventParticipation"></span>
+                                </li>
+
+                                <li>
+                                    <strong>Maximum Participants:</strong>
+                                    <span id="eventMaxParticipants"></span>
+                                </li>
+
+                                <li id="eventLinkRow">
+                                    <strong>Event Link:</strong>
+                                    <span id="eventLink"></span>
+                                </li>
                             </ul>
                         </div>
+                    </div>
 
                         <div class="action-buttons">
 
@@ -849,19 +905,55 @@
 
             function openEventModal(
                 eventId,
+                eventPoster,
                 eventName,
                 description,
-                date,
-                venue
+                startDate,
+                endDate,
+                startTime,
+                endTime,
+                eventMode,
+                mainLocation,
+                generalLocation,
+                facultyWing,
+                specificLocation,
+                participationOption,
+                maxParticipants,
+                eventLink
             ){
 
                 selectedEventId = eventId;
+
+                document.getElementById("eventPoster").src = eventPoster;
                 document.getElementById("eventName").textContent = eventName;
                 document.getElementById("eventDescription").textContent = description;
-                document.getElementById("eventDate").textContent = date;
+                document.getElementById("eventDate").textContent = `${startDate} - ${endDate}`;
+                document.getElementById("eventTime").textContent = `${startTime} - ${endTime}`;
+                document.getElementById("eventMode").textContent = eventMode;
+                document.getElementById("eventMainLocation").textContent = mainLocation;
+                document.getElementById("eventMode").textContent = eventMode;
+                document.getElementById("eventMainLocation").textContent = mainLocation;
+
+                // decide venue display
+                let venue = "";
+                if (mainLocation === "General") {
+                    venue = generalLocation;}
+                else if (mainLocation === "CLC") {
+                    venue = specificLocation;}
+                else {venue = `${facultyWing} - ${specificLocation}`;}
+
                 document.getElementById("eventVenue").textContent = venue;
-                document.getElementById("eventModal")
-                    .classList.add("show");
+                document.getElementById("eventParticipation").textContent = participationOption;
+                document.getElementById("eventMaxParticipants").textContent = maxParticipants || "Unlimited";
+
+                const eventLinkRow = document.getElementById("eventLinkRow");
+                if (eventMode === "online" || eventMode === "hybrid") {
+                    eventLinkRow.style.display = "list-item";
+                    document.getElementById("eventLink").innerHTML = eventLink ? `<a href="${eventLink}" target="_blank">${eventLink}</a>`: "-";
+                } else {
+                    eventLinkRow.style.display = "none";
+                }
+                document.getElementById("eventModal").classList.add("show");
             }
 
             function closeEventModal(){
