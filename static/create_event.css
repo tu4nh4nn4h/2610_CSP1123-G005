@@ -33,6 +33,19 @@ body {
     z-index: 1000;
 }
 
+.notification-link{
+    position:relative;
+}
+
+.notification-dot{
+    position:absolute;
+    width:10px;
+    height:10px;
+    background:red;
+    border-radius:50%;
+    top:-3px;
+    right:-10px;
+}
 .navbar-brand {
     font-size: 1.5rem;
     font-weight: 700;

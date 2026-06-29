@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Organizer - My Event</title>
+        <title>Organizer: My Event - UniSphere</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -73,6 +73,20 @@
                 justify-content: space-between;
                 padding: 0 40px;
                 z-index: 1000;
+            }
+
+            .notification-link{
+                position:relative;
+            }
+
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
             }
 
             .navbar-brand {
@@ -158,23 +172,16 @@
                 display: flex;
                 align-items: center;
                 gap: 25px;
-
                 background: rgba(176,106,214,0.35);
-
                 border-radius: 25px;
-
                 padding: 25px 30px;
-
                 transition: all 0.3s ease;
-
                 min-height: 180px;
             }
 
             .manageevent-card:hover {
                 transform: translateY(-6px);
-
                 background: rgba(176,106,214,0.5);
-
                 box-shadow: 0 12px 30px rgba(0,0,0,0.15);
             }
 
@@ -183,14 +190,77 @@
             .manageevent-poster {
                 width: 140px;
                 height: 140px;
-
                 object-fit: cover;
-
                 border-radius: 15px;
-
                 flex-shrink: 0;
             }
 
+            .status-badge{
+                padding:8px 18px;
+                border-radius:20px;
+                font-size:0.85rem;
+                font-weight:600;
+                margin-left:auto; /* push ke kanan */
+                white-space:nowrap;
+                flex-shrink: 0;
+            }
+
+            .status-badge.approved {
+                background: #d4edda;
+                color: #155724;
+            }
+
+            .status-badge.pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+
+            .status-badge.redo {
+                background: #f8d7da;
+                color: #721c24;
+            }
+
+            .event-action-area{
+                display:flex;
+                flex-direction:column;
+                align-items:flex-end;
+                justify-content: flex-start;
+                gap:15px;
+                margin-left:auto;
+                width:260px;
+            }
+
+            .admin-remark-display{
+                width:100%;
+                padding:15px;
+                background:rgba(255,255,255,0.35);
+                border-radius:15px;
+                color:#3f1b57;
+            }
+
+            .admin-remark-display h3{
+                font-size:1rem;
+                margin-bottom:8px;
+            }
+
+            .admin-remark-display p{
+                font-size:0.9rem;
+                word-wrap:break-word;
+            }
+
+            .event-title-row{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                width:100%;
+                margin-bottom:15px;
+            }
+
+            .event-title-row h3{
+                margin:0;
+                color:#3f1b57;
+                flex:1;
+            }
             /* ===== EVENT INFO ===== */
 
             .manageevent-info {
@@ -217,38 +287,30 @@
             }
 
             /* ===== BUTTON ===== */
-
-            .manageevent-actions {
-                margin-left: auto;
-            }
-
             .manage-btn {
                 border: none;
-
                 background: linear-gradient(
                     135deg,
                     #7b2cbf,
                     #c77dff
                 );
-
                 color: white;
-
                 padding: 14px 24px;
-
                 border-radius: 12px;
-
                 font-size: 1rem;
                 font-weight: 600;
-
                 cursor: pointer;
-
                 transition: all 0.25s ease;
             }
 
             .manage-btn:hover {
                 transform: scale(1.05);
-
                 box-shadow: 0 8px 20px rgba(123,44,191,0.4);
+            }
+
+            .event-action-area .manage-btn{
+                width:auto;
+                align-self:flex-end;
             }
 
             /* ===== EMPTY ===== */
@@ -268,17 +330,35 @@
                 {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
             </div>
@@ -287,39 +367,60 @@
         <div class="dashb">
             <h1 class="title">MY EVENT</h1>
             <p class="subtitle">Organizer Event Management</p>
+
             <div class="manageevents-container">
                 {% if events %}
                     {% for event in events %}
                     <div class="manageevent-card">
                         <img src="{{ url_for('static', filename='eventPoster/' + event['event_poster']) }}" class="manageevent-poster">
                         <div class="manageevent-info">
-                            <h3>{{ event['event_name'] }}</h3>
-
+                            <div class="event-title-row">
+                                <h3>{{ event['event_name'] }}</h3>
+                            </div>
+                            
                             <div class="event-meta">
                                 <p>📅 {{ event['start_date'] }} - {{ event['end_date'] }}</p>
                                 <p>🕒{{ event['start_time'] }} - {{ event['end_time'] }}</p>
 
                                 {% if event['general_location'] %}
-
                                     <p>📍{{ event['general_location'] }}</p>
-
-                                {% elif event['clc_hall'] %}
-
-                                    <p>📍{{event['main_location']}}, {{ event['faculty_wing'] }} - {{ event['specific_location'] }}</p>
-
+                                {% elif event['main_location'] == "CLC" %}
+                                    <p>📍{{event['main_location']}} - {{ event['specific_location'] }}</p>
                                 {% else %}
-
                                     <p>📍{{event['main_location']}}, {{ event['faculty_wing'] }} - {{ event['specific_location'] }}</p>
-
                                 {% endif %}
 
                                 <p>🎯 {{ event['event_mode']|title }}</p>
                             </div>
                         </div>
+                        <div class="event-action-area">
+                            {% if event['event_status'] == 'Redo' %}
+                                <div class="status-badge redo">
+                                    🔴 Redo Required
+                                </div>
 
-                        <a href="{{ url_for('my_event_manage', event_id=event['event_id']) }}">
-                            <button class="manage-btn">Manage Event</button>
-                        </a>
+                            {% elif event['event_status'] == 'Pending' %}
+                                <div class="status-badge pending">
+                                    🟡 Pending Review
+                                </div>
+
+                            {% elif event['event_status'] == 'Approved' %}
+                                <div class="status-badge approved">
+                                    🟢 Approved
+                                </div>
+                            {% endif %}
+
+                            <a href="{{ url_for('my_event_manage', event_id=event['event_id']) }}">
+                                <button class="manage-btn">Manage Event</button>
+                            </a>
+
+                            {% if event['event_status'] == 'Redo' %}
+                                <div class="admin-remark-display">
+                                    <h3>Admin Remark</h3>
+                                    <p>{{ event['admin_remark'] }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
                     </div>
 
                     {% endfor %}

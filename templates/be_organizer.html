@@ -4,7 +4,7 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-        <title>Become Organizer</title>
+        <title>Become Organizer - UniSphere</title>
         <style>
             * {
                 box-sizing: border-box;
@@ -29,7 +29,7 @@
                 width: 100vw;
             }
 
-            .becomeOrganizerForm {
+            .becomeOrganizerContainer {
                 margin-bottom: 18px;
             }
 
@@ -101,6 +101,20 @@
                 justify-content: space-between;
                 padding: 0 40px;
                 z-index: 1000;
+            }
+
+            .notification-link{
+                position:relative;
+            }
+
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
             }
 
             .navbar-brand {
@@ -246,35 +260,53 @@
                 {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
             </div>
         </nav>
+        
         <div class = "be_org-container">
-
             <div class="userToOrganizer-form">
-                <div id="becomeOrganizerForm">
+                <div id="becomeOrganizerContainer">
                     <form id="becomeOrganizerForm" action="/be_organizer" method="post" enctype="multipart/form-data">
                         <label for="Club_body">Club / Body:</label>
-                        <input type="text" id="Club_body" name="Club_body" required><br>
+                        <input type="text" id="club_body" name="clubBody" required><br>
 
                         <label for="Position_title">Position Title:</label>
-                        <input type="text" id="Position_title" name="Position_title" required><br>
+                        <input type="text" id="position_title" name="positionTitle" required><br>
 
                         <label for="proof_document">Supporting Document:</label>
                         <div class="file-upload-wrapper">
-                            <input type="file" id="proof_document" name="proof_document" accept=".pdf,.jpg,.jpeg,.png" 
+                            <input type="file" id="proof_document" name="proofFile" accept=".pdf,.jpg,.jpeg,.png" 
                             onchange= "updateFileName()" required>
 
                             <label for="proof_document" class="custom-file-upload">Choose File</label>
@@ -285,6 +317,7 @@
                     </form>
                 </div>
             </div>
+        </div>
 
             <div id="errorPopup" class="popup-overlay">
                 <div class="popup-box">
@@ -309,37 +342,36 @@
 
             <script>
                 function becomeOrganizer() {
-                    const clubBody = document.getElementById('Club_body').value.trim();
-                    const positionTitle = document.getElementById('Position_title').value.trim();
-                    const supportDocument = document.getElementById('proof_document').value.trim();
 
-                    if (!clubBody || !positionTitle || !supportDocument) {
+                    const clubBody = document.getElementById('club_body').value.trim();
+                    const positionTitle = document.getElementById('position_title').value.trim();
+                    const proofFile = document.getElementById('proof_document').files.length;
+
+                    // CHECK FIELD KOSONG
+                    if (!clubBody || !positionTitle || proofFile === 0) {
                         showPopup("Please fill in all required fields before continuing.");
                         return;
                     }
 
-                    fetch('/be_organizer', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({
-                            club_body: document.getElementById('Club_body').value,
-                            position_title: document.getElementById('Position_title').value
-                        })
-                    })
-                    .then(res => res.json())
+                    const form = document.getElementById('becomeOrganizerForm');
+                    const formData = new FormData(form);
+
+                    fetch('/be_organizer', {method: 'POST', body: formData})
+
+                    .then(response => response.json())
                     .then(data => {
                         if (data.status === "become_organizer_success") {
-                            showSuccessPopup(
-                            "Thank you for applying to become an organizer. \
-                            Your application has been submitted successfully and will be reviewed by administrators. \
-                            You will be notified once the review process is completed.");
-                        } else {
-                            showPopup("Failed to become an organizer. Please try again.");
+                            document.getElementById("successPopup").style.display = "flex";
+                        } 
+                        else if(data.status === "blocked"){
+                            showPopup(data.message);
+                        }else{
+                            showPopup("Failed to become organizer.");
                         }
                     })
-                    .catch(error => {
-                        showPopup("An unexpected error occurred. Please try again later.");
-                        console.error(error);
+
+                    .catch(error => {console.error(error);
+                        alert("An error occurred.");
                     });
                 }
 
@@ -373,6 +405,5 @@
                     }
                 }
             </script>
-        </div>
     </body>
 </html>

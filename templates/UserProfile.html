@@ -1,270 +1,302 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>User Profile - UniSphere</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>User Profile - UniSphere</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
 
-        body {
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            padding-top: 80px; /* Prevent content from hiding behind navbar */
-        }
+            body {
+                background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+                padding-top: 80px; /* Prevent content from hiding behind navbar */
+            }
 
-        /* Fixed Global Navigation Navbar Layer */
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 1000;
-        }
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3f1b57;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+            .notification-link{
+                position:relative;
+            }
 
-        /* Core application navigation action links */
-        .navbar-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
+            }
 
-        .navbar-links a {
-            color: #5c3576;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            position: relative;
-            padding: 4px 0;
-        }
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        .navbar-links a:hover {
-            color: #7b2cbf;
-        }
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
+            }
 
-        /* Underline slider effect matching system application pages */
-        .navbar-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #7b2cbf;
-            transition: width 0.2s ease;
-        }
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
+            }
 
-        .navbar-links a:hover::after {
-            width: 100%;
-        }
+            .navbar-links a:hover {
+                color: #7b2cbf;
+            }
 
-        /* Profile Glass Container matching dashboard */
-        .dashboard-view {
-            width: 95%;
-            max-width: 1100px;
-            padding: 40px;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-        }
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
 
-        .title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
+            .navbar-links a:hover::after {
+                width: 100%;
+            }
 
-        .subtitle {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
+            /* Profile Glass Container matching dashboard */
+            .dashboard-view {
+                width: 95%;
+                max-width: 1100px;
+                padding: 40px;
+                border-radius: 25px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                color: white;
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
+            .title {
+                font-size: 3.5rem;
+                font-weight: 700;
+                margin-bottom: 5px;
+                text-transform: uppercase;
+            }
 
-        .card {
-            background: rgba(176, 106, 214, 0.4);
-            border-radius: 25px;
-            padding: 35px;
-            min-height: 350px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 30px;
+                opacity: 0.9;
+            }
 
-        /* Profile Layout */
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            margin-bottom: 20px;
-        }
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
 
-        .profile-picture {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-        }
+            .card {
+                background: rgba(176, 106, 214, 0.4);
+                border-radius: 25px;
+                padding: 35px;
+                min-height: 350px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
 
-        .profile-card h3 {
-            font-size: 1.6rem;
-            font-weight: 600;
-        }
+            /* Profile Layout */
+            .profile-header {
+                display: flex;
+                align-items: center;
+                gap: 25px;
+                margin-bottom: 20px;
+            }
 
-        .card p {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            line-height: 1.5;
-        }
+            .profile-picture {
+                width: 110px;
+                height: 110px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 4px solid white;
+            }
 
-        .card h3 {
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 8px;
-        }
+            .profile-card h3 {
+                font-size: 1.6rem;
+                font-weight: 600;
+            }
 
-        /* Button configurations */
-        .profile-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 15px;
-        }
+            .card p {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+                line-height: 1.5;
+            }
 
-        .btn {
-            padding: 12px 24px;
-            color: #7a1fa2;
-            background-color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 100%;
-            text-decoration: none;
-            display: inline-block;
-            transition: transform 0.2s ease, background-color 0.3s ease;
-            text-align: center;
-        }
+            .card h3 {
+                margin-bottom: 20px;
+                font-size: 1.5rem;
+                text-transform: uppercase;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+                padding-bottom: 8px;
+            }
 
-        .btn:hover {
-            transform: translateY(-3px);
-            background-color: #f3e5f5;
-        }
+            /* Button configurations */
+            .profile-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 15px;
+            }
 
-        .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
+            .btn {
+                padding: 12px 24px;
+                color: #7a1fa2;
+                background-color: white;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 100%;
+                text-decoration: none;
+                display: inline-block;
+                transition: transform 0.2s ease, background-color 0.3s ease;
+                text-align: center;
+            }
 
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
+            .btn:hover {
+                transform: translateY(-3px);
+                background-color: #f3e5f5;
+            }
 
-        /* Responsive Fix */
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
-            .title { font-size: 2.5rem; }
-        }
-    </style>
-</head>
-<body>
+            .btn-secondary {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.4);
+            }
 
-    <nav class="navbar">
-        <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
-        <div class="navbar-links">
-            {% if session.get('role') == 'user' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/be_organizer">Become Organizer</a>
-                    <a href="/user_dashboard">Profile</a>
+            .btn-secondary:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+            }
 
-                {% elif session.get('role') == 'organizer' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
-                    <a href="/user_dashboard">Profile</a>
+            /* Responsive Fix */
+            @media (max-width: 900px) {
+                .grid { grid-template-columns: 1fr; }
+                .title { font-size: 2.5rem; }
+            }
+        </style>
+    </head>
+    <body>
 
-                {% elif session.get('role') == 'admin' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/admin_dashboard">Admin Dashboard</a>
-                    <a href="/user_dashboard">Profile</a>
-                {% endif %}
-        </div>
-    </nav>
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/be_organizer">Become Organizer</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
 
-    <div class="dashboard-view">
-        <h1 class="title">User Profile</h1>
-        <p class="subtitle">Welcome to your profile page!</p>
-        
-        <div class="grid">
-            <div class="card profile-card">
-                <div>
-                    <div class="profile-header">
-                        <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="profile-picture">
-                        <h3>@<span id="username-value">{{ user['username'] }}</span></h3>
+                    {% elif session.get('role') == 'organizer' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/createevent">Create Event</a>
+                        <a href="/myevent">My Event</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+
+                    {% elif session.get('role') == 'admin' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/admin_dashboard">Admin Dashboard</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+                    {% endif %}
+            </div>
+        </nav>
+
+        <div class="dashboard-view">
+            <h1 class="title">User Profile</h1>
+            <p class="subtitle">Welcome to your profile page!</p>
+            
+            <div class="grid">
+                <div class="card profile-card">
+                    <div>
+                        <div class="profile-header">
+                            <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="profile-picture">
+                            <h3>@<span id="username-value">{{ user['username'] }}</span></h3>
+                        </div>
+                        <p id="name"><b>Name:</b> {{ user['name'] }}</p>
+                        <p id="bio"><b>Bio:</b> {{ user['bio'] if user['bio'] else 'No bio added yet.' }}</p>
                     </div>
-                    <p id="name"><b>Name:</b> {{ user['name'] }}</p>
-                    <p id="bio"><b>Bio:</b> {{ user['bio'] if user['bio'] else 'No bio added yet.' }}</p>
                 </div>
-            </div>
 
-            <div class="card about-card">
-                <div>
-                    <h3>About You</h3>
-                    <p id="birthday"><b>Birthday:</b> {{ user['birthday'] }}</p>
-                    <p id="faculty"><b>Faculty:</b> {{ user['faculty'] }}</p>
-                    <p id="year-of-study"><b>Year of Study:</b> {{ user['year_of_study'] }}</p>
-                    <p id="email"><b>Email:</b> {{ user['email'] }}</p>
-                </div>
-                
-                <div class="profile-actions">
-                    <a href="{{ url_for('edit_profile') }}" class="btn">Edit Profile</a>
-                    <a href="{{ url_for('logout')}}" class="btn btn-secondary">Log Out</a>
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                <div class="card about-card">
+                    <div>
+                        <h3>About You</h3>
+                        <p id="birthday"><b>Birthday:</b> {{ user['birthday'] }}</p>
+                        <p id="faculty"><b>Faculty:</b> {{ user['faculty'] }}</p>
+                        <p id="year-of-study"><b>Year of Study:</b> {{ user['year_of_study'] }}</p>
+                        <p id="email"><b>Email:</b> {{ user['email'] }}</p>
+                    </div>
+                    
+                    <div class="profile-actions">
+                        <a href="{{ url_for('edit_profile') }}" class="btn">Edit Profile</a>
+                        <a href="{{ url_for('logout')}}" class="btn btn-secondary">Log Out</a>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>

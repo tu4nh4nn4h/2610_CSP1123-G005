@@ -1,382 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Registration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #e6b2b8, #b57edc, #7b2cbf);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 120px;
-            padding-bottom: 40px;
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            border-bottom: 1px solid #ddd;
-            z-index: 1000;
-        }
-
-        .logo a {
-            font-size: 24px;
-            font-weight: bold;
-            color: black;
-            text-decoration: none;
-            padding-right: 13px;
-        }
-
-        .nav-links {
-            list-style: none;
-            display: flex;
-            gap: 20px;
-        }
-
-        .nav-links li a, .profile a {
-            color: black;
-            text-decoration: none;
-            font-size: 16px;
-            padding: 5px 10px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .nav-links li a:hover, .profile a:hover {
-            background-color: #f0f0f0;
-            border-radius: 4px;
-        }
-
-        .profile {
-            margin-left: auto;
-        }
-
-        .main-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .form-card {
-            width: 420px;
-            background: white;
-            padding: 35px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .header h2 {
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #777;
-            font-size: 14px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            margin-bottom: 6px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #444;
-        }
-
-        .form-group input, .form-group select {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 5px rgba(124,58,237,0.3);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-top: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #555;
-        }
-
-        button[type="submit"] {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: #7c3aed;
-            color: white;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        button[type="submit"]:hover {
-            background: #6d28d9;
-        }
-
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .modal-box {
-            width: 320px;
-            background: white;
-            padding: 35px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .icon-circle {
-            width: 70px;
-            height: 70px;
-            background: #7c3aed;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: auto;
-            margin-bottom: 18px;
-            font-size: 30px;
-            font-weight: bold;
-        }
-
-        .modal-btn {
-            background: #7c3aed;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .modal-btn:hover {
-            background: #6d28d9;
-        }
-
-        @media (max-width:768px) {
-            .navbar {
-                flex-direction: column;
-                gap: 15px;
-                padding: 18px;
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Event Registration - UniSphere</title>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
-            .nav-links {
-                flex-direction: column;
-                gap: 10px;
+
+            body {
+                font-family: 'Poppins', sans-serif;
+                background: linear-gradient(135deg, #e6b2b8, #b57edc, #7b2cbf);
+                min-height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                padding-top: 120px;
+                padding-bottom: 40px;
+            }
+
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
+
+            .notification-link{
+                position:relative;
+            }
+
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
                 align-items: center;
             }
-            .profile {
-                margin-left: 0;
+
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
             }
-            body {
-                padding-top: 220px;
+
+            .navbar-links a:hover {
+                color: #7b2cbf;
             }
-            .form-card {
+
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
+
+            .navbar-links a:hover::after {
                 width: 100%;
-                max-width: 420px;
             }
-            .form-row {
+
+            .profile {
+                margin-left: auto;
+            }
+
+            .main-wrapper {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                padding: 20px;
+            }
+
+            .form-card {
+                width: 420px;
+                background: white;
+                padding: 35px;
+                border-radius: 24px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+
+            .header {
+                text-align: center;
+                margin-bottom: 25px;
+            }
+
+            .header h2 {
+                color: #333;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                color: #777;
+                font-size: 14px;
+            }
+
+            .form-group {
+                display: flex;
                 flex-direction: column;
-                gap: 0;
+                margin-bottom: 18px;
             }
-        }
-    </style>
-</head>
-<body>
 
-<nav class="navbar">
-    <div class="logo">
-        <a href="#">UniSphere</a>
-    </div>
-    <ul class="nav-links">
-        <li><a href="{{ url_for('eventbrowsing') }}">Browse Event</a></li>
-        <li><a href="{{ url_for('create_event') }}">Create Event</a></li>
-    </ul>
-    <div class="profile">
-        <a href="{{ url_for('dashboard') }}">Profile</a>
-    </div>
-</nav>
+            .form-group label {
+                margin-bottom: 6px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #444;
+            }
 
-<div class="main-wrapper">
-    <div class="form-card">
-        <div class="header">
-            <h2>Event Registration</h2>
-            <p>Please fill in your details carefully</p>
+            .form-group input, .form-group select {
+                padding: 12px;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                font-size: 14px;
+                outline: none;
+                transition: 0.2s;
+            }
+
+            .form-group input:focus, .form-group select:focus {
+                border-color: #7c3aed;
+                box-shadow: 0 0 5px rgba(124,58,237,0.3);
+            }
+
+            .form-row {
+                display: flex;
+                gap: 15px;
+            }
+
+            .form-row .form-group {
+                flex: 1;
+            }
+
+            .checkbox-group {
+                display: flex;
+                align-items: flex-start;
+                gap: 10px;
+                margin-top: 5px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                color: #555;
+            }
+
+            button[type="submit"] {
+                width: 100%;
+                padding: 14px;
+                border: none;
+                border-radius: 10px;
+                background: #7c3aed;
+                color: white;
+                font-size: 15px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+            button[type="submit"]:hover {
+                background: #6d28d9;
+            }
+
+            .modal {
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 2000;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .modal-box {
+                width: 320px;
+                background: white;
+                padding: 35px;
+                border-radius: 20px;
+                text-align: center;
+            }
+
+            .icon-circle {
+                width: 70px;
+                height: 70px;
+                background: #7c3aed;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: auto;
+                margin-bottom: 18px;
+                font-size: 30px;
+                font-weight: bold;
+            }
+
+            .modal-btn {
+                background: #7c3aed;
+                color: white;
+                border: none;
+                border-radius: 10px;
+                padding: 12px 20px;
+                cursor: pointer;
+                font-size: 15px;
+                font-weight: 600;
+            }
+
+            .modal-btn:hover {
+                background: #6d28d9;
+            }
+
+            @media (max-width:768px) {
+                body {
+                    padding-top: 220px;
+                }
+                .form-card {
+                    width: 100%;
+                    max-width: 420px;
+                }
+                .form-row {
+                    flex-direction: column;
+                    gap: 0;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/be_organizer">Become Organizer</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+
+                    {% elif session.get('role') == 'organizer' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/createevent">Create Event</a>
+                        <a href="/myevent">My Event</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+
+                    {% elif session.get('role') == 'admin' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/admin_dashboard">Admin Dashboard</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+                    {% endif %}
+            </div>
+        </nav>
+
+        <div class="main-wrapper">
+            <div class="form-card">
+                <div class="header">
+                    <h2>Event Registration</h2>
+                    <p>Please fill in your details carefully</p>
+                </div>
+
+                <form id="regForm">
+                    <input type="hidden" id="eventId" value="{{ event_id }}">
+
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="name" value="{{ user['name'] if user else '' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Student ID</label>
+                        <input type="text" id="studentId" value="{{ user['student_id'] if user else '' }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Student Email</label>
+                        <input type="email" id="studentEmail" value="{{ user['email'] if user else '' }}" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="phone_number" placeholder="example: 0123456789" required>
+        </div>
+                        <div class="form-group">
+                            <label>Faculty</label>
+                            <select id="faculty" required>
+                                <option value="">Select faculty</option>
+                                <option value="FCI" {% if user and user['faculty'] == 'FCI' %}selected{% endif %}>FCI</option>
+                                <option value="FAIE" {% if user and user['faculty'] == 'FAIE' %}selected{% endif %}>FAIE</option>
+                                <option value="FOM" {% if user and user['faculty'] == 'FOM' %}selected{% endif %}>FOM</option>
+                                <option value="FAC" {% if user and user['faculty'] == 'FAC' %}selected{% endif %}>FAC</option>
+                                <option value="FCM" {% if user and user['faculty'] == 'FCM' %}selected{% endif %}>FCM</option>
+                                <option value="FCA" {% if user and user['faculty'] == 'FCA' %}selected{% endif %}>FCA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="outlookCalendar">
+                        <label for="outlookCalendar">Add this event to my Outlook Calendar</label>
+                    </div>
+
+                    <button type="submit">Register</button>
+                </form>
+            </div>
         </div>
 
-        <form id="regForm">
-            <input type="hidden" id="eventId" value="{{ event_id }}">
-
-            <div class="form-group">
-                <label>Full Name</label>
-                <input type="text" id="name" value="{{ user['name'] if user else '' }}" required>
+        <div id="successModal" class="modal hidden">
+            <div class="modal-box">
+                <div class="icon-circle">✓</div>
+                <h2>Successful</h2>
+                <p style="margin:10px 0 20px; color:#666;">You have registered successfully.</p>
+                <button onclick="closeModal()" class="modal-btn">Back to Event Page</button>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label>Student ID</label>
-                <input type="text" id="studentId" value="{{ user['student_id'] if user else '' }}" required>
-            </div>
+        <script>
+        document.getElementById("regForm").addEventListener("submit", function(e){
+            e.preventDefault();
 
-            <div class="form-group">
-                <label>Student Email</label>
-                <input type="email" id="studentEmail" value="{{ user['email'] if user else '' }}" required>
-            </div>
+            const payload = {
+                event_id: parseInt(document.getElementById('eventId').value),
+                name: document.getElementById('name').value,
+                studentId: document.getElementById('studentId').value,
+                studentEmail: document.getElementById('studentEmail').value,
+                personalEmail: '', // Kept empty to coordinate backend parameters cleanly
+                phone: document.getElementById('phone_number').value,
+                faculty: document.getElementById('faculty').value,
+                outlook_calendar: document.getElementById('outlookCalendar').checked 
+            };
 
-            <div class="form-row">
-                <div class="form-group">
-    <label>Phone Number</label>
-    <input type="text" id="phone_number" placeholder="example: 0123456789" required>
-</div>
-                <div class="form-group">
-                    <label>Faculty</label>
-                    <select id="faculty" required>
-                        <option value="">Select faculty</option>
-                        <option value="FCI" {% if user and user['faculty'] == 'FCI' %}selected{% endif %}>FCI</option>
-                        <option value="FAIE" {% if user and user['faculty'] == 'FAIE' %}selected{% endif %}>FAIE</option>
-                        <option value="FOM" {% if user and user['faculty'] == 'FOM' %}selected{% endif %}>FOM</option>
-                        <option value="FAC" {% if user and user['faculty'] == 'FAC' %}selected{% endif %}>FAC</option>
-                        <option value="FCM" {% if user and user['faculty'] == 'FCM' %}selected{% endif %}>FCM</option>
-                        <option value="FCA" {% if user and user['faculty'] == 'FCA' %}selected{% endif %}>FCA</option>
-                    </select>
-                </div>
-            </div>
+            fetch('/register_event', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Process downloaded .ics for Outlook if requested
+                    if (data.download_calendar && data.ics_content) {
+                        downloadICSFile(data.ics_content, data.filename || 'event.ics');
+                    }
+                    // Display your customized popup modal layout directly
+                    document.getElementById("successModal").classList.remove("hidden");
+                } else {
+                    alert('Registration error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Submission Error:', error);
+                alert('An unexpected server communication issue occurred.');
+            });
+        });
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="outlookCalendar">
-                <label for="outlookCalendar">Add this event to my Outlook Calendar</label>
-            </div>
-
-            <button type="submit">Register</button>
-        </form>
-    </div>
-</div>
-
-<div id="successModal" class="modal hidden">
-    <div class="modal-box">
-        <div class="icon-circle">✓</div>
-        <h2>Successful</h2>
-        <p style="margin:10px 0 20px; color:#666;">You have registered successfully.</p>
-        <button onclick="closeModal()" class="modal-btn">Back to Event Page</button>
-    </div>
-</div>
-
-<script>
-document.getElementById("regForm").addEventListener("submit", function(e){
-    e.preventDefault();
-
-    const payload = {
-        event_id: parseInt(document.getElementById('eventId').value),
-        name: document.getElementById('name').value,
-        studentId: document.getElementById('studentId').value,
-        studentEmail: document.getElementById('studentEmail').value,
-        personalEmail: '', // Kept empty to coordinate backend parameters cleanly
-        phone: document.getElementById('phone_number').value,
-        faculty: document.getElementById('faculty').value,
-        outlook_calendar: document.getElementById('outlookCalendar').checked 
-    };
-
-    fetch('/register_event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            // Process downloaded .ics for Outlook if requested
-            if (data.download_calendar && data.ics_content) {
-                downloadICSFile(data.ics_content, data.filename || 'event.ics');
+        function downloadICSFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/calendar;charset=utf-8;' });
+            const link = document.createElement('a');
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', filename);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
-            // Display your customized popup modal layout directly
-            document.getElementById("successModal").classList.remove("hidden");
-        } else {
-            alert('Registration error: ' + data.message);
         }
-    })
-    .catch(error => {
-        console.error('Submission Error:', error);
-        alert('An unexpected server communication issue occurred.');
-    });
-});
 
-function downloadICSFile(content, filename) {
-    const blob = new Blob([content], { type: 'text/calendar;charset=utf-8;' });
-    const link = document.createElement('a');
-    if (link.download !== undefined) {
-        const url = URL.createObjectURL(blob);
-        link.setAttribute('href', url);
-        link.setAttribute('download', filename);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-}
-
-function closeModal(){
-    document.getElementById("successModal").classList.add("hidden");
-    let eventId = document.getElementById('eventId').value || 1;
-    window.location.href = `/event/${eventId}`;
-}
-</script>
-</body>
+        function closeModal(){
+            document.getElementById("successModal").classList.add("hidden");
+            let eventId = document.getElementById('eventId').value || 1;
+            window.location.href = `/event/${eventId}`;
+        }
+        </script>
+    </body>
 </html>

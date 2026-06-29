@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Organizer: Edit Event - UniSphere</title>
+
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+        <style>
+
+            *{
+                margin:0;
+                padding:0;
+                box-sizing:border-box;
+                font-family:'Poppins',sans-serif;
+            }
+
+            body{
+                background:linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%);
+                min-height:100vh;
+                padding:100px 30px 30px;
+            }
+
+            /* Fixed Global Navigation Navbar Layer */
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
+
+            .notification-link{
+                position:relative;
+            }
+
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
+            }
+
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
+            }
+
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
+            }
+
+            .navbar-links a:hover {
+                color: #7b2cbf;
+            }
+
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
+
+            .navbar-links a:hover::after {
+                width: 100%;
+            }
+
+            .container{
+                max-width:1400px;
+                margin:auto;
+
+                background:rgba(255,255,255,0.15);
+                backdrop-filter:blur(10px);
+
+                border-radius:25px;
+                padding:40px;
+
+                color:white;
+            }
+
+            .title{
+                text-align:center;
+                font-size:3rem;
+                margin-bottom:10px;
+                color:#3f1b57;
+            }
+
+            .subtitle{
+                text-align:center;
+                margin-bottom:40px;
+                color:#3f1b57;
+            }
+
+            .event-header{
+                display:flex;
+                gap:30px;
+                align-items:center;
+                background:rgba(255,255,255,0.12);
+                border-radius:20px;
+                padding:25px;
+                margin-bottom:30px;
+            }
+
+            .event-poster{
+                width:220px;
+                height:220px;
+                object-fit:cover;
+                border-radius:15px;
+            }
+
+            .event-info{
+                flex:1;
+                color:#3f1b57;
+            }
+
+            .event-info h2{
+                font-size:2rem;
+                margin-bottom:15px;
+            }
+
+            .event-info p{
+                margin-bottom:8px;
+            }
+
+            .action-buttons{
+                display:flex;
+                gap:15px;
+                margin-top:20px;
+            }
+
+            .btn{
+                border:none;
+                padding:12px 22px;
+                border-radius:10px;
+
+                color:white;
+
+                font-weight:600;
+                cursor:pointer;
+            }
+
+            .btn-edit{
+                background:#7b2cbf;
+            }
+
+            .btn-export{
+                background:#00b894;
+            }
+
+            .btn-delete{
+                background:#b8006b;
+            }
+
+            .form-group textarea {
+                width: 100%;
+                padding: 12px 16px;
+                border: 1.5px solid #ddd;
+                border-radius: 12px;
+                font-size: 1rem;
+                outline: none;
+                color: #333;
+                transition: border-color 0.2s, box-shadow 0.2s;
+                height: 120px;        /* fixed height */
+                resize: none;          /* disable resize */
+            }
+            .form-group textarea:focus {
+                border-color: #b37cd4;
+                box-shadow: 0 0 0 3px rgba(179, 124, 212, 0.25);
+            }
+
+            .stats{
+                display:grid;
+                grid-template-columns:repeat(3,1fr);
+                gap:20px;
+                margin-bottom:30px;
+            }
+
+            .stat-card{
+                background:rgba(255,255,255,0.12);
+                color:#3f1b57;
+                border-radius:15px;
+                padding:25px;
+                text-align:center;
+            }
+
+            .stat-card h3{
+                font-size:2rem;
+            }
+
+            .participants-section{
+                background:rgba(255,255,255,0.12);
+                color:#3f1b57;
+                border-radius:20px;
+                padding:25px;
+            }
+
+            .participants-section h2{
+                margin-bottom:20px;
+            }
+
+            table{
+                width:100%;
+                border-collapse:collapse;
+            }
+
+            th,
+            td{
+                padding:15px;
+                text-align:left;
+            }
+
+            th{
+                background:rgba(255,255,255,0.15);
+            }
+
+            tr:nth-child(even){
+                background:rgba(255,255,255,0.08);
+            }
+
+            tr:hover{
+                background:rgba(255,255,255,0.15);
+            }
+
+            .modal {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.6);
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            .modal-content {
+                background: white;
+                color: black;
+                padding: 30px;
+                border-radius: 15px;
+                width: 400px;
+                text-align: center;
+            }
+
+            .modal-buttons {
+                margin-top: 20px;
+                display: flex;
+                justify-content: center;
+                gap: 15px;
+            }
+
+            #confirmSaveBtn:disabled{
+                opacity:.5;
+                cursor:not-allowed;
+            }
+
+        </style>
+    </head>
+
+    <body>
+
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'organizer' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/createevent">Create Event</a>
+                    <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="/user_dashboard">Profile</a>
+
+                {% elif session.get('role') == 'admin' %}
+                    <a href="/eventbrowsing">Browse Events</a>
+                    <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
+                    <a href="/user_dashboard">Profile</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="container">
+            <h1 class="title">EDIT EVENT</h1>
+            <p class="subtitle">Organizer Event Management Panel</p>
+
+        <form id="editEventForm" action="{{ url_for('update_event', event_id=event['event_id']) }}" method="POST" enctype="multipart/form-data">
+
+            <!-- SECTION 1: BASIC INFO -->
+            <div class="form-step">
+                <div class="form-group">
+                    <label>Event Poster:</label>
+                    <input type="file" name="eventPoster" accept="image/*">
+                    <br>
+                    <img src="{{ url_for('static', filename='eventPoster/' + event['event_poster']) }}"width="200">
+                </div>
+
+                <div class="form-group">
+                    <label>Event Name:</label>
+                    <input type="text" id="event_name" name="eventName" value="{{event['event_name']}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Description:</label>
+                    <textarea id="event_description" name="eventDescription" required>{{event['event_description']}}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" name="startDate" value="{{event['start_date']}}"required>
+                </div>
+
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" name="endDate" value="{{event['end_date']}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Start Time:</label>
+                    <input type="time" name="startTime" value="{{event['start_time']}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>End Time:</label>
+                    <input type="time" name="endTime" value="{{event['end_time']}}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Event Mode:</label>
+                    <select name="eventMode" id="event_mode" onchange="toggleEventLink()" required>
+                        <option value="online" {% if event['event_mode']=="online" %}selected{% endif %}>Online</option>
+                        <option value="offline" {% if event['event_mode']=="offline" %}selected{% endif %}>Offline</option>
+                        <option value="hybrid"{% if event['event_mode']=="hybrid" %}selected{% endif %}>Hybrid</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SECTION 2 LOCATION -->
+            <div class="form-step">
+                <div class="form-group">
+                    <label>Event Location:</label>
+                    <select id="mainloc" name="mainLocation" onchange="updateMainLocations()" required>
+                        <option value="General" {% if event['main_location']=="General" %}selected{% endif %}>General Campus Area</option>
+                        <option value="CLC" {% if event['main_location']=="CLC" %}selected{% endif %}>CLC</option>
+                        <option value="FCI" {% if event['main_location']=="FCI" %}selected{% endif %}>FCI</option>
+                        <option value="FAIE" {% if event['main_location']=="FAIE" %}selected{% endif %}>FAIE</option>
+                        <option value="FCM" {% if event['main_location']=="FCM" %}selected{% endif %}>FCM</option>
+                        <option value="FOM" {% if event['main_location']=="FOM" %}selected{% endif %}>FOM</option>
+                        <option value="FAC" {% if event['main_location']=="FAC" %}selected{% endif %}>FAC</option>
+                        <option value="FCA" {% if event['main_location']=="FCA" %}selected{% endif %}>FCA</option>
+                    </select>
+                </div>
+
+                <!-- GENERAL -->
+                <div class="form-group" id="general_location_container">
+                    <label>Venue:</label>
+                    <select id="general_location" name="generalLocation">
+                        <option value="{{event['general_location']}}">{{event['general_location']}}</option>
+                    </select>
+                </div>
+
+                <!-- CLC -->
+                <div class="form-group" id="clc_hall_container">
+                    <label>Venue:</label>
+                    <select id="clc_hall" name="clcHall">
+                        <option value="{{event['specific_location']}}">{{event['specific_location']}}</option>
+                    </select>
+                </div>
+
+                <!-- FACULTY -->
+                <div class="form-group" id="faculty_wing_container">
+                    <label>Wing:</label>
+                    <select id="faculty_wing" name="facultyWing">
+                        <option value="{{event['faculty_wing']}}">{{event['faculty_wing']}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="specific_location_container">
+                    <label>Room / Venue:</label>
+                    <select id="specific_location" name="specificLocation">
+                        <option value="{{event['specific_location']}}">{{event['specific_location']}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Participation Type:</label>
+                    <select name="participationOption">
+                        <option value="unlimited" {% if event['participation_option']=="unlimited" %}selected{% endif %}>Unlimited</option>
+                        <option value="limited" {% if event['participation_option']=="limited" %}selected{% endif %}>Limited</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Max Participants:</label>
+                    <input type="number" name="limitedMaxParticipants" value="{{event['limited_max_participants'] or ''}}">
+                </div>
+
+                <div class="form-group" id="event_link_container">
+                    <label>Event Link:</label>
+                    <input type="url" name="eventLink" value="{{event['event_link'] or ''}}">
+                </div>
+
+                <button type="button" class="btn-primary" onclick="openSaveModal()">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+
+        <div id="saveChangesModal" class="modal">
+            <div class="modal-content">
+                <h2>Confirm Changes</h2>
+                <p>
+                    You are about to submit changes to this event.
+                </p>
+                <p>
+                    Your edited event will be sent to the administrator
+                    for approval before becoming visible.
+                </p>
+                <hr>
+                <!-- Only show this if event already approved -->
+                {% if event['event_status'] == "Approved" %}
+                    <p>
+                        <strong>Edit Attempts</strong><br>
+                        Remaining:
+                        {{ 2 - event['edit_attempt'] }} / 2
+                    </p>
+                {% endif %}
+                <br>
+                <label class="checkbox-container">
+                    <input type="checkbox" id="confirmDeclaration" onchange="toggleConfirmButton()">
+                    I confirm that all event information is correct and understand
+                    that submitting these changes will require administrator approval.
+                </label>
+
+                <div class="modal-buttons">
+                    <button type="button" class="delete-cancel" onclick="closeSaveModal()">
+                        Cancel
+                    </button>
+
+                    <button type="button" id="confirmSaveBtn" class="btn-edit" onclick="submitEditForm()" disabled>
+                        Confirm Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openSaveModal(){
+                document.getElementById("saveChangesModal").style.display="flex";
+            }
+
+            function closeSaveModal(){
+                document.getElementById("saveChangesModal").style.display="none";
+            }
+
+            function toggleConfirmButton(){
+                const checked = document.getElementById("confirmDeclaration").checked;
+                document.getElementById("confirmSaveBtn").disabled=!checked;
+            }
+
+            function submitEditForm(){
+                document.getElementById("editEventForm").submit();
+            }
+        </script>
+        
+    </body>
+</html>

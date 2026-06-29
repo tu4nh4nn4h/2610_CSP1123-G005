@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Manage Event</title>
+        <title>Organizer: Manage Event - UniSphere</title>
 
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -36,6 +36,20 @@
                 justify-content: space-between;
                 padding: 0 40px;
                 z-index: 1000;
+            }
+
+            .notification-link{
+                position:relative;
+            }
+
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
             }
 
             .navbar-brand {
@@ -139,6 +153,42 @@
 
             .event-info p{
                 margin-bottom:8px;
+            }
+
+            .event-title-row{
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:18px;
+            }
+
+            .event-title-row h2{
+                margin:0;
+                color:#3f1b57;
+                flex:1;
+            }
+
+            .status-badge{
+                padding:8px 16px;
+                border-radius:20px;
+                font-size:0.9rem;
+                font-weight:600;
+                white-space:nowrap;
+            }
+
+            .status-badge.approved{
+                background:#d4edda;
+                color:#155724;
+            }
+
+            .status-badge.pending{
+                background:#fff3cd;
+                color:#856404;
+            }
+
+            .status-badge.redo{
+                background:#f8d7da;
+                color:#721c24;
             }
 
             .action-buttons{
@@ -268,6 +318,35 @@
                 cursor: pointer;
             }
 
+            .event-action-area{
+                display:flex;
+                flex-direction:column;
+                align-items:flex-end;
+                gap:10px;
+                margin-left:auto;
+                width:260px;
+            }
+
+            .admin-remark-display{
+                width:260px;
+                padding:15px;
+                background:rgba(255,255,255,0.35);
+                border-radius:15px;
+                color:#3f1b57;
+            }
+
+
+            .admin-remark-display h3{
+                font-size:1rem;
+                margin-bottom:8px;
+            }
+
+
+            .admin-remark-display p{
+                font-size:0.9rem;
+                word-wrap:break-word;
+            }
+
         </style>
     </head>
 
@@ -278,42 +357,86 @@
                 {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
             </div>
         </nav>
 
         <div class="container">
-            <h1 class="title">Manage Event</h1>
+            <h1 class="title">MANAGE EVENT</h1>
             <p class="subtitle">Organizer Event Management Panel</p>
 
             <div class="event-header">
                 <img src="{{ url_for('static', filename='eventPoster/' + event['event_poster']) }}" class="event-poster">
                 <div class="event-info">
-                    <h2>{{ event['event_name'] }}</h2>
+                    <div class="event-title-row">
+                        <h2>{{ event['event_name'] }}</h2>
+
+                        <div class="event-action-area">
+                            {% if event['event_status'] == 'Redo' %}
+                                <div class="status-badge redo">
+                                    🔴 Redo Required
+                                </div>
+
+                            {% elif event['event_status'] == 'Pending' %}
+                                <div class="status-badge pending">
+                                    🟡 Pending Review
+                                </div>
+
+                            {% elif event['event_status'] == 'Approved' %}
+                                <div class="status-badge approved">
+                                    🟢 Approved
+                                </div>
+                            {% endif %}
+
+                            {% if event['event_status'] == 'Redo' %}
+                                <div class="admin-remark-display">
+                                    <h3>Admin Remark</h3>
+                                    <p>{{ event['admin_remark'] }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
                     <p><strong>Date: </strong>{{ event['start_date'] }} - {{ event['end_date'] }}</p>
                     <p><strong>Time: </strong>{{ event['start_time'] }} - {{ event['end_time'] }}</p>
                     <p><strong>Mode: </strong>{{ event['event_mode'] }}</p>
 
                     {% if event['general_location'] %}
-
                     <p><strong>Venue: </strong>{{ event['general_location'] }}</p>
-
+                    {% elif event['main_location'] == "CLC" %}
+                    <p><strong>Venue: </strong>{{event['main_location']}} - {{ event['specific_location'] }}</p>                   
                     {% else %}
-
                     <p><strong>Venue: </strong>{{ event['faculty_wing'] }} - {{ event['specific_location'] }}</p>
-
                     {% endif %}
 
                     <div class="action-buttons">
@@ -324,50 +447,52 @@
                 </div>
             </div>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <p>Total Participants</p>
-                    <h3>{{ participants|length }}</h3>
+            {% if event['event_status'] == 'Approved' %}
+                <div class="stats">
+                    <div class="stat-card">
+                        <p>Total Participants</p>
+                        <h3>{{ participants|length }}</h3>
+                    </div>
+
+                    <div class="stat-card">
+                        <p>Event Mode</p>
+                        <h3>{{ event['event_mode'] }}</h3>
+                    </div>
+
+                    <div class="stat-card">
+                        <p>Event ID</p>
+                        <h3>{{ event['event_id'] }}</h3>
+                    </div>
                 </div>
 
-                <div class="stat-card">
-                    <p>Event Mode</p>
-                    <h3>{{ event['event_mode'] }}</h3>
+                <div class="participants-section">
+                    <h2>Participant List</h2>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Student ID</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Faculty</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for participant in participants %}
+                            <tr>
+                                <td>{{ participant['name'] }}</td>
+                                <td>{{ participant['student_id'] }}</td>
+                                <td>{{ participant['email'] }}</td>
+                                <td>{{ participant['phone_number'] }}</td>
+                                <td>{{ participant['faculty'] }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-
-                <div class="stat-card">
-                    <p>Event ID</p>
-                    <h3>{{ event['event_id'] }}</h3>
-                </div>
-            </div>
-
-            <div class="participants-section">
-                <h2>Participant List</h2>
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Student ID</th>
-                            <th>Email</th>
-                            <th>Phone</th>
-                            <th>Faculty</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for participant in participants %}
-                        <tr>
-                            <td>{{ participant['name'] }}</td>
-                            <td>{{ participant['student_id'] }}</td>
-                            <td>{{ participant['email'] }}</td>
-                            <td>{{ participant['phone_number'] }}</td>
-                            <td>{{ participant['faculty'] }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            {% endif %}
         </div>
 
         <div id="deleteModal" class="modal">

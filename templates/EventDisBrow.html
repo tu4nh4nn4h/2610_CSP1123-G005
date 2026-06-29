@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Event Browsing</title>
+    <title>Event Browsing - UniSphere</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ===== GLOBAL ===== */
@@ -35,6 +35,20 @@
             justify-content: space-between;
             padding: 0 40px;
             z-index: 1000;
+        }
+
+        .notification-link{
+            position:relative;
+        }
+
+        .notification-dot{
+            position:absolute;
+            width:10px;
+            height:10px;
+            background:red;
+            border-radius:50%;
+            top:-3px;
+            right:-10px;
         }
 
         .navbar-brand {
@@ -181,17 +195,35 @@
             {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
         </div>

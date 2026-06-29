@@ -24,13 +24,12 @@ CREATE TABLE IF NOT EXISTS user_details (
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
-
-
 -- 3. Organizer Details
 CREATE TABLE IF NOT EXISTS organizer_details (
     student_id VARCHAR(10) PRIMARY KEY,
     club_body TEXT NOT NULL,
     position_title TEXT NOT NULL,
+    proof_document TEXT,
     approved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
@@ -54,7 +53,9 @@ CREATE TABLE IF NOT EXISTS events (
     limited_max_participants INTEGER,    -- optional, only for limited participation
     event_link TEXT,
     student_id varchar(10) NOT NULL,
-    event_status TEXT DEFAULT 'Pending' CHECK(event_status IN ('Pending', 'Approved', 'Rejected')),
+    event_status TEXT DEFAULT 'Pending' CHECK(event_status IN ('Pending', 'Approved', 'Redo')),
+    admin_remark TEXT,
+    edit_attempt INTEGER DEFAULT 0,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );
 
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     type TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    link TEXT,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 
@@ -91,6 +93,7 @@ CREATE TABLE IF NOT EXISTS organizer_applications (
     proof_document TEXT NOT NULL,
     application_status TEXT NOT NULL DEFAULT 'Pending' CHECK(application_status IN ('Pending', 'Approved', 'Rejected')),
     submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    rejected_date DATE,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 

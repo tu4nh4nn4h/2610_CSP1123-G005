@@ -207,7 +207,7 @@ def allowed_file(filename):
     return '.' in filename and \
             filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def create_notification(student_id, message, type):
+def create_notification(student_id, message, notif_type):
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -216,7 +216,7 @@ def create_notification(student_id, message, type):
         INSERT INTO notifications
         (student_id, message, type)
         VALUES (?, ?, ?)
-    """, (student_id, message, type))
+    """, (student_id, message, notif_type))
 
     conn.commit()
     conn.close()
@@ -321,6 +321,10 @@ def register_organizer():
                             (student_id, name, username, email, generate_password_hash(password), security_question, keyword, 'user', 0))
             cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title, proof_document, application_status) VALUES (?, ?, ?, ?, ?)",
                             (student_id, club_body, position_title, filename, 'Pending'))
+            
+            # # 🔔 SEND NOTIFICATIONS
+            # send_admin_notification(f"{student_id} has applied to become an organizer.","Approval Pending","/admin_dashboard")
+            # create_notification(student_id,"Your application has been submitted successfully and is now under review by the administrator.","Approval Pending")
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
@@ -361,6 +365,7 @@ def signin():
 
                 session['user'] = username  # Assuming the first column is user ID
                 session['role'] = role
+                session['student_id'] = user['student_id']
                 
                 return redirect(url_for('dashboard'))
             else:
@@ -537,7 +542,6 @@ def form():
             conn.close()
 
     return render_template('form.html', event_id=event_id, user=user_data)
-
 
 @app.route('/register_event', methods=['POST'])
 def register_event():
@@ -719,6 +723,10 @@ def create_event():
                 (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, 
                 general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, user['student_id'], 'Pending'))
 
+        #  # 🔔 SEND NOTIFICATIONS
+        #     send_admin_notification(f"{user['student_id']} has created an event.","Event Pending","/admin_dashboard")
+        #     create_notification(user["student_id"],"Your event has been submitted successfully and is now under review by the administrator.","Event Pending")
+
             conn.commit()
             return jsonify({"status": "create_event_success"})
         
@@ -731,11 +739,6 @@ def create_event():
 
         finally:
             conn.close()
-            create_notification(
-            user["student_id"],
-                "Your event has been created successfully.",
-                "Event Created"
-            )
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():
@@ -764,20 +767,44 @@ def be_organizer():
         return render_template('be_organizer.html')
 
     if request.method == 'POST':
-        data=request.get_json()
-        club_body = data.get('club_body')
-        position_title = data.get('position_title')
-        uploaded_file = request.files['proof_document']
+
+         # =========================
+        # CHECK REAPPLY 3 DAYS
+        # =========================
+
+        cursor.execute("""SELECT rejected_date FROM organizer_applications WHERE student_id=?
+            AND application_status='Rejected' ORDER BY rejected_date DESC LIMIT 1""",(user['student_id'],))
+
+        last_reject = cursor.fetchone()
+
+        if last_reject and last_reject['rejected_date']:
+            reject_date = datetime.strptime(last_reject['rejected_date'], "%Y-%m-%d")
+            allow_date = reject_date + timedelta(days=3)
+
+            if datetime.now() < allow_date:
+                remaining = (allow_date - datetime.now()).days
+                conn.close()
+                return jsonify({"status":"blocked","message":f"You can only reapply after {remaining} day(s)."})
+
+        # =========================
+        # INSERT NEW APPLICATION
+        # =========================
+
+        club_body = request.form.get('clubBody')
+        position_title = request.form.get('positionTitle')
+        uploaded_file = request.files['proofFile']
 
         filename = secure_filename(uploaded_file.filename)
-
         uploaded_file.save(os.path.join(app.config['SUPPORTING_DOCS_FOLDER'], filename))
 
         try:
             # Insert organizer details
-            cursor.execute("""INSERT INTO organizer_applications (student_id, club_body, position_title, proof_document)
-            VALUES (?, ?, ?, ?)""", (user['student_id'], club_body, position_title, filename))
+            cursor.execute("""INSERT INTO organizer_applications (student_id, club_body, position_title, proof_document, application_status)
+            VALUES (?, ?, ?, ?, ?)""", (user['student_id'], club_body, position_title, filename, 'Pending'))
 
+            # # 🔔 SEND NOTIFICATIONS
+            # send_admin_notification(f"{user['student_id']} has applied to become an organizer.","Application Pending","/admin_dashboard")
+            # create_notification(user["student_id"],"Your application has been submitted successfully and is now under review by the administrator.","Application Pending")
             conn.commit()
 
         except Exception as e:
@@ -886,18 +913,30 @@ def delete_event(event_id):
     # Send notification
     for participant in participants:
         cursor.execute("""INSERT INTO notifications (student_id, message, type) VALUES (?, ?, ?)""",
-        (participant['student_id'], f"The event '{event['event_name']}' has been cancelled by the organizer.",'event_cancelled'))
+        (participant['student_id'], f"The event '{event['event_name']}' has been cancelled by the organizer.",'Event Cancelled'))
 
     # Delete registrations first
-    cursor.execute("""DELETE * FROM event_registrations WHERE event_id = ?""", (event_id,))
+    cursor.execute("DELETE FROM event_registrations WHERE event_id = ?", (event_id,))
 
     # Delete event
-    cursor.execute("""DELETE FROM events WHERE event_id = ?""", (event_id,))
+    cursor.execute("DELETE FROM events WHERE event_id = ?", (event_id,))
 
     conn.commit()
     conn.close()
 
-    return redirect(url_for('myevent'))
+    return redirect(url_for('my_event'))
+
+@app.route('/editevent/<int:event_id>')
+def edit_event(event_id):
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM events WHERE event_id=?",(event_id,))
+
+    event = cursor.fetchone()
+    conn.close()
+
+    return render_template("edit_event.html",event=event)
 
 @app.route('/user_dashboard')
 def dashboard():
@@ -976,7 +1015,7 @@ def cancel_registration(event_id):
         cursor.execute("""
             INSERT INTO notifications (student_id, message, type)
             VALUES (?, ?, ?)
-        """, (student_id, notification_msg, 'Cancellation'))
+        """, (student_id, notification_msg, 'cancellation'))
 
         # Commit all changes to the database safely
         conn.commit()
@@ -1081,7 +1120,7 @@ def user_profile():
 def logout():
     session.clear()
     return redirect(url_for('signin'))
- 
+
 # notification page
 @app.route('/notifications')
 def notifications():
@@ -1112,9 +1151,50 @@ def notifications():
     """, (user["student_id"],))
 
     notifications_list = cursor.fetchall()
+
+    # 🔴 COUNT UNREAD NOTIFICATIONS
+    cursor.execute("""
+        SELECT COUNT(*) 
+        FROM notifications
+        WHERE student_id=? AND is_read=0
+    """, (user["student_id"],))
+
+    unread_notifications = cursor.fetchone()[0]
     conn.close()
 
-    return render_template("notifications.html", notifications=notifications_list)
+    return render_template("notifications.html", notifications=notifications_list, unread_notifications=unread_notifications)
+
+# def send_admin_notification(message, notif_type, link):
+
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+
+#     cursor.execute("SELECT student_id FROM users_general WHERE role='admin'")
+#     admins = cursor.fetchall()
+
+#     for admin in admins:
+#         cursor.execute("INSERT INTO notifications (student_id, message, type, link) VALUES (?, ?, ?,?)",
+#         (admin['student_id'], message,notif_type,link))
+
+    conn.commit()
+    conn.close()
+
+@app.context_processor
+def inject_notifications():
+
+    if 'student_id' not in session:
+        return dict(unread_notifications=0)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT COUNT(*) AS total FROM notifications WHERE student_id = ? AND is_read = 0",
+    (session['student_id'],))
+
+    result = cursor.fetchone()
+    conn.close()
+
+    return dict(unread_notifications=result['total'])
 
 @app.route('/change_email', methods=['POST'])
 def change_email():
@@ -1255,21 +1335,47 @@ def approve_organizer(application_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # ambil student_id daripada application
-    cursor.execute("SELECT student_id FROM organizer_applications WHERE application_id = ?",(application_id,))
+    cursor.execute("""
+    SELECT student_id, club_body, position_title, proof_document
+    FROM organizer_applications
+    WHERE application_id = ?""", (application_id,))
 
     application = cursor.fetchone()
 
     if application:
-        student_id = application['student_id']
+        student_id = application["student_id"]
 
         # update application status
-        cursor.execute(
-            "UPDATE organizer_applications SET application_status='Approved' WHERE application_id = ?",(application_id,))
+        cursor.execute("""
+            UPDATE organizer_applications 
+            SET application_status='Approved'
+            WHERE application_id=?
+        """, (application_id,))
+
 
         # update role user
-        cursor.execute(
-            "UPDATE users_general SET role='organizer' WHERE student_id=?",(student_id,))
+        cursor.execute("""
+            UPDATE users_general 
+            SET role='organizer'
+            WHERE student_id=?
+        """, (student_id,))
+
+
+        # insert organizer details
+        cursor.execute("""
+            INSERT INTO organizer_details
+            (student_id, club_body, position_title, proof_document)
+            VALUES (?, ?, ?, ?)
+        """,
+        (
+            application["student_id"],
+            application["club_body"],
+            application["position_title"],
+            application["proof_document"]
+        ))
+        
+    #     # 🔔 SEND NOTIFICATIONS       
+    # create_notification(application["student_id"],"Congratulations! Your organizer application has been approved.", "Application Approved")
 
     conn.commit()
     conn.close()
@@ -1283,7 +1389,15 @@ def reject_organizer(application_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("UPDATE organizer_applications SET application_status='Rejected' WHERE application_id=?", (application_id,))
+    # ambil student yang apply
+    cursor.execute("SELECT student_id FROM organizer_applications WHERE application_id=?",(application_id,))
+    
+    # update application status
+    cursor.execute("""UPDATE organizer_applications SET application_status='Rejected', 
+        rejected_date=CURRENT_DATE WHERE application_id=?""",(application_id,))
+    
+    # # 🔔 SEND NOTIFICATIONS       
+    # create_notification(application["student_id"],"Your organizer application has been rejected. You can reapply after 3 days.","Application Rejected")
 
     conn.commit()
     conn.close()
@@ -1297,7 +1411,10 @@ def approve_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""UPDATE events SET status='Approved' WHERE event_id=?""", (event_id,))
+    cursor.execute("UPDATE events SET event_status ='Approved' WHERE event_id=?", (event_id,))
+
+    # # 🔔 SEND NOTIFICATIONS       
+    # create_notification(event["student_id"],f"Your event '{event['event_name']}' has been approved.","Event Approved")
 
     conn.commit()
     conn.close()
@@ -1308,12 +1425,15 @@ def approve_event(event_id):
 @app.route('/reject_event/<int:event_id>', methods=['POST'])
 def reject_event(event_id):
 
+    admin_remark = request.form['admin_remark']
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""UPDATE events SET status='Pending' WHERE event_id=?""", (event_id,))
+    cursor.execute("UPDATE events SET event_status='Redo', admin_remark=? WHERE event_id=?", (admin_remark, event_id))
 
-
+    # # 🔔 SEND NOTIFICATIONS       
+    # create_notification(event["student_id"],f"Your event '{event['event_name']}' requires revision. Please check admin remark.","Event Redo")
     conn.commit()
     conn.close()
 

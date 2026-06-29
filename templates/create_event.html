@@ -2,7 +2,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Organizer: Event Creation Form</title>
+        <title>Organizer: Event Creation Form - UniSphere</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='create_event.css') }}">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </head>
@@ -15,17 +15,35 @@
                 {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
             </div>
@@ -218,7 +236,7 @@
                 "CNMX 1002",
                 "CNMX 1003",
                 "CNMX 1004",
-                "CNMX 1005",
+                "CNMX 1005"
             ],
 
             "FCI": {
@@ -334,13 +352,11 @@
             const generalContainer = document.getElementById('general_location_container');
 
             const clcHallContainer = document.getElementById('clc_hall_container');
-            const clcHallSelect = document.getElementById('clc_hall');
 
             const specificContainer = document.getElementById('specific_location_container');
             const specificSelect = document.getElementById('specific_location');
 
             // Reset options
-            clcHallSelect.innerHTML = '<option value="">Select Venue</option>';
             specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
             if (mainLocation === "General") {
                 generalContainer.style.display = 'block';

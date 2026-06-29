@@ -1,395 +1,427 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - UniSphere</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Edit Profile - UniSphere</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+            }
 
-        body {
-            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            padding-top: 80px;
-        }
+            body {
+                background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                padding: 20px;
+                padding-top: 80px;
+            }
 
-        .navbar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            z-index: 1000;
-        }
+            .navbar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 70px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 40px;
+                z-index: 1000;
+            }
 
-        .navbar-brand {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3f1b57;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+            .notification-link{
+                position:relative;
+            }
 
-        /* Core application navigation action links */
-        .navbar-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-        }
+            .notification-dot{
+                position:absolute;
+                width:10px;
+                height:10px;
+                background:red;
+                border-radius:50%;
+                top:-3px;
+                right:-10px;
+            }
 
-        .navbar-links a {
-            color: #5c3576;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            position: relative;
-            padding: 4px 0;
-        }
+            .navbar-brand {
+                font-size: 1.5rem;
+                font-weight: 700;
+                color: #3f1b57;
+                text-decoration: none;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
 
-        .navbar-links a:hover {
-            color: #7b2cbf;
-        }
+            /* Core application navigation action links */
+            .navbar-links {
+                display: flex;
+                gap: 25px;
+                align-items: center;
+            }
 
-        /* Underline slider effect matching system application pages */
-        .navbar-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #7b2cbf;
-            transition: width 0.2s ease;
-        }
+            .navbar-links a {
+                color: #5c3576;
+                text-decoration: none;
+                font-size: 0.95rem;
+                font-weight: 500;
+                transition: color 0.2s;
+                position: relative;
+                padding: 4px 0;
+            }
 
-        .navbar-links a:hover::after {
-            width: 100%;
-        }
-   
-        .profile a {
-            color: black;
-            text-decoration: none;
-            font-size: 16px;
-            padding: 5px 10px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+            .navbar-links a:hover {
+                color: #7b2cbf;
+            }
 
-        .profile a:hover {
-            background-color: #f0f0f0;
-            border-radius: 4px;
-        }
+            /* Underline slider effect matching system application pages */
+            .navbar-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: 0;
+                left: 0;
+                background-color: #7b2cbf;
+                transition: width 0.2s ease;
+            }
 
-        .profile {
-            margin-left: auto;
-        }
+            .navbar-links a:hover::after {
+                width: 100%;
+            }
+    
+            .profile a {
+                color: black;
+                text-decoration: none;
+                font-size: 16px;
+                padding: 5px 10px;
+                transition: background-color 0.3s, color 0.3s;
+            }
 
-        /* Container & Glass Panels */
-        .dashboard-view {
-            width: 95%;
-            max-width: 1100px;
-            padding: 40px;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            color: white;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-        }
+            .profile a:hover {
+                background-color: #f0f0f0;
+                border-radius: 4px;
+            }
 
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 25px;
-        }
+            .profile {
+                margin-left: auto;
+            }
 
-        .card {
-            background: rgba(176, 106, 214, 0.4);
-            border-radius: 25px;
-            padding: 35px;
-            min-height: 600px;
-        }
+            /* Container & Glass Panels */
+            .dashboard-view {
+                width: 95%;
+                max-width: 1100px;
+                padding: 40px;
+                border-radius: 25px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                color: white;
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            }
 
-        .card h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-transform: uppercase;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 8px;
-        }
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 25px;
+            }
 
-        .card p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
+            .card {
+                background: rgba(176, 106, 214, 0.4);
+                border-radius: 25px;
+                padding: 35px;
+                min-height: 600px;
+            }
 
-        /* Form Controls */
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
+            .card h2 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin-bottom: 25px;
+                text-transform: uppercase;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+                padding-bottom: 8px;
+            }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="date"],
-        input[type="file"],
-        select {
-            width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
+            .card p {
+                font-size: 1.1rem;
+                line-height: 1.6;
+                margin-bottom: 20px;
+            }
 
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
+            /* Form Controls */
+            label {
+                display: block;
+                margin-top: 15px;
+                font-weight: 500;
+                font-size: 0.95rem;
+            }
 
-        input[type="file"] {
-            padding: 5px;
-        }
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="date"],
+            input[type="file"],
+            select {
+                width: 100%;
+                padding: 10px;
+                margin-top: 6px;
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                border-radius: 10px;
+                background: rgba(255, 255, 255, 0.2);
+                color: white;
+                font-size: 1rem;
+                outline: none;
+            }
 
-        /* Buttons & Submits */
-        input[type="submit"], .btn {
-            margin-top: 20px;
-            padding: 12px;
-            width: 100%;
-            background-color: white;
-            color: #7a1fa2;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: transform 0.2s, background-color 0.3s;
-            text-align: center;
-            display: inline-block;
-            text-decoration: none;
-        }
+            input::placeholder {
+                color: rgba(255, 255, 255, 0.7);
+            }
 
-        input[type="submit"]:hover, .btn:hover {
-            transform: translateY(-3px);
-            background-color: #f3e5f5;
-        }
+            input[type="file"] {
+                padding: 5px;
+            }
 
-        .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            margin-top: 15px;
-        }
+            /* Buttons & Submits */
+            input[type="submit"], .btn {
+                margin-top: 20px;
+                padding: 12px;
+                width: 100%;
+                background-color: white;
+                color: #7a1fa2;
+                border: none;
+                border-radius: 12px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 1rem;
+                transition: transform 0.2s, background-color 0.3s;
+                text-align: center;
+                display: inline-block;
+                text-decoration: none;
+            }
 
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
+            input[type="submit"]:hover, .btn:hover {
+                transform: translateY(-3px);
+                background-color: #f3e5f5;
+            }
 
-        /* Popups */
-        .popup {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(5px);
-        }
+            .btn-secondary {
+                background-color: rgba(255, 255, 255, 0.2);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.4);
+                margin-top: 15px;
+            }
 
-        .popup-content {
-            background: rgba(100, 50, 150, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            margin: 10% auto;
-            padding: 30px;
-            width: 90%;
-            max-width: 400px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
+            .btn-secondary:hover {
+                background-color: rgba(255, 255, 255, 0.3);
+            }
 
-        .close-btn {
-            color: rgba(255, 255, 255, 0.7);
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            line-height: 20px;
-        }
+            /* Popups */
+            .popup {
+                display: none;
+                position: fixed;
+                z-index: 2000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(5px);
+            }
 
-        .close-btn:hover {
-            color: white;
-        }
+            .popup-content {
+                background: rgba(100, 50, 150, 0.95);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                color: white;
+                margin: 10% auto;
+                padding: 30px;
+                width: 90%;
+                max-width: 400px;
+                border-radius: 20px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            }
 
-        @media (max-width: 900px) {
-            .grid { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
+            .close-btn {
+                color: rgba(255, 255, 255, 0.7);
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+                line-height: 20px;
+            }
 
-    <nav class="navbar">
-        <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
-        <div class="navbar-links">
-            {% if session.get('role') == 'user' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/be_organizer">Become Organizer</a>
-                    <a href="/user_dashboard">Profile</a>
+            .close-btn:hover {
+                color: white;
+            }
 
-                {% elif session.get('role') == 'organizer' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
-                    <a href="/user_dashboard">Profile</a>
+            @media (max-width: 900px) {
+                .grid { grid-template-columns: 1fr; }
+            }
+        </style>
+    </head>
+    <body>
 
-                {% elif session.get('role') == 'admin' %}
-                    <a href="/eventbrowsing">Browse Events</a>
-                    <a href="/admin_dashboard">Admin Dashboard</a>
-                    <a href="/user_dashboard">Profile</a>
-                {% endif %}
-        </div>
-    </nav>
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/be_organizer">Become Organizer</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
 
-    <div class="dashboard-view">
-        <div class="grid">
-            <div class="card">
-                <h2>Edit Your Profile</h2>
-                <div style="text-align: center; margin-bottom: 15px;">
-                    <img src="{{ url_for('static', filename='uploads/' + (details['profile_picture'] if details and details['profile_picture'] else 'default.png')) }}" 
-                         style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid white;">
+                    {% elif session.get('role') == 'organizer' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/createevent">Create Event</a>
+                        <a href="/myevent">My Event</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+
+                    {% elif session.get('role') == 'admin' %}
+                        <a href="/eventbrowsing">Browse Events</a>
+                        <a href="/admin_dashboard">Admin Dashboard</a>
+                        <a href="/notifications" class="notification-link">
+                            Notifications
+                            {% if unread_notifications > 0 %}
+                                <span class="notification-dot"></span>
+                            {% endif %}
+                        </a>
+                        <a href="/user_dashboard">Profile</a>
+                    {% endif %}
+            </div>
+        </nav>
+
+        <div class="dashboard-view">
+            <div class="grid">
+                <div class="card">
+                    <h2>Edit Your Profile</h2>
+                    <div style="text-align: center; margin-bottom: 15px;">
+                        <img src="{{ url_for('static', filename='uploads/' + (details['profile_picture'] if details and details['profile_picture'] else 'default.png')) }}" 
+                            style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; border: 4px solid white;">
+                    </div>
+                    <form action="/edit_profile" method="post" enctype="multipart/form-data">
+                        <label for="profile_picture">Profile Picture:</label>
+                        <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+                        
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" value="{{ user['name'] }}">
+                        
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" value="{{ user['username'] }}">
+                        
+                        <label for="bio">Bio:</label>
+                        <input type="text" id="bio" name="bio" value="{{ details['bio'] if details else '' }}">  
+                        
+                        <label for="birthday">Birthday:</label>
+                        <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
+                        
+                        <label for="faculty">Faculty:</label>
+                        <select id="faculty" name="faculty">
+                            <option value="Faculty of Computing and Informatics"
+                                {% if not details or details['faculty'] == 'Faculty of Computing and Informatics' %}selected{% endif %} style="color: black;">
+                                Faculty of Computing and Informatics
+                            </option>
+
+                            <option value="Faculty of Artificial Intelligence & Engineering"
+                                {% if details and details['faculty'] == 'Faculty of Artificial Intelligence & Engineering' %}selected{% endif %} style="color: black;">
+                                Faculty of Artificial Intelligence & Engineering
+                            </option>
+
+                            <option value="Faculty of Management"
+                                {% if details and details['faculty'] == 'Faculty of Management' %}selected{% endif %} style="color: black;">        
+                                Faculty of Management
+                            </option>
+
+                            <option value="Faculty of Cinematic Arts"
+                                {% if details and details['faculty'] == 'Faculty of Cinematic Arts' %}selected{% endif %} style="color: black;">
+                                Faculty of Cinematic Arts
+                            </option>
+
+                            <option value="Faculty of Creative Multimedia"
+                                {% if details and details['faculty'] == 'Faculty of Creative Multimedia' %}selected{% endif %} style="color: black;">
+                                Faculty of Creative Multimedia
+                            </option>
+                        </select>
+                        
+                        <label for="year_of_study">Year of Study:</label>
+                        <input type="text" id="year_of_study" name="year_of_study" value="{{ details['year_of_study'] if details else '2' }}">
+                        
+                        <input type="submit" value="Update Profile">
+                    </form>
                 </div>
-                <form action="/edit_profile" method="post" enctype="multipart/form-data">
-                    <label for="profile_picture">Profile Picture:</label>
-                    <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
-                    
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" value="{{ user['name'] }}">
-                    
+
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h2>Important Info</h2>
+                        <p>Please ensure that your profile information is accurate and up-to-date. This will help you connect with other students and access relevant resources on UniSphere.</p>
+                        
+                        <button onclick="openPopup('passwordPopup')" class="btn">Change Password</button>
+                        <button onclick="openPopup('emailPopup')" class="btn">Change Email</button>
+                    </div>
+
+                    <div>
+                        <a href="{{ url_for('user_profile') }}" class="btn btn-secondary">Back to Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="passwordPopup" class="popup">
+            <div class="popup-content">
+                <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
+                <h3>Change Password</h3>
+                <form action="/verify_keyword" method="post">
+                    <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;">Please enter your username and the answer to your security question to receive a password reset link.</p>
+                    <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;"><b>Security Question:</b> {{ security_question }}</p>
                     <label for="username">Username:</label>
-                    <input type="text" id="username" name="username" value="{{ user['username'] }}">
-                    
-                    <label for="bio">Bio:</label>
-                    <input type="text" id="bio" name="bio" value="{{ details['bio'] if details else '' }}">  
-                    
-                    <label for="birthday">Birthday:</label>
-                    <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
-                    
-                    <label for="faculty">Faculty:</label>
-                    <select id="faculty" name="faculty">
-                        <option value="Faculty of Computing and Informatics"
-                            {% if not details or details['faculty'] == 'Faculty of Computing and Informatics' %}selected{% endif %} style="color: black;">
-                            Faculty of Computing and Informatics
-                        </option>
-
-                        <option value="Faculty of Artificial Intelligence & Engineering"
-                            {% if details and details['faculty'] == 'Faculty of Artificial Intelligence & Engineering' %}selected{% endif %} style="color: black;">
-                            Faculty of Artificial Intelligence & Engineering
-                        </option>
-
-                        <option value="Faculty of Management"
-                            {% if details and details['faculty'] == 'Faculty of Management' %}selected{% endif %} style="color: black;">        
-                            Faculty of Management
-                        </option>
-
-                        <option value="Faculty of Cinematic Arts"
-                            {% if details and details['faculty'] == 'Faculty of Cinematic Arts' %}selected{% endif %} style="color: black;">
-                            Faculty of Cinematic Arts
-                        </option>
-
-                        <option value="Faculty of Creative Multimedia"
-                            {% if details and details['faculty'] == 'Faculty of Creative Multimedia' %}selected{% endif %} style="color: black;">
-                            Faculty of Creative Multimedia
-                        </option>
-                    </select>
-                    
-                    <label for="year_of_study">Year of Study:</label>
-                    <input type="text" id="year_of_study" name="year_of_study" value="{{ details['year_of_study'] if details else '2' }}">
-                    
-                    <input type="submit" value="Update Profile">
+                    <input type="text" id="username" name="username" required>
+                    <label for="keyword">Answer:</label>
+                    <input type="password" id="keyword" name="keyword" required>
+                    <input type="submit" value="Verify Keyword">
                 </form>
             </div>
+        </div>
 
-            <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <h2>Important Info</h2>
-                    <p>Please ensure that your profile information is accurate and up-to-date. This will help you connect with other students and access relevant resources on UniSphere.</p>
-                    
-                    <button onclick="openPopup('passwordPopup')" class="btn">Change Password</button>
-                    <button onclick="openPopup('emailPopup')" class="btn">Change Email</button>
-                </div>
-
-                <div>
-                    <a href="{{ url_for('user_profile') }}" class="btn btn-secondary">Back to Profile</a>
-                </div>
+        <div id="emailPopup" class="popup">
+            <div class="popup-content">
+                <span class="close-btn" onclick="closePopup('emailPopup')">&times;</span>
+                <h3>Change Email</h3>
+                <form action="/change_email" method="post">
+                    <label for="current_email">Current Email:</label>
+                    <input type="email" id="current_email" name="current_email" required>
+                    <label for="new_email">New Email:</label>
+                    <input type="email" id="new_email" name="new_email" required>
+                    <input type="submit" value="Update Email">
+                </form>
             </div>
         </div>
-    </div>
 
-    <div id="passwordPopup" class="popup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closePopup('passwordPopup')">&times;</span>
-            <h3>Change Password</h3>
-            <form action="/verify_keyword" method="post">
-                <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;">Please enter your username and the answer to your security question to receive a password reset link.</p>
-                <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;"><b>Security Question:</b> {{ security_question }}</p>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-                <label for="keyword">Answer:</label>
-                <input type="password" id="keyword" name="keyword" required>
-                <input type="submit" value="Verify Keyword">
-            </form>
-        </div>
-    </div>
-
-    <div id="emailPopup" class="popup">
-        <div class="popup-content">
-            <span class="close-btn" onclick="closePopup('emailPopup')">&times;</span>
-            <h3>Change Email</h3>
-            <form action="/change_email" method="post">
-                <label for="current_email">Current Email:</label>
-                <input type="email" id="current_email" name="current_email" required>
-                <label for="new_email">New Email:</label>
-                <input type="email" id="new_email" name="new_email" required>
-                <input type="submit" value="Update Email">
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function openPopup(id) {
-            document.getElementById(id).style.display = "block";
-        }
-        function closePopup(id) {
-            document.getElementById(id).style.display = "none";
-        }
-    </script>
-</body>
+        <script>
+            function openPopup(id) {
+                document.getElementById(id).style.display = "block";
+            }
+            function closePopup(id) {
+                document.getElementById(id).style.display = "none";
+            }
+        </script>
+    </body>
 </html>

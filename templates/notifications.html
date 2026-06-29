@@ -39,6 +39,20 @@
             z-index: 1000;
         }
 
+        .notification-link{
+            position:relative;
+        }
+
+        .notification-dot{
+            position:absolute;
+            width:10px;
+            height:10px;
+            background:red;
+            border-radius:50%;
+            top:-3px;
+            right:-10px;
+        }
+
         .navbar-brand {
             font-size: 1.5rem;
             font-weight: 700;
@@ -199,6 +213,20 @@
             border-color: #7b2cbf;
         }
 
+        .notif-arrow{
+            text-decoration:none;
+            color:#999;
+            font-size:25px;
+            font-weight:600;
+            transition:0.2s;
+            margin-left:10px;
+        }
+
+        .notif-arrow:hover{
+            color:#7b2cbf;
+            transform:translateX(5px);
+        }
+
         .notification-meta {
             font-size: 0.8rem;
             color: #888;
@@ -223,17 +251,35 @@
             {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
+                    <a href="/notifications" class="notification-link">
+                        Notifications
+                        {% if unread_notifications > 0 %}
+                            <span class="notification-dot"></span>
+                        {% endif %}
+                    </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
         </div>
@@ -257,11 +303,11 @@
                     
                     <div class="notification-content">
                         <span class="msg-text">
-                            {% if n['type'] == 'confirmation' %}
+                            {% if n['type'] == 'Confirmation' %}
                                 ✅
-                            {% elif n['type'] == 'reminder' %}
+                            {% elif n['type'] == 'Reminder' %}
                                 ⏰
-                            {% elif n['type'] == 'cancellation' %}
+                            {% elif n['type'] == 'Cancellation' %}
                                 ❌
                             {% elif n['type'] == 'Profile Updated' %}
                                 👤
@@ -269,8 +315,20 @@
                                 📧
                             {% elif n['type'] == 'Password Changed' %}
                                 🔐
-                            {% elif n['type'] == 'Event Created' %}
-                                🎉
+                            {% elif n['type'] == 'Event Pending' %}
+                                🎉🟡
+                            {% elif n['type'] == 'Event Approved' %}
+                                🎉🟢
+                            {% elif n['type'] == 'Event Redo' %}
+                                🎉🔵
+                            {% elif n['type'] == 'Event Cancelled' %}
+                                🎉📢❌️
+                            {% elif n['type'] == 'Application Pending' %}
+                                📋🟡
+                            {% elif n['type'] == 'Application Approved' %}
+                                📋🟢
+                            {% elif n['type'] == 'Application Rejected' %}
+                                📋🔴
                             {% endif %}
                             
                             {{ n['message'] }}
@@ -279,6 +337,12 @@
                         {% if n['is_read'] == 0 %}
                             <a class="mark-read" href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
                                 Mark as read
+                            </a>
+                        {% endif %}
+
+                        {% if session.get('role') == 'admin' %}
+                            <a class="notif-arrow" href="{{ n['link'] }}">
+                                →
                             </a>
                         {% endif %}
                     </div>
