@@ -235,11 +235,11 @@
                         <label for="security_question">Security Question:</label>
                         <select id="security_question" name="security_question" required>
                             <option value="">-- Select a Question --</option>
-                            <option value="pet">What is the name of your first pet?</option>
-                            <option value="school">What is the name of your primary school?</option>
-                            <option value="city">In what city were you born?</option>
-                            <option value="food">What is your favorite food?</option>
-                            <option value="teacher">Who was your favorite teacher?</option>
+                            <option value="pet" {% if request.form.get('security_question') == 'pet' %}selected{% endif %}>What is the name of your first pet?</option>
+                            <option value="school" {% if request.form.get('security_question') == 'school' %}selected{% endif %}>What is the name of your primary school?</option>
+                            <option value="city" {% if request.form.get('security_question') == 'city' %}selected{% endif %}>In what city were you born?</option>
+                            <option value="food" {% if request.form.get('security_question') == 'food' %}selected{% endif %}>What is your favorite food?</option>
+                            <option value="teacher" {% if request.form.get('security_question') == 'teacher' %}selected{% endif %}>Who was your favorite teacher?</option>
                         </select>
                     </div>
 

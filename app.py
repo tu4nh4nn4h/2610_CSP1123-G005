@@ -1095,7 +1095,7 @@ def edit_profile():
         return redirect(url_for('user_profile'))
 
     conn.close()
-    return render_template('EditProfile.html', user=user, details=details)
+    return render_template('EditProfile.html', user=user, details=details, security_question=user['security_question'])
 
 @app.route('/UserProfile')
 def user_profile():
