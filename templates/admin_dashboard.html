@@ -1008,6 +1008,32 @@
                 form.innerHTML = `<input type="hidden" name="admin_remark" value="${remark}">`;
                 form.submit();
             }
+
+            document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll(".request-item").forEach(item => {
+                item.addEventListener("click", function () {
+
+                    openEventModal(
+                        this.dataset.id,
+                        this.dataset.poster,
+                        this.dataset.name,
+                        this.dataset.desc,
+                        this.dataset.startdate,
+                        this.dataset.enddate,
+                        this.dataset.starttime,
+                        this.dataset.endtime,
+                        this.dataset.mode,
+                        this.dataset.mainloc,
+                        this.dataset.genloc,
+                        this.dataset.wing,
+                        this.dataset.spec,
+                        this.dataset.part,
+                        this.dataset.max,
+                        this.dataset.link
+                        );
+                    });
+                });
+            });
         </script>
     </body>
 </html>
