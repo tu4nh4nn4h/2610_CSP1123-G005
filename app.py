@@ -497,7 +497,7 @@ def eventbrowsing():
    
 @app.route('/eventregister')
 def eventregister():
-    return render_template('eventregsys.html')
+    return render_template('EventRegSys.html')
 
 
 @app.route('/event/<int:event_id>')
@@ -513,7 +513,7 @@ def event_detail(event_id):
         return "Event not found", 404
 
     # Renders your registration system page, passing the actual database item
-    return render_template('eventregsys.html', event=event)
+    return render_template('EventRegSys.html', event=event)
 
 
 @app.route('/form', methods=['GET', 'POST'])
