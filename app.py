@@ -322,9 +322,6 @@ def register_organizer():
             cursor.execute("INSERT INTO organizer_details (student_id, club_body, position_title, proof_document, application_status) VALUES (?, ?, ?, ?, ?)",
                             (student_id, club_body, position_title, filename, 'Pending'))
             
-            # # 🔔 SEND NOTIFICATIONS
-            # send_admin_notification(f"{student_id} has applied to become an organizer.","Approval Pending","/admin_dashboard")
-            # create_notification(student_id,"Your application has been submitted successfully and is now under review by the administrator.","Approval Pending")
             conn.commit()
 
             token = s.dumps(email, salt='email-confirm')
@@ -336,6 +333,10 @@ def register_organizer():
 
         finally:
             conn.close()
+        
+        # 🔔 SEND NOTIFICATIONS
+        send_admin_notification(f"{student_id} has applied to become an organizer.","Approval Pending","/admin_dashboard")
+        create_notification(student_id,"Your application has been submitted successfully and is now under review by the administrator.","Approval Pending")
 
         return redirect(url_for('signin'))
 
@@ -723,12 +724,7 @@ def create_event():
                 (event_poster, event_name, event_description, start_date, end_date, start_time, end_time, event_mode, main_location, 
                 general_location, faculty_wing, specific_location, participation_option, limited_max_participants, event_link, user['student_id'], 'Pending'))
 
-        #  # 🔔 SEND NOTIFICATIONS
-        #     send_admin_notification(f"{user['student_id']} has created an event.","Event Pending","/admin_dashboard")
-        #     create_notification(user["student_id"],"Your event has been submitted successfully and is now under review by the administrator.","Event Pending")
-
             conn.commit()
-            return jsonify({"status": "create_event_success"})
         
         except Exception as e:
             conn.rollback()
@@ -739,6 +735,12 @@ def create_event():
 
         finally:
             conn.close()
+        
+        # 🔔 SEND NOTIFICATIONS
+        send_admin_notification(f"{user['student_id']} has created an event.","Event Pending","/admin_dashboard")
+        create_notification(user["student_id"],"Your event has been submitted successfully and is now under review by the administrator.","Event Pending")
+
+        return jsonify({"status": "create_event_success"})
 
 @app.route('/be_organizer', methods=['GET', 'POST'])
 def be_organizer():
@@ -802,9 +804,6 @@ def be_organizer():
             cursor.execute("""INSERT INTO organizer_applications (student_id, club_body, position_title, proof_document, application_status)
             VALUES (?, ?, ?, ?, ?)""", (user['student_id'], club_body, position_title, filename, 'Pending'))
 
-            # # 🔔 SEND NOTIFICATIONS
-            # send_admin_notification(f"{user['student_id']} has applied to become an organizer.","Application Pending","/admin_dashboard")
-            # create_notification(user["student_id"],"Your application has been submitted successfully and is now under review by the administrator.","Application Pending")
             conn.commit()
 
         except Exception as e:
@@ -813,6 +812,10 @@ def be_organizer():
 
         finally:
             conn.close()
+        
+        # 🔔 SEND NOTIFICATIONS
+        send_admin_notification(f"{user['student_id']} has applied to become an organizer.","Application Pending","/admin_dashboard")
+        create_notification(user["student_id"],"Your application has been submitted successfully and is now under review by the administrator.","Application Pending")
 
         return jsonify({"status": "become_organizer_success"})
 
@@ -866,7 +869,7 @@ def my_event_manage(event_id):
 
     return render_template('my_event_manage.html',event=event,participants=participants)
 
-@app.route('/exportevent/<int:event_id>')
+@app.route('/export_event/<int:event_id>')
 def export_event(event_id):
 
     conn = get_db_connection()
@@ -926,17 +929,77 @@ def delete_event(event_id):
 
     return redirect(url_for('my_event'))
 
-@app.route('/editevent/<int:event_id>')
+@app.route('/edit_event/<int:event_id>', methods=['GET','POST'])
 def edit_event(event_id):
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM events WHERE event_id=?",(event_id,))
 
-    event = cursor.fetchone()
-    conn.close()
+        # GET request
+    if request.method == "GET":
+        cursor.execute("SELECT * FROM events WHERE event_id=?",(event_id,))
+        event = cursor.fetchone()
+        conn.close()
+        return render_template("edit_event.html",event=event)
 
-    return render_template("edit_event.html",event=event)
+    if request.method == "POST":
+        eventPoster = request.files.get('eventPoster')
+
+        #if user choose new poster
+        if eventPoster and eventPoster.filename != "":
+            filename = secure_filename(eventPoster.filename)
+            eventPoster.save(os.path.join(app.config['EVENT_POSTER_FOLDER'],filename))
+            newPoster = filename
+        else:
+            # keep the current poster
+            newPoster = event['event_poster']
+
+        eventName = request.form.get('eventName')
+        eventDescription = request.form.get('eventDescription')
+        startDate = request.form.get('startDate')
+        endDate = request.form.get('endDate')
+        startTime = request.form.get('startTime')
+        endTime = request.form.get('endTime')
+        eventMode = request.form.get('eventMode')
+        mainLocation = request.form.get('mainLocation')
+        generalLocation = request.form.get('generalLocation')
+        clcHall = request.form.get('clcHall')
+        facultyWing = request.form.get('facultyWing')
+        specificLocation = request.form.get('specificLocation')
+
+        participationOption = request.form.get('participationOption')
+        if participationOption == "limited":
+            limitedMaxParticipants = request.form.get('limitedMaxParticipants')
+        else:
+            limitedMaxParticipants = None
+
+        eventMode = request.form.get('eventMode')
+        if eventMode == "offline":
+            eventLink = None
+        else:
+            eventLink = request.form.get('eventLink')
+
+        # Decide final venue
+        if mainLocation == "General":
+            finalLocation = generalLocation
+            facultyWing = None
+        elif mainLocation == "CLC":
+            finalLocation = clcHall
+            facultyWing = None
+        else:
+            finalLocation = specificLocation
+
+        # Update database
+        cursor.execute("""UPDATE events SET event_poster=?, event_name=?, event_description=?, start_date=?, end_date=?,
+        start_time=?, end_time=?, event_mode=?, main_location=?, specific_location=?, faculty_wing=?, participation_option=?,
+        limited_max_participants=?, event_link=? WHERE event_id=?""",
+        (newPoster, eventName, eventDescription, startDate, endDate, startTime, endTime, eventMode, mainLocation, finalLocation,
+        facultyWing, participationOption, limitedMaxParticipants, eventLink, event_id))
+
+        conn.commit()
+        conn.close()
+
+        return redirect('/myevent')
 
 @app.route('/user_dashboard')
 def dashboard():
@@ -964,7 +1027,7 @@ def dashboard():
     cursor.execute("""
         SELECT e.event_id, e.event_name, e.event_description, 
                e.start_date, e.end_date, e.start_time, e.end_time, 
-               e.main_location, e.event_mode
+               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link
         FROM events e
         INNER JOIN event_registrations er ON e.event_id = er.event_id
         WHERE er.student_id = ?
@@ -1164,17 +1227,16 @@ def notifications():
 
     return render_template("notifications.html", notifications=notifications_list, unread_notifications=unread_notifications)
 
-# def send_admin_notification(message, notif_type, link):
+def send_admin_notification(message, notif_type, link):
 
-#     conn = get_db_connection()
-#     cursor = conn.cursor()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT student_id FROM users_general WHERE role='admin'")
+    admins = cursor.fetchall()
 
-#     cursor.execute("SELECT student_id FROM users_general WHERE role='admin'")
-#     admins = cursor.fetchall()
-
-#     for admin in admins:
-#         cursor.execute("INSERT INTO notifications (student_id, message, type, link) VALUES (?, ?, ?,?)",
-#         (admin['student_id'], message,notif_type,link))
+    for admin in admins:
+         cursor.execute("INSERT INTO notifications (student_id, message, type, link) VALUES (?, ?, ?,?)",
+         (admin['student_id'], message,notif_type,link))
 
     conn.commit()
     conn.close()

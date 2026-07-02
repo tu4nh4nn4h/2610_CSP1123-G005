@@ -673,24 +673,22 @@
                     <h2>Event Queue</h2>
                     {% for event in pending_events %}
                     <div class="request-item"
-                        onclick="openEventModal(
-                        '{{event.event_id}}',
-                        '{{event.event_poster}}',
-                        '{{event.event_name}}',
-                        '{{event.event_description}}',
-                        '{{event.start_date}}',
-                        '{{event.end_date}}',
-                        '{{event.start_time}}',
-                        '{{event.end_time}}',
-                        '{{event.event_mode}}',
-                        '{{event.main_location}}',
-                        '{{event.general_location}}',
-                        '{{event.faculty_wing}}',
-                        '{{event.specific_location}}',
-                        '{{event.participation_option}}',
-                        '{{event.limited_max_participants}}',
-                        '{{event.event_link}}'
-                        )">
+                        data-id="{{event.event_id}}"
+                        data-poster="{{event.event_poster}}"
+                        data-name="{{event.event_name}}"
+                        data-desc="{{event.event_description}}"
+                        data-startdate="{{event.start_date}}"
+                        data-enddate="{{event.end_date}}"
+                        data-starttime="{{event.start_time}}"
+                        data-endtime="{{event.end_time}}"
+                        data-mode="{{event.event_mode}}"
+                        data-mainloc="{{event.main_location}}"
+                        data-genloc="{{event.general_location}}"
+                        data-wing="{{event.faculty_wing}}"
+                        data-spec="{{event.specific_location}}"
+                        data-part="{{event.participation_option}}"
+                        data-max="{{event.limited_max_participants}}"
+                        data-link="{{event.event_link}}">
                         {{event.event_name}}
                     </div>
                     {% endfor %}

@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     type TEXT NOT NULL,
     is_read INTEGER DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    link TEXT,
+    redirect TEXT,
     FOREIGN KEY (student_id) REFERENCES users_general(student_id)
 );
 

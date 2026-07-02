@@ -98,6 +98,36 @@
                 width: 100%;
             }
 
+            .basic-info-grid{
+                display:grid;
+                grid-template-columns:260px 1fr;
+                gap:35px;
+                margin-bottom:40px;
+                align-items:start;
+            }
+
+            .poster-section{
+                display:flex;
+                flex-direction:column;
+                gap:8px;
+            }
+
+            .poster-preview{
+                width:100%;
+                height:350px;
+                object-fit:cover;
+                border-radius:15px;
+                border:3px solid white;
+                box-shadow:0 8px 25px rgba(0,0,0,.15);
+                cursor: pointer;
+            }
+
+            .details-section{
+                display:flex;
+                flex-direction:column;
+                gap:20px;
+            }
+
             .container{
                 max-width:1400px;
                 margin:auto;
@@ -155,103 +185,84 @@
                 margin-bottom:8px;
             }
 
-            .action-buttons{
+            .form-group{
                 display:flex;
-                gap:15px;
-                margin-top:20px;
+                flex-direction:column;
+                gap:8px;
             }
 
-            .btn{
-                border:none;
-                padding:12px 22px;
-                border-radius:10px;
-
-                color:white;
-
+            .form-group label, 
+            .poster-section label{
+                color:#3f1b57;
                 font-weight:600;
-                cursor:pointer;
+                font-size:16px;
             }
 
-            .btn-edit{
-                background:#7b2cbf;
-            }
+            .form-group input,
+            .form-group select,
+            .form-group textarea{
 
-            .btn-export{
-                background:#00b894;
-            }
-
-            .btn-delete{
-                background:#b8006b;
-            }
-
-            .form-group textarea {
-                width: 100%;
-                padding: 12px 16px;
-                border: 1.5px solid #ddd;
-                border-radius: 12px;
-                font-size: 1rem;
-                outline: none;
-                color: #333;
-                transition: border-color 0.2s, box-shadow 0.2s;
-                height: 120px;        /* fixed height */
-                resize: none;          /* disable resize */
-            }
-            .form-group textarea:focus {
-                border-color: #b37cd4;
-                box-shadow: 0 0 0 3px rgba(179, 124, 212, 0.25);
-            }
-
-            .stats{
-                display:grid;
-                grid-template-columns:repeat(3,1fr);
-                gap:20px;
-                margin-bottom:30px;
-            }
-
-            .stat-card{
-                background:rgba(255,255,255,0.12);
-                color:#3f1b57;
-                border-radius:15px;
-                padding:25px;
-                text-align:center;
-            }
-
-            .stat-card h3{
-                font-size:2rem;
-            }
-
-            .participants-section{
-                background:rgba(255,255,255,0.12);
-                color:#3f1b57;
-                border-radius:20px;
-                padding:25px;
-            }
-
-            .participants-section h2{
-                margin-bottom:20px;
-            }
-
-            table{
                 width:100%;
-                border-collapse:collapse;
+                padding:13px 15px;
+
+                border:none;
+                border-radius:12px;
+
+                background:white;
+
+                font-size:15px;
             }
 
-            th,
-            td{
+            .form-group textarea{
+                height:180px;
+            }
+
+            .event-details-grid{
+                display:grid;
+                grid-template-columns:repeat(2,1fr);
+                gap:28px 35px;
+                margin-top:25px;
+            }
+
+            .upload-btn{
+                display:inline-block;
+                padding:12px 20px;
+                background:#7b2cbf;
+                color:white !important;
+                border-radius:10px;
+                cursor:pointer;
+                font-weight:600;
+                text-align:center;
+                transition:.2s;
+            }
+
+            .upload-btn:hover{
+                background:#6923a6;
+            }
+
+            #file-name{
+                margin-top:8px;
+                color:white;
+                font-size:14px;
+            }
+
+            .btn-primary{
+                display:block;
+                margin:45px auto 0;
+                width:250px;
                 padding:15px;
-                text-align:left;
+                background:#7b2cbf;
+                color:white;
+                font-size:18px;
+                border:none;
+                border-radius:12px;
+                cursor:pointer;
+                transition:.25s;
             }
 
-            th{
-                background:rgba(255,255,255,0.15);
-            }
-
-            tr:nth-child(even){
-                background:rgba(255,255,255,0.08);
-            }
-
-            tr:hover{
-                background:rgba(255,255,255,0.15);
+            .btn-primary:hover{
+                transform:translateY(-3px);
+                box-shadow:0 10px 25px rgba(123,44,191,.35);
             }
 
             .modal {
@@ -280,6 +291,41 @@
                 gap: 15px;
             }
 
+            .delete-cancel,
+            .btn-edit{
+                padding:12px 25px;
+                border:none;
+                border-radius:10px;
+                font-weight:600;
+                font-size:15px;
+                cursor:pointer;
+                transition:.25s;
+            }
+
+            .delete-cancel{
+                background:#e0e0e0;
+                color:#333;
+            }
+
+
+            .delete-cancel:hover{
+                background:#cfcfcf;
+            }
+
+
+
+            .btn-edit{
+                background:#7b2cbf;
+                color:white;
+            }
+
+
+
+            .btn-edit:hover:not(:disabled){
+                background:#5a189a;
+                transform:translateY(-2px);
+            }
+
             #confirmSaveBtn:disabled{
                 opacity:.5;
                 cursor:not-allowed;
@@ -296,37 +342,23 @@
                 {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
-                    <a href="/notifications" class="notification-link">
-                        Notifications
-                        {% if unread_notifications > 0 %}
-                            <span class="notification-dot"></span>
-                        {% endif %}
-                    </a>
-                    <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
                     <a href="/myevent">My Event</a>
-                    <a href="/notifications" class="notification-link">
-                        Notifications
-                        {% if unread_notifications > 0 %}
-                            <span class="notification-dot"></span>
-                        {% endif %}
-                    </a>
-                    <a href="/user_dashboard">Profile</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
-                    <a href="/notifications" class="notification-link">
-                        Notifications
-                        {% if unread_notifications > 0 %}
-                            <span class="notification-dot"></span>
-                        {% endif %}
-                    </a>
-                    <a href="/user_dashboard">Profile</a>
                 {% endif %}
+                <a href="/notifications" class="notification-link">
+                    Notifications
+                    {% if unread_notifications > 0 %}
+                        <span class="notification-dot"></span>
+                    {% endif %}
+                </a>
+                <a href="/user_dashboard">Profile</a>
             </div>
         </nav>
 
@@ -334,27 +366,31 @@
             <h1 class="title">EDIT EVENT</h1>
             <p class="subtitle">Organizer Event Management Panel</p>
 
-        <form id="editEventForm" action="{{ url_for('update_event', event_id=event['event_id']) }}" method="POST" enctype="multipart/form-data">
+        <form id="editEventForm" action="{{ url_for('edit_event', event_id=event['event_id']) }}" method="POST" enctype="multipart/form-data">
 
-            <!-- SECTION 1: BASIC INFO -->
-            <div class="form-step">
-                <div class="form-group">
-                    <label>Event Poster:</label>
-                    <input type="file" name="eventPoster" accept="image/*">
-                    <br>
-                    <img src="{{ url_for('static', filename='eventPoster/' + event['event_poster']) }}"width="200">
+            <div class="basic-info-grid">
+                <div class="poster-section">
+                    <label >Event Poster</label>
+                    <img src="{{ url_for('static', filename='eventPoster/' + event['event_poster']) }}" class="poster-preview">
+                    <label for="eventPoster" class="upload-btn">Choose New Poster</label>
+                    <input type="file" id="eventPoster" name="eventPoster" accept="image/*" hidden>
+                    <span id="file-name">No file chosen</span>
                 </div>
 
-                <div class="form-group">
-                    <label>Event Name:</label>
-                    <input type="text" id="event_name" name="eventName" value="{{event['event_name']}}" required>
-                </div>
+                <div class="details-section">
+                    <div class="form-group">
+                        <label>Event Name</label>
+                        <input type="text" name="eventName" value="{{event['event_name']}}">
+                    </div>
 
-                <div class="form-group">
-                    <label>Event Description:</label>
-                    <textarea id="event_description" name="eventDescription" required>{{event['event_description']}}</textarea>
+                    <div class="form-group">
+                        <label>Event Description</label>
+                        <textarea name="eventDescription">{{event['event_description']}}</textarea>
+                    </div>
                 </div>
+            </div>
 
+            <div class="event-details-grid">
                 <div class="form-group">
                     <label>Start Date:</label>
                     <input type="date" name="startDate" value="{{event['start_date']}}"required>
@@ -383,12 +419,9 @@
                         <option value="hybrid"{% if event['event_mode']=="hybrid" %}selected{% endif %}>Hybrid</option>
                     </select>
                 </div>
-            </div>
 
-            <!-- SECTION 2 LOCATION -->
-            <div class="form-step">
                 <div class="form-group">
-                    <label>Event Location:</label>
+                    <label>Main Location:</label>
                     <select id="mainloc" name="mainLocation" onchange="updateMainLocations()" required>
                         <option value="General" {% if event['main_location']=="General" %}selected{% endif %}>General Campus Area</option>
                         <option value="CLC" {% if event['main_location']=="CLC" %}selected{% endif %}>CLC</option>
@@ -420,7 +453,7 @@
                 <!-- FACULTY -->
                 <div class="form-group" id="faculty_wing_container">
                     <label>Wing:</label>
-                    <select id="faculty_wing" name="facultyWing">
+                    <select id="faculty_wing" name="facultyWing" onchange="updateSpecificLocations()">
                         <option value="{{event['faculty_wing']}}">{{event['faculty_wing']}}</option>
                     </select>
                 </div>
@@ -434,13 +467,13 @@
 
                 <div class="form-group">
                     <label>Participation Type:</label>
-                    <select name="participationOption">
+                    <select id="participation_type" name="participationOption" onchange="toggleParticipation()">
                         <option value="unlimited" {% if event['participation_option']=="unlimited" %}selected{% endif %}>Unlimited</option>
                         <option value="limited" {% if event['participation_option']=="limited" %}selected{% endif %}>Limited</option>
                     </select>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="max_participant_container">
                     <label>Max Participants:</label>
                     <input type="number" name="limitedMaxParticipants" value="{{event['limited_max_participants'] or ''}}">
                 </div>
@@ -449,6 +482,7 @@
                     <label>Event Link:</label>
                     <input type="url" name="eventLink" value="{{event['event_link'] or ''}}">
                 </div>
+            </div>
 
                 <button type="button" class="btn-primary" onclick="openSaveModal()">
                     Save Changes
@@ -510,6 +544,186 @@
 
             function submitEditForm(){
                 document.getElementById("editEventForm").submit();
+            }
+
+            document.getElementById("eventPoster").addEventListener("change", function(){
+                const file = this.files[0];
+                const fileName = file ? file.name : "No file chosen";
+                document.getElementById("file-name").textContent = fileName;
+
+                // LIVE PREVIEW UPDATE
+                if(file){
+                    document.getElementById("file-name").textContent = file.name;
+                    const preview = document.querySelector(".poster-preview");
+                    preview.src = URL.createObjectURL(file);
+                }else{
+                    document.getElementById("file-name").textContent="No file chosen";
+                }
+            });
+
+            function toggleEventLink() {
+                const mode = document.getElementById("event_mode").value;
+                const eventLink = document.getElementById("event_link_container");
+                if(mode === "offline"){
+                    eventLink.style.display = "none";
+                }else{
+                    eventLink.style.display = "block";
+                }
+            }
+
+            const locationData = {
+            "General": [
+                "Central Plaza",
+                "MMU Stadium",
+                "Surau Al-Hidayah",
+                "Tun Dr. Hasmah Mohd Ali Digital Library",
+                "Dewan Tun Canselor",
+                "Annex Hall",
+                "MMU Hostel"
+            ],
+
+            "CLC": [
+                "CNMX 1001",
+                "CNMX 1002",
+                "CNMX 1003",
+                "CNMX 1004",
+                "CNMX 1005"
+            ],
+
+            "FCI": {
+                "Wing A": ["Smart Lab 1", "FCI Lecture Hall 1"],
+                "Wing B": ["Meeting Room Level 3", "Computing Lab 5"],
+                "Wing C": ["Innovation Hub", "FCI Seminar Room"]
+            },
+
+            "FAIE": {
+                "Wing A": ["e-Theater", "Sound Studio"],
+                "Wing B": ["Main Gallery", "FAIE Workshop"],
+                "Wing C": ["Media Lab", "FAIE Conference Room"]
+            },
+
+            "FCM": {
+                "Wing A": ["e-Theater", "Sound Studio"],
+                "Wing B": ["Main Gallery", "FCM Workshop"],
+                "Wing C": ["Media Lab", "FCM Conference Room"]
+            },
+
+            "FOM": {
+                "Wing A": ["FOM Exam Hall"],
+                "Wing B": ["Case Study Room 1", "Management Suite"],
+                "Wing C": ["FOM Seminar Room", "Strategy Lab"]
+            },
+
+            "FAC": {
+                "Wing A": ["FAC Lecture Room 2"],
+                "Wing B": ["Accounting Seminar Room", "Level 1 Lounge"]
+            },
+
+            "FCA": {
+                "Wing A": ["FCA Main Auditorium"],
+                "Wing B": ["FCA Art Studio", "Design Lab"],
+                "Wing C": ["FCA Gallery", "Creative Workshop"]
+            }
+        };
+
+        function updateMainLocations() {
+            const mainlocSelect = document.getElementById('mainloc');
+            const wingContainer = document.getElementById('faculty_wing_container');
+            const wingSelect = document.getElementById('faculty_wing');
+            const generalContainer = document.getElementById('general_location_container');
+            const generalSelect = document.getElementById('general_location');
+            const clcHallContainer = document.getElementById('clc_hall_container');
+            const clcHallSelect = document.getElementById('clc_hall');
+            const specificContainer = document.getElementById('specific_location_container');
+            const specificSelect = document.getElementById('specific_location');
+            const selectedLocation = mainlocSelect.value;
+
+            // Clear previous options
+            generalSelect.innerHTML = '<option value="">Select Venue</option>';
+            clcHallSelect.innerHTML = '<option value="">Select Venue</option>';
+            wingSelect.innerHTML = '<option value="">Select Wing</option>';
+            specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
+
+            // Hide everything first
+            generalContainer.style.display = 'none';
+            clcHallContainer.style.display = 'none';
+            wingContainer.style.display = 'none';
+            specificContainer.style.display = 'none';
+
+            if (selectedLocation === "General") {
+                generalContainer.style.display = 'block';
+                Object.values(locationData["General"]).forEach(location => {
+                    const option = document.createElement('option');
+                    option.value = location;
+                    option.textContent = location;
+                    generalSelect.appendChild(option);
+                });
+            }
+            else if (selectedLocation === "CLC") {
+                clcHallContainer.style.display = 'block';
+                locationData["CLC"].forEach(hall => {
+                    const option = document.createElement('option');
+                    option.value = hall;
+                    option.textContent = hall;
+                    clcHallSelect.appendChild(option);
+                });
+
+            }
+            else if (selectedLocation && locationData[selectedLocation]) {
+                // Show the second dropdown and populate it based on selected location
+            wingContainer.style.display = 'block';
+
+                Object.keys(locationData[selectedLocation]).forEach(wing => {
+                    const option = document.createElement('option');
+                    option.value = wing;
+                    option.textContent = wing;
+                    wingSelect.appendChild(option);
+                });
+
+            } else {
+                // Selected a general spot or no faculty, hide the second dropdown
+                clcHallContainer.style.display = 'none';
+                wingContainer.style.display = 'none';
+                specificContainer.style.display = 'none';
+            }
+        }
+
+        document.getElementById('faculty_wing')
+        .addEventListener('change', updateSpecificLocations);
+
+        function updateSpecificLocations() {
+            const mainLocation = document.getElementById('mainloc').value;
+            const facultyWing = document.getElementById('faculty_wing').value;
+            const specificContainer = document.getElementById('specific_location_container');
+            const specificSelect = document.getElementById('specific_location');
+
+            specificSelect.innerHTML = '<option value="">Select Room / Venue</option>';
+            if(mainLocation && facultyWing && locationData[mainLocation]){
+                specificContainer.style.display='block';
+                locationData[mainLocation][facultyWing].forEach(location=>{
+                    const option=document.createElement('option');
+                    option.value=location;
+                    option.textContent=location;
+                    specificSelect.appendChild(option);
+                });
+            }
+        }
+
+            function toggleParticipation(){
+                const type = document.getElementById("participation_type").value;
+                const max = document.getElementById("max_participant_container");
+                if(type === "limited"){
+                    max.style.display = "block";
+                }
+                else{
+                    max.style.display = "none";
+                }
+            }
+
+            window.onload=function(){
+                updateMainLocations();
+                toggleEventLink();
+                toggleParticipation();
             }
         </script>
         
