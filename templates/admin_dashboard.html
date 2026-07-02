@@ -652,19 +652,17 @@
                 <div class="card">
                     <h2>Organizer Queue</h2>
                     {% for application in organizer_applications %}
-                    <div class="request-item"
-                        onclick="openOrganizerModal(
-                        '{{ application.application_id }}',
-                        '{{ application.student_id }}',
-                        '{{ application.name }}',
-                        '{{ application.username }}',
-                        '{{ application.email }}',
-                        '{{ application.club_body }}',
-                        '{{ application.position_title }}',
-                        '{{ application.proof_document }}'
-                        )">
-                        {{ application.name }} - {{ application.club_body }}
-                    </div>
+                        <div class="request-item organizer-item"
+                            data-id="{{ application.application_id }}"
+                            data-student="{{ application.student_id }}"
+                            data-name="{{ application.name }}"
+                            data-username="{{ application.username }}"
+                            data-email="{{ application.email }}"
+                            data-club="{{ application.club_body }}"
+                            data-position="{{ application.position_title }}"
+                            data-doc="{{ application.proof_document }}">
+                            {{ application.name }} - {{ application.club_body }}
+                        </div>
                     {% endfor %}
                 </div>
 
@@ -672,7 +670,7 @@
                 <div class="card">
                     <h2>Event Queue</h2>
                     {% for event in pending_events %}
-                    <div class="request-item"
+                    <div class="request-item event-item"
                         data-id="{{event.event_id}}"
                         data-poster="{{event.event_poster}}"
                         data-name="{{event.event_name}}"
@@ -1010,26 +1008,43 @@
             }
 
             document.addEventListener("DOMContentLoaded", function () {
-            document.querySelectorAll(".request-item").forEach(item => {
-                item.addEventListener("click", function () {
+                document.querySelectorAll(".event-item").forEach(item => {
+                    item.addEventListener("click", function () {
 
-                    openEventModal(
-                        this.dataset.id,
-                        this.dataset.poster,
-                        this.dataset.name,
-                        this.dataset.desc,
-                        this.dataset.startdate,
-                        this.dataset.enddate,
-                        this.dataset.starttime,
-                        this.dataset.endtime,
-                        this.dataset.mode,
-                        this.dataset.mainloc,
-                        this.dataset.genloc,
-                        this.dataset.wing,
-                        this.dataset.spec,
-                        this.dataset.part,
-                        this.dataset.max,
-                        this.dataset.link
+                        openEventModal(
+                            this.dataset.id,
+                            this.dataset.poster,
+                            this.dataset.name,
+                            this.dataset.desc,
+                            this.dataset.startdate,
+                            this.dataset.enddate,
+                            this.dataset.starttime,
+                            this.dataset.endtime,
+                            this.dataset.mode,
+                            this.dataset.mainloc,
+                            this.dataset.genloc,
+                            this.dataset.wing,
+                            this.dataset.spec,
+                            this.dataset.part,
+                            this.dataset.max,
+                            this.dataset.link
+                            );
+                        });
+                    });
+
+                /* ORGANIZER */
+                document.querySelectorAll(".organizer-item").forEach(item => {
+                    item.addEventListener("click", function () {
+
+                        openOrganizerModal(
+                            this.dataset.id,
+                            this.dataset.student,
+                            this.dataset.name,
+                            this.dataset.username,
+                            this.dataset.email,
+                            this.dataset.club,
+                            this.dataset.position,
+                            this.dataset.doc
                         );
                     });
                 });
