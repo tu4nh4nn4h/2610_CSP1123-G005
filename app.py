@@ -1227,7 +1227,7 @@ def notifications():
 
     return render_template("notifications.html", notifications=notifications_list, unread_notifications=unread_notifications)
 
-def send_admin_notification(message, notif_type, link):
+def send_admin_notification(message, notif_type, redirect):
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1235,8 +1235,8 @@ def send_admin_notification(message, notif_type, link):
     admins = cursor.fetchall()
 
     for admin in admins:
-         cursor.execute("INSERT INTO notifications (student_id, message, type, link) VALUES (?, ?, ?,?)",
-         (admin['student_id'], message,notif_type,link))
+         cursor.execute("INSERT INTO notifications (student_id, message, type, redirect) VALUES (?, ?, ?,?)",
+         (admin['student_id'], message,notif_type,redirect))
 
     conn.commit()
     conn.close()
