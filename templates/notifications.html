@@ -340,10 +340,11 @@
                             </a>
                         {% endif %}
 
-                        {% if session.get('role') == 'admin' %}
+                        {% if session.get('role') == 'admin' and n['redirect'] not in [None, '', '/none'] and n['is_read'] == 0 %}
                             <a class="notif-arrow" href="{{ n['redirect'] }}">
                                 →
                             </a>
+
                         {% endif %}
                     </div>
 

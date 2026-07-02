@@ -943,6 +943,8 @@ def edit_event(event_id):
         return render_template("edit_event.html",event=event)
 
     if request.method == "POST":
+        cursor.execute("SELECT * FROM events WHERE event_id=?", (event_id,))
+        event = cursor.fetchone()
         eventPoster = request.files.get('eventPoster')
 
         #if user choose new poster
