@@ -402,11 +402,27 @@
                 <h3>Change Password</h3>
                 <form action="/verify_keyword" method="post">
                     <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;">Please enter your username and the answer to your security question to receive a password reset link.</p>
-                    <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;"><b>Security Question:</b> {{ security_question }}</p>
+                    <p style="font-size: 0.9rem; color: white; margin-bottom: 20px;"><b>Security Question Hint:</b> {{ security_question }}</p>
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" required>
                     <label for="keyword">Answer:</label>
                     <input type="password" id="keyword" name="keyword" required>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            <script>
+                                window.onload = function() {
+                                    openPopup('passwordPopup');
+                                };
+                            </script>
+                            {% for category, message in messages %}
+                                {% if category == 'keyword_error' %}
+                                    <div class="error">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
                     <input type="submit" value="Verify Keyword">
                 </form>
             </div>

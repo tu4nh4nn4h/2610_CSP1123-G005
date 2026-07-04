@@ -409,7 +409,8 @@ def verify_keyword():
         session['reset_user'] = username
         return redirect(url_for('reset_password'))
 
-    return "Invalid username or keyword"
+    flash("Invalid username or keyword", "keyword_error")
+    return redirect(url_for('edit_profile'))
 
 
 @app.route('/reset_password', methods=['GET', 'POST'])
