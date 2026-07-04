@@ -1029,18 +1029,29 @@ def dashboard():
         conn.close()
         return "User not found"
 
-    # 2. Query only the events that THIS specific student has registered for
+    # 2. Query only UPCOMING events that THIS specific student has registered for
     cursor.execute("""
         SELECT e.event_id, e.event_name, e.event_description, 
                e.start_date, e.end_date, e.start_time, e.end_time, 
-               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link
+               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link, e.event_poster
         FROM events e
         INNER JOIN event_registrations er ON e.event_id = er.event_id
-        WHERE er.student_id = ?
+        WHERE er.student_id = ? AND e.end_date >= date('now')
     """, (user["student_id"],))
     events = cursor.fetchall()
+    
+    # 2b. Query PAST events (Joined) that THIS specific student registered for
+    cursor.execute("""
+        SELECT e.event_id, e.event_name, e.event_description, 
+               e.start_date, e.end_date, e.start_time, e.end_time, 
+               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link, e.event_poster
+        FROM events e
+        INNER JOIN event_registrations er ON e.event_id = er.event_id
+        WHERE er.student_id = ? AND e.end_date < date('now')
+    """, (user["student_id"],))
+    joined_events = cursor.fetchall()
 
-    # 3. Fetch all notifications for this student (Using * to grab all available columns)
+    # 3. Fetch all notifications for this student
     cursor.execute("""
         SELECT * FROM notifications 
         WHERE student_id = ? 
@@ -1048,7 +1059,7 @@ def dashboard():
     """, (user["student_id"],))
     notifications = cursor.fetchall()
 
-    # 4. Count the total unread notifications (Removing the status column check to prevent column errors)
+    # 4. Count the total unread notifications
     cursor.execute("""
         SELECT COUNT(*) as count 
         FROM notifications 
@@ -1064,6 +1075,7 @@ def dashboard():
         'user_dashboard.html', 
         user=user, 
         events=events, 
+        joined_events=joined_events,
         notifications=notifications, 
         unread_notifications=unread_notifications
     )
