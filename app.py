@@ -1390,8 +1390,7 @@ def verify_new_email(token):
     except Exception:
         return render_template('verify_email.html', status="error")
     
-
-@app.route('/mark_all_notifications_read', methods=['POST'])
+@app.route('/mark_all_notifications_read', methods=['POST', 'GET'])
 def mark_all_notifications_read():
     user_id = session.get('user_id') 
     if not user_id:
@@ -1407,7 +1406,8 @@ def mark_all_notifications_read():
     conn.commit()
     conn.close()
 
-    return redirect(url_for('notifications'))
+ 
+    return redirect(request.referrer or url_for('notifications'))
 
 @app.route('/admin_dashboard')
 def admin_dashboard():

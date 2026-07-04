@@ -731,42 +731,85 @@
                     </div>
                 </div>
 
-    <div class="card inbox-card">
+     <div class="card inbox-card">
+
     <div class="card-header-row">
+
         <h2 class="card-title-main" style="gap:15px;">
+
             <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/></svg>
+
             Inbox
+
         </h2>
+
         {% if unread_notifications and unread_notifications > 0 %}
+
             <span class="notification-badge-count">{{ unread_notifications }}</span>
+
         {% endif %}
+
     </div>
-    
+
+   
+
     {% if notifications %}
+
         <p class="inbox-subtitle">You have {{ unread_notifications if unread_notifications else '0' }} unread notifications</p>
+
     {% else %}
+
         <p class="inbox-subtitle">You are all caught up!</p>
+
     {% endif %}
-    
+
+   
+
     <div class="notifications-list">
+
         {% if notifications %}
+
             {# Limits the dashboard display to a maximum of 3 notifications #}
+
             {% for n in notifications[:3] %}
+
                 <a href="/notifications" class="notif-item">
+
                     <div class="notif-content-wrapper">
+
                         <div class="notif-title">{{ n["title"] if n["title"] else "Notification" }}</div>
+
                         <div class="notif-desc">{{ n["description"] if n["description"] else n["message"] }}</div>
+
                         <div class="notif-time">{{ n["time_ago"] if n["time_ago"] else n["time"] }}</div>
+
                     </div>
+
                     <span class="chevron-icon">&#10095;</span>
+
                 </a>
+
             {% endfor %}
+
         {% else %}
+
             <div style="text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+
                 No new notifications
+
             </div>
+
         {% endif %}
+
     </div>
+
+
+
+    <a href="/notifications" class="view-all-notif-btn">View All Notifications &nbsp; &#10095;</a>
+
+</div> 
+
+
 
     <form action="{{ url_for('mark_all_notifications_read') }}" method="POST" style="display: inline;">
     <button type="submit" class="btn-mark-all">
