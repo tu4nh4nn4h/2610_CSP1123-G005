@@ -768,7 +768,9 @@
         {% endif %}
     </div>
 
-    <a href="/notifications" class="view-all-notif-btn">View All Notifications &nbsp; &#10095;</a>
+    <a href="{{ url_for('mark_all_notifications_read') }}" class="btn-mark-all">
+    Mark all as read
+</a>
 </div>
 
         <div id="optionsModal" class="modal-backdrop">
@@ -792,7 +794,6 @@
                             <h3>Please note that:</h3>
                             <ul>
                                 <li>Any paid commitment fees may be non-refundable, subject to the event's terms and conditions.</li>
-                                <li>A confirmation email regarding this cancellation will be sent to your registered email address shortly.</li>
                             </ul>
                         </div>
                         <button id="finalDeleteSubmitBtn" class="confirm-btn">Confirm Cancellation</button>
