@@ -333,6 +333,17 @@
                         
                         <label for="birthday">Birthday:</label>
                         <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for category, message in messages %}
+                                    {% if category == 'profile_error' %}
+                                        <div class="error">
+                                            {{ message }}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
                         
                         <label for="faculty">Faculty:</label>
                         <select id="faculty" name="faculty">

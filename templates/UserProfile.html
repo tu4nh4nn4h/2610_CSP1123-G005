@@ -284,7 +284,7 @@
                 <div class="card about-card">
                     <div>
                         <h3>About You</h3>
-                        <p id="birthday"><b>Birthday:</b> {{ user['birthday'] }}</p>
+                        <p id="birthday"><b>Birthday:</b> {{ user['birthday'].split('-')[2] }}-{{ user['birthday'].split('-')[1] }}-{{ user['birthday'].split('-')[0] }}</p>
                         <p id="faculty"><b>Faculty:</b> {{ user['faculty'] }}</p>
                         <p id="year-of-study"><b>Year of Study:</b> {{ user['year_of_study'] }}</p>
                         <p id="email"><b>Email:</b> {{ user['email'] }}</p>
