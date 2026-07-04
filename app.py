@@ -1332,7 +1332,8 @@ def change_email():
 
     if user[0] != current_email:
         conn.close()
-        return "Current email is incorrect"
+        flash("Current email is incorrect", "email_error")
+        return redirect(url_for('edit_profile'))
 
     # Store new email temporarily
     cursor.execute("""
@@ -1384,10 +1385,10 @@ def verify_new_email(token):
         conn.commit()
         conn.close()
 
-        return "New email verified successfully. You can now log in."
+        return render_template('verify_email.html', status="success") 
 
     except Exception:
-        return "Verification link is invalid or expired."
+        return render_template('verify_email.html', status="error")
     
 
 @app.route('/mark_all_notifications_read', methods=['POST'])
