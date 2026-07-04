@@ -341,18 +341,15 @@
                         
                         <label for="birthday">Birthday:</label>
                         <input type="date" id="birthday" name="birthday" value="{{ details['birthday'] if details else '1990-01-01' }}">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    {% if category == 'profile_error' %}
-                                        <div class="error">
-                                            {{ message }}
-                                        </div>
-                                    {% endif %}
+                        {% with age_messages = get_flashed_messages(category_filter=['age_error']) %}
+                            {% if age_messages %}
+                                {% for message in age_messages %}
+                                    <div class="error">
+                                        {{ message }}
+                                    </div>
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}
-                        
                         <label for="faculty">Faculty:</label>
                         <select id="faculty" name="faculty">
                             <option value="Faculty of Computing and Informatics"
@@ -415,19 +412,18 @@
                     <input type="text" id="username" name="username" required>
                     <label for="keyword">Answer:</label>
                     <input type="password" id="keyword" name="keyword" required>
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                        {% if messages %}
+                    {% with keyword_messages = get_flashed_messages(category_filter=['keyword_error']) %}
+                        {% if keyword_messages %}
                             <script>
                                 window.onload = function() {
                                     openPopup('passwordPopup');
                                 };
                             </script>
-                            {% for category, message in messages %}
-                                {% if category == 'keyword_error' %}
-                                    <div class="error">
-                                        {{ message }}
-                                    </div>
-                                {% endif %}
+
+                            {% for message in keyword_messages %}
+                                <div class="error">
+                                    {{ message }}
+                                </div>
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
