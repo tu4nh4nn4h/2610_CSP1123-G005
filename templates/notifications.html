@@ -335,7 +335,7 @@
 
                         <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
                             {% if n['is_read'] == 0 %}
-                                <a class="mark-read" href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
+                                <a class="mark-read" href="{{ url_for('mark_all_notifications_read', notification_id=n['id']) }}">
                                     Mark as read
                                 </a>
                             {% endif %}
