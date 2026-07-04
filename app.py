@@ -1332,7 +1332,8 @@ def change_email():
 
     if user[0] != current_email:
         conn.close()
-        return "Current email is incorrect"
+        flash("Current email is incorrect", "email_error")
+        return redirect(url_for('edit_profile'))
 
     # Store new email temporarily
     cursor.execute("""
