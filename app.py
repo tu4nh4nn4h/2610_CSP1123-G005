@@ -1385,10 +1385,10 @@ def verify_new_email(token):
         conn.commit()
         conn.close()
 
-        return "New email verified successfully. You can now log in."
+        return render_template('verify_email.html', status="success") 
 
     except Exception:
-        return "Verification link is invalid or expired."
+        return render_template('verify_email.html', status="error")
     
 
 @app.route('/mark_notification_read/<int:notification_id>')
