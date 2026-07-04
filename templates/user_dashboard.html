@@ -16,206 +16,354 @@
             }
 
             body {
-                /* Gradient background matching the image */
-                background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+                background: linear-gradient(135deg, #fbc2eb 0%, #a18cd1 100%);
                 display: flex;
                 justify-content: center;
-                align-items: center;
+                align-items: flex-start;
                 min-height: 100vh;
-                padding: 20px;
-                padding-top: 60px; /* prevent content from hiding behind navbar */
+                padding: 40px 20px;
+                padding-top: 110px; 
             }
 
             .dashboard {
                 width: 95%;
                 max-width: 1400px;
-                padding: 40px;
-                border-radius: 25px;
-                /* Semi-transparent overlay to let the background peak through slightly */
-                background: rgba(255, 255, 255, 0.15);
-                backdrop-filter: blur(10px);
-                color: white;
-            }
-
-            .dashboard-header {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .welcome {
-                font-size: 1.2rem;
-                margin-bottom: 5px;
-            }
-
-            .title {
-                font-size: 3.5rem;
-                font-weight: 700;
-                margin-bottom: 30px;
-                text-transform: uppercase;
-            }
-
-            .myEvent-btn-container {
-                margin-bottom: 30px; /* same as title margin */
-                margin-right: 50px;
-            }
-
-            #myEvent-btn {
-                background-color: #bb00ff;
-                color: white;
-                font-size: 1rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                transition: background-color 0.2s, transform 0.1s;
-                padding: 12px 24px;
-                border: none;
-                border-radius: 10px;
-                cursor: pointer;
-                white-space: nowrap;
-            }
-
-            .grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr; /* Two equal columns */
-                gap: 25px;
-            }
-
-            .card {
-                background: rgba(176, 106, 214, 0.4);
-                border-radius: 40px;
-                padding: 30px;
-                min-height: 280px;
-            }
-
-            /* Profile Card Styles */
-            .profile-card {
-                display: flex;
-                align-items: center;
+                flex-direction: column;
                 gap: 30px;
             }
 
+         /* --- Top Profile Banner Layout --- */
+            .profile-banner {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-radius: 30px;
+                padding: 35px 50px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                color: white;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+                
+                /* Animation transition smooth properties */
+                transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+            }
+
+            /* Subtle motion feedback when mouse hovers over the container */
+            .profile-banner:hover {
+                background: rgba(255, 255, 255, 0.25);
+                transform: translateY(-2px); /* Moves up slightly */
+                box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Click feedback when pressed */
+            .profile-banner:active {
+                transform: translateY(0) scale(0.99);
+            }
+
+            .profile-left {
+                display: flex;
+                align-items: center;
+                gap: 35px;
+            }
+
             .dashboard-profile-picture {
-                width: 120px;
-                height: 120px;
+                width: 130px;
+                height: 130px;
                 border-radius: 50%;
                 object-fit: cover;
+                background-color: #e0e0e0;
                 border: 4px solid white;
                 flex-shrink: 0;
             }
 
-            .profile-content p {
-                font-size: 1.1rem;
-                margin-bottom: 5px;
-            }
-
-            /* Calendar Card Styles */
-            .calendar-card {
+            .profile-content {
                 display: flex;
-                justify-content: space-between;
-                align-items: center;
+                flex-direction: column;
+                gap: 8px;
             }
 
-            .date-info .day { font-size: 1.2rem; }
-            .date-info .date { font-size: 3rem; font-weight: 700; }
-
-            .calendar-grid {
-                display: grid;
-                grid-template-columns: repeat(6, 1fr);
-                width: 200px;
-                height: 120px;
+            .profile-row {
+                display: flex;
+                align-items: baseline;
+                font-size: 1.1rem;
+                font-weight: 400;
             }
 
-            .calendar-grid div {
-                border: 1px solid rgba(255, 255, 255, 0.5);
-            }
-
-            /* Events Card Styles */
-            .event-row {
-                margin-bottom: 20px;
-            }
-
-            .event-label {
-                font-size: 1.2rem;
-                margin-bottom: 10px;
-            }
-
-        .circles {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        /* Main event circles (Standard size for Joined Events) */
-        .circle {
-            width: 70px;
-            height: 70px;
-            background: #7a1fa2;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-            flex-shrink: 0;
-        }
-
-            /* Smaller circles for Registered Events */
-            .circle-small {
-                width: 45px;
-                height: 45px;
-                background: #7a1fa2;
-                border-radius: 50%;
+            .profile-label {
+                font-weight: 600;
+                width: 160px;
                 flex-shrink: 0;
             }
 
-            .circle:hover,
-            .circle-small:hover {
-                transform: scale(1.08);
+            .profile-value {
+                word-break: break-all;
             }
 
-            .scroll-bar {
-                width: 100%;
-                height: 12px;
-                background: rgba(255, 255, 255, 0.3);
-                border-radius: 10px;
-                margin-top: 20px;
+            /* --- Main Split Content Grid --- */
+            .main-grid {
+                display: grid;
+                grid-template-columns: 1.6fr 1fr;
+                gap: 30px;
             }
 
-            .scroll-fill {
-                width: 40%;
-                height: 100%;
-                background: #e0f2f1;
-                border-radius: 10px;
+            .card {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-radius: 30px;
+                padding: 35px;
+                color: white;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
             }
 
-            /* Inbox Card Styles */
-            .inbox-title {
+            /* --- Events Layout Section --- */
+            .card-header-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            .card-title-main {
                 font-size: 1.5rem;
                 font-weight: 700;
                 text-transform: uppercase;
+                letter-spacing: 0.5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
             }
 
-            .clickable-card {
-                text-decoration: none; /* Removes underline */
-                color: inherit;        /* Keeps text white/original color */
-                display: flex;         /* Maintains your original layout */
+            .scroll-arrows {
+                display: flex;
+                gap: 10px;
+            }
+
+            .arrow-btn {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.25);
+                border: none;
+                color: white;
                 cursor: pointer;
-                transition: transform 0.2s ease, background 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 0.85rem;
+                transition: background 0.2s;
             }
 
-            .clickable-card:hover {
-                transform: translateY(-5px); /* Lift effect on hover */
-                background: rgba(176, 106, 214, 0.6); /* Slightly darker on hover */
+            .arrow-btn:hover {
+                background: rgba(255, 255, 255, 0.4);
             }
 
-            .clickable-card:active {
-                transform: translateY(0); /* "Press" effect when clicked */
+            .event-section-label {
+                font-size: 1.1rem;
+                font-weight: 500;
+                margin-bottom: 15px;
+                position: relative;
+                padding-left: 12px;
             }
 
-            /* Responsive Fix */
-            @media (max-width: 900px) {
-                .grid { grid-template-columns: 1fr; }
-                .title { font-size: 2.5rem; }
+            .event-section-label::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 4px;
+                width: 4px;
+                height: 16px;
+                background-color: #ff5252;
+                border-radius: 2px;
             }
 
-            /* Fixed Global Navigation Navbar Layer */
+            .posters-container {
+                display: flex;
+                gap: 15px;
+                align-items: center;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                margin-bottom: 30px;
+            }
+
+            .posters-container::-webkit-scrollbar {
+                height: 6px;
+            }
+            .posters-container::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+            }
+
+            .event-poster {
+                width: 110px;
+                height: 155px;
+                border-radius: 12px;
+                overflow: hidden;
+                cursor: pointer;
+                transition: transform 0.2s ease;
+                background: rgba(0,0,0,0.1);
+                flex-shrink: 0;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            }
+
+            .event-poster img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .event-poster:hover {
+                transform: scale(1.05);
+            }
+
+            /* View All Frame */
+            .view-all-box {
+                width: 110px;
+                height: 155px;
+                border-radius: 12px;
+                border: 2px dashed rgba(255, 255, 255, 0.6);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 5px;
+                cursor: pointer;
+                color: rgba(255, 255, 255, 0.9);
+                text-decoration: none;
+                font-size: 0.85rem;
+                font-weight: 500;
+                flex-shrink: 0;
+                transition: background 0.2s;
+            }
+
+            .view-all-box:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .view-all-box span {
+                font-size: 1.5rem;
+                font-weight: 300;
+            }
+
+            /* --- Inbox & Notifications Layout --- */
+            .inbox-card {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .notification-badge-count {
+                background: #ff3b30;
+                color: white;
+                font-size: 0.75rem;
+                font-weight: 700;
+                min-width: 20px;
+                height: 20px;
+                padding: 0 6px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .inbox-subtitle {
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: -20px;
+                margin-bottom: 20px;
+            }
+
+            .notifications-list {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                flex: 1;
+            }
+
+            .notif-item {
+                background: rgba(255, 255, 255, 0.85);
+                border-radius: 18px;
+                padding: 15px 20px;
+                color: #333;
+                text-decoration: none;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                transition: transform 0.2s, background 0.2s;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            }
+
+            .notif-item:hover {
+                transform: translateY(-2px);
+                background: rgba(255, 255, 255, 0.95);
+            }
+
+            .notif-content-wrapper {
+                padding-left: 15px;
+                position: relative;
+            }
+
+            .notif-content-wrapper::before {
+                content: '';
+                position: absolute;
+                left: 0;
+                top: 6px;
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background-color: #bb00ff;
+            }
+
+            .notif-title {
+                font-weight: 600;
+                font-size: 0.95rem;
+                color: #2b1140;
+                margin-bottom: 2px;
+            }
+
+            .notif-desc {
+                font-size: 0.85rem;
+                color: #666;
+                margin-bottom: 4px;
+                line-height: 1.3;
+            }
+
+            .notif-time {
+                font-size: 0.75rem;
+                color: #999;
+            }
+
+            .chevron-icon {
+                color: #7b2cbf;
+                font-weight: 700;
+                font-size: 1.1rem;
+            }
+
+            .view-all-notif-btn {
+                margin-top: 20px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.85);
+                color: #7b2cbf;
+                text-align: center;
+                text-decoration: none;
+                padding: 12px;
+                border-radius: 15px;
+                font-size: 0.85rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                transition: background 0.2s;
+                display: block;
+            }
+
+            .view-all-notif-btn:hover {
+                background: white;
+            }
+
+            /* --- Fixed Top Navbar --- */
             .navbar {
                 position: fixed;
                 top: 0;
@@ -232,18 +380,15 @@
                 z-index: 1000;
             }
 
-            .notification-link{
-                position:relative;
-            }
-
-            .notification-dot{
-                position:absolute;
-                width:10px;
-                height:10px;
-                background:red;
-                border-radius:50%;
-                top:-3px;
-                right:-10px;
+            .notification-link { position: relative; }
+            .notification-dot {
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                background: red;
+                border-radius: 50%;
+                top: -1px;
+                right: -8px;
             }
 
             .navbar-brand {
@@ -255,7 +400,6 @@
                 letter-spacing: 0.5px;
             }
 
-            /* Core application navigation action links */
             .navbar-links {
                 display: flex;
                 gap: 25px;
@@ -272,11 +416,7 @@
                 padding: 4px 0;
             }
 
-            .navbar-links a:hover {
-                color: #7b2cbf;
-            }
-
-            /* Underline slider effect matching system application pages */
+            .navbar-links a:hover { color: #7b2cbf; }
             .navbar-links a::after {
                 content: '';
                 position: absolute;
@@ -287,16 +427,9 @@
                 background-color: #7b2cbf;
                 transition: width 0.2s ease;
             }
+            .navbar-links a:hover::after { width: 100%; }
 
-        .navbar-links a:hover::after {
-            width: 100%;
-        }
-
-            /* ==========================================================================
-            MODAL SYSTEM STYLES (Aesthetic Purple & Soft Lavender Tint Theme)
-            ========================================================================== */
-            
-            /* Global Modal Backdrop Mask Overlay */
+            /* --- Modals --- */
             .modal-backdrop {
                 display: none; 
                 position: fixed;
@@ -309,14 +442,10 @@
                 justify-content: center;
                 align-items: center;
             }
+            .modal-backdrop.show { display: flex; }
 
-            .modal-backdrop.show {
-                display: flex;
-            }
-
-            /* --- 1st Modal: Options Customization --- */
             .options-card {
-                background-color: #fdf2ff; /* Soft pastel pinkish-white background */
+                background-color: #fdf2ff;
                 padding: 35px 50px;
                 border-radius: 30px;
                 display: flex;
@@ -334,30 +463,15 @@
                 transition: transform 0.1s ease, filter 0.2s ease;
                 text-transform: uppercase;
             }
+            .btn-modal-option:hover { filter: brightness(0.95); }
+            .btn-modal-option:active { transform: scale(0.98); }
+            .btn-gray { background-color: #cccccc; color: #ffffff; }
+            .btn-purple { background-color: #b37cd4; color: #ffffff; }
 
-            .btn-modal-option:hover {
-                filter: brightness(0.95);
-            }
-
-            .btn-modal-option:active {
-                transform: scale(0.98);
-            }
-
-            .btn-gray {
-                background-color: #cccccc; /* Neutral muted gray */
-                color: #ffffff;
-            }
-
-            .btn-purple {
-                background-color: #b37cd4; /* Vibrant lavender purple accent */
-                color: #ffffff;
-            }
-
-            /* --- 2nd Modal: Detailed Confirmation Customization --- */
             .modal-card {
                 width: 900px;
                 max-width: 95%;
-                background: #fdf2ff; /* Outer layout container frame color */
+                background: #fdf2ff;
                 border-radius: 30px;
                 overflow: hidden;
                 position: relative;
@@ -366,7 +480,6 @@
                 flex-direction: column;
             }
 
-            /* Close window corner controller */
             .close-btn {
                 position: absolute;
                 top: 15px;
@@ -386,22 +499,16 @@
                 background: #fdf2ff;
             }
 
-            .modal-body-wrapper {
-                display: flex;
-                flex: 1;
-            }
-
-            /* Left Side Panel Layout */
+            .modal-body-wrapper { display: flex; flex: 1; }
             .modal-left-purple {
-                background-color: #b37cd4; /* Bold Purple core panel */
+                background-color: #b37cd4;
                 flex: 1.1;
                 padding: 50px 40px;
-                border-radius: 0 40px 40px 0; /* Distinct outward reverse rounding */
+                border-radius: 0 40px 40px 0;
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
             }
-
             .modal-left-purple h2 {
                 font-size: 2.8rem;
                 font-weight: 700;
@@ -409,196 +516,87 @@
                 margin-bottom: 20px;
                 color: #ffffff;
             }
+            .modal-left-purple p { font-size: 1rem; line-height: 1.5; color: #ffffff; opacity: 0.95; }
 
-            .modal-left-purple p {
-                font-size: 1rem;
-                line-height: 1.5;
-                color: #ffffff;
-                opacity: 0.95;
-            }
-
-            /* Right Side Content Layout */
             .modal-right-lavender {
-                background-color: #fdf2ff; /* Matching base tone */
+                background-color: #fdf2ff;
                 flex: 1;
                 padding: 50px 40px;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                color: #4a148c; /* Uniform contrasting tone */
+                color: #4a148c;
             }
-
-            .modal-right-lavender h3 {
-                font-size: 1.1rem;
-                font-weight: 500;
-                margin-bottom: 15px;
-            }
-
-            .modal-right-lavender ul {
-                list-style: none;
-                margin-bottom: 30px;
-            }
-
-            .modal-right-lavender ul li {
-                position: relative;
-                padding-left: 20px;
-                margin-bottom: 15px;
-                font-size: 0.95rem;
-                line-height: 1.4;
-            }
-
-            /* Custom Bullet Points */
-            .modal-right-lavender ul li::before {
-                content: "•";
-                position: absolute;
-                left: 0;
-                color: #7b2cbf;
-                font-size: 1.2rem;
-                top: -2px;
-            }
+            .modal-right-lavender h3 { font-size: 1.1rem; font-weight: 500; margin-bottom: 15px; }
+            .modal-right-lavender ul { list-style: none; margin-bottom: 30px; }
+            .modal-right-lavender ul li { position: relative; padding-left: 20px; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.4; }
+            .modal-right-lavender ul li::before { content: "•"; position: absolute; left: 0; color: #7b2cbf; font-size: 1.2rem; top: -2px; }
 
             .confirm-btn {
-                background-color: #b37cd4;
-                color: white;
-                border: none;
-                padding: 14px 28px;
-                border-radius: 25px;
-                font-size: 0.95rem;
-                font-weight: 600;
-                cursor: pointer;
-                align-self: center;
-                text-transform: uppercase;
-                transition: background-color 0.2s;
+                background-color: #b37cd4; color: white; border: none; padding: 14px 28px;
+                border-radius: 25px; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+                align-self: center; text-transform: uppercase; transition: background-color 0.2s;
+            }
+            .confirm-btn:hover { background-color: #9c5ec2; }
+
+            .details-modal-card {
+                width: 580px; max-width: 90%; background: #f4eef8; border-radius: 28px;
+                padding: 24px; position: relative; box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+                animation: popupFade 0.25s ease;
             }
 
-            .confirm-btn:hover {
-                background-color: #9c5ec2;
+            @keyframes popupFade {
+                from { opacity: 0; transform: scale(0.92); }
+                to { opacity: 1; transform: scale(1); }
             }
 
-        /* Responsive handle for nested split content viewports */
-        @media (max-width: 768px) {
-            .modal-body-wrapper { flex-direction: column; }
-            .modal-left-purple { border-radius: 0 0 30px 30px; padding: 30px; }
-            .modal-right-lavender { padding: 30px; }
-            .options-card { flex-direction: column; gap: 15px; padding: 30px; }
-        }
+            .details-content { display: flex; flex-direction: column; align-items: center; }
+            .details-image { width: 100%; height: 210px; background: #d3d3d3; border-radius: 22px; overflow: hidden; margin-bottom: 22px; }
+            .details-image img { width: 100%; height: 100%; object-fit: cover; }
+            .details-title { font-size: 1.7rem; font-weight: 700; color: #3f1b57; margin-bottom: 18px; text-align: center; }
+            .details-info { width: 100%; font-size: 0.98rem; color: #333; line-height: 1.8; padding: 0 8px; }
+            .details-info p { margin-bottom: 10px; }
+            .details-info strong { color: #6d2e9c; }
 
-        /* ==========================================================================
-           EVENT DETAILS MODAL (3RD MODAL)
-           ========================================================================== */
-        .details-modal-card {
-            width: 580px;
-            max-width: 90%;
-            background: #f4eef8;
-            border-radius: 28px;
-            padding: 24px;
-            position: relative;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-            animation: popupFade 0.25s ease;
-        }
-
-        /* Smooth popup animation */
-        @keyframes popupFade {
-            from {
-                opacity: 0;
-                transform: scale(0.92);
+            .details-back-btn {
+                margin-top: 20px; background: #b37cd4; color: white; border: none;
+                border-radius: 18px; padding: 12px 30px; font-size: 0.95rem; font-weight: 500;
+                cursor: pointer; transition: 0.2s ease; text-transform: uppercase;
             }
-            to {
-                opacity: 1;
-                transform: scale(1);
+            .details-back-btn:hover { background: #9c5ec2; transform: translateY(-2px); }
+            .close-details-btn { position: absolute; top: 14px; right: 18px; font-size: 1.5rem; cursor: pointer; color: #7b2cbf; font-weight: 700; transition: 0.2s ease; }
+            .close-details-btn:hover { transform: scale(1.1); }
+
+            /* Responsive */
+            @media (max-width: 1024px) {
+                .main-grid { grid-template-columns: 1fr; }
+                .profile-banner { padding: 35px; }
             }
-        }
+            @media (max-width: 768px) {
+                .modal-body-wrapper { flex-direction: column; }
+                .modal-left-purple { border-radius: 0 0 30px 30px; padding: 30px; }
+                .modal-right-lavender { padding: 30px; }
+                .options-card { flex-direction: column; gap: 15px; padding: 30px; }
+            }
 
-        .details-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+            .posters-container {
+                    display: flex;
+                    gap: 15px;
+                    align-items: center;
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                    margin-bottom: 30px;
+                    /* Adds a native scroll snapping behavior if desired, or just smooths JS manual overrides */
+                    scroll-behavior: smooth; 
+                }
+        </style>
+    </head>
+    <body>
 
-        /* Event image */
-        .details-image {
-            width: 100%;
-            height: 210px;
-            background: #d3d3d3;
-            border-radius: 22px;
-            overflow: hidden;
-            margin-bottom: 22px;
-        }
-
-        .details-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Event title */
-        .details-title {
-            font-size: 1.7rem;
-            font-weight: 700;
-            color: #3f1b57;
-            margin-bottom: 18px;
-            text-align: center;
-        }
-
-        /* Event details text */
-        .details-info {
-            width: 100%;
-            font-size: 0.98rem;
-            color: #333;
-            line-height: 1.8;
-            padding: 0 8px;
-        }
-
-        .details-info p {
-            margin-bottom: 10px;
-        }
-
-        .details-info strong {
-            color: #6d2e9c;
-        }
-
-        /* Button */
-        .details-back-btn {
-            margin-top: 20px;
-            background: #b37cd4;
-            color: white;
-            border: none;
-            border-radius: 18px;
-            padding: 12px 30px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: 0.2s ease;
-            text-transform: uppercase;
-        }
-
-        .details-back-btn:hover {
-            background: #9c5ec2;
-            transform: translateY(-2px);
-        }
-
-        /* Close button */
-        .close-details-btn {
-            position: absolute;
-            top: 14px;
-            right: 18px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #7b2cbf;
-            font-weight: 700;
-            transition: 0.2s ease;
-        }
-
-        .close-details-btn:hover {
-            transform: scale(1.1);
-        }
-    </style>
-</head>
-<body>
-    <nav class="navbar">
-        <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
-        <div class="navbar-links">
-            {% if session.get('role')== 'user' %}
+        <nav class="navbar">
+            <a class="navbar-brand" href="/user_dashboard">UniSphere</a>
+            <div class="navbar-links">
+                {% if session.get('role') == 'user' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/be_organizer">Become Organizer</a>
                     <a href="/notifications" class="notification-link">
@@ -608,7 +606,6 @@
                         {% endif %}
                     </a>
                     <a href="/user_dashboard">Profile</a>
-
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
@@ -620,7 +617,6 @@
                         {% endif %}
                     </a>
                     <a href="/user_dashboard">Profile</a>
-
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/admin_dashboard">Admin Dashboard</a>
@@ -632,42 +628,77 @@
                     </a>
                     <a href="/user_dashboard">Profile</a>
                 {% endif %}
+            </div>
+        </nav>
+
+<div class="dashboard">   
+    <div class="profile-banner" onclick="window.location.href='/edit_profile';" style="cursor: pointer;" title="Click to Edit Profile">
+        <div class="profile-left">
+            <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="dashboard-profile-picture">
+            <div class="profile-content">
+                <div class="profile-row">
+                    <span class="profile-label">Name :</span>
+                    <span class="profile-value">{{ user['name'] }}</span>
+                </div>
+                <div class="profile-row">
+                    <span class="profile-label">Username :</span>
+                    <span class="profile-value">{{ user['username'] }}</span>
+                </div>
+                <div class="profile-row">
+                    <span class="profile-label">Contact Details :</span>
+                    <span class="profile-value">{{ user['email'] }}</span>
+                </div>
+            </div>
         </div>
-    </nav>
-
-    <div class="dashboard">
-        <p class="welcome">Welcome back, {{ user['name'] }}!</p>
-        <h1 class="title">User Dashboard</h1>
-
-        <div class="grid">
-            <a href="{{ url_for('user_profile') }}" class="card profile-card clickable-card">
-                <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="dashboard-profile-picture">
-                <div class="profile-content">
-                    <p><b>Name :</b> {{ user['name'] }}</p>
-                    <p><b>Username :</b> {{ user['username'] }}</p>
-                    <p><b>Contact Details :</b> {{ user['email'] }}</p>
-                </div>
-            </a>
-
-                <div class="card calendar-card">
-                    <div class="date-info">
-                        <p class="day">DAY</p>
-                        <p class="date">DATE</p>
+    </div>
+            <div class="main-grid">
+                
+                <div class="card">
+                    <div class="card-header-row">
+                        <h2 class="card-title-main">
+                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16" style="margin-right:4px;"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
+                            My Events
+                        </h2>
+                        <div class="scroll-arrows">
+                            <button class="arrow-btn prev-btn">&#10094;</button>
+                            <button class="arrow-btn next-btn">&#10095;</button>
+                        </div>
                     </div>
-                    <div class="calendar-grid">
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                        <div></div><div></div><div></div><div></div><div></div><div></div>
-                    </div>
-                </div>
 
-            <div class="card event-card">
-                <div class="event-row">
-                    <p class="event-label">Registered Events :</p>
-                    <div class="circles">
+                    <p class="event-section-label">Registered Events</p>
+                    <div class="posters-container">
                         {% if events %}
                             {% for e in events %}
+                                {% if e["main_location"] == "General" %}
+                                {% elif e["main_location"] == "CLC" %}
+                                    {% set location = e["main_location"] ~ ", " ~ e["specific_location"] %}
+                                {% else %}
+                                    {% set location = e["main_location"] ~ ", " ~ e["faculty_wing"] ~ ", " ~ e["specific_location"] %}
+                                {% endif %}
+                                    
+                                <div class="event-poster"
+                                     onclick='triggerActionMenu(
+                                         `{{ e["event_id"] }}`,
+                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
+                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
+                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
+                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
+                                         `{{ location }} ({{ e["event_mode"] }})`,
+                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`
+                                     )'
+                                     title="{{ e['event_name'] }}">
+                                <img src="{{ url_for('static', filename='eventPoster/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
+                                </div>
+                            {% endfor %}
+                            {% else %}
+                            <p style="color: rgba(255,255,255,0.7); font-size:0.95rem;">No registered events.</p>
+                        {% endif %}
+                    </div>
+
+                    <p class="event-section-label">Joined Events</p>
+                    <div class="posters-container">
+                        {% if joined_events %}
+                            {% for e in joined_events %}
                                 {% if e["main_location"] == "General" %}
                                     {% set location = e["specific_location"] %}
                                 {% elif e["main_location"] == "CLC" %}
@@ -675,7 +706,8 @@
                                 {% else %}
                                     {% set location = e["main_location"] ~ ", " ~ e["faculty_wing"] ~ ", " ~ e["specific_location"] %}
                                 {% endif %}
-                                <div class="circle circle-small"
+
+                                <div class="event-poster"
                                      onclick='triggerActionMenu(
                                          `{{ e["event_id"] }}`,
                                          `{{ e["event_name"] | replace("`", "\\`") }}`,
@@ -683,183 +715,221 @@
                                          `{{ e["start_date"] }} to {{ e["end_date"] }}`,
                                          `{{ e["start_time"] }} - {{ e["end_time"] }}`,
                                          `{{ location }} ({{ e["event_mode"] }})`,
-                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
-                                         `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
+                                         <img src="{{ url_for('static', filename='eventPoster/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
                                      )'
                                      title="{{ e['event_name'] }}">
+                                    <img src="{{ url_for('static', filename='eventPoster/' + (e['event_poster'] if e['event_poster'] else 'defaultPoster.png')) }}" alt="{{ e['event_name'] }}">
                                 </div>
                             {% endfor %}
+                            <a href="/eventbrowsing" class="view-all-box">
+                                <span>+</span>
+                                View All
+                            </a>
                         {% else %}
-                            <div class="circle circle-small"></div>
-                            <div class="circle circle-small"></div>
-                            <div class="circle circle-small"></div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="event-row">
-                    <p class="event-label">Joined Events :</p>
-                    <div class="circles">
-                        {% if joined_events %}
-                            {% for e in joined_events %}
-                                <div class="circle"
-                                     onclick='triggerActionMenu(
-                                         `{{ e["event_id"] }}`,
-                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
-                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
-                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
-                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
-                                         `{{ location }} ({{ e["event_mode"] }})`,
-                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
-                                         `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
-                                     )'
-                                     title="{{ e['event_name'] }}">
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;" title="No events joined"></div>
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
+                            <p style="color: rgba(255,255,255,0.7); font-size:0.95rem;">No joined events.</p>
                         {% endif %}
                     </div>
                 </div>
 
-                <div class="scroll-bar">
-                    <div class="scroll-fill"></div>
-                </div>
-            </div>
-
-                <a href="{{ url_for('notifications') }}" class="card inbox-card clickable-card">
-                    <h2 class="inbox-title">Inbox 🔔</h2>
+    <div class="card inbox-card">
+    <div class="card-header-row">
+        <h2 class="card-title-main" style="gap:15px;">
+            <svg width="22" height="22" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/></svg>
+            Inbox
+        </h2>
+        {% if unread_notifications and unread_notifications > 0 %}
+            <span class="notification-badge-count">{{ unread_notifications }}</span>
+        {% endif %}
+    </div>
+    
+    {% if notifications %}
+        <p class="inbox-subtitle">You have {{ unread_notifications if unread_notifications else '0' }} unread notifications</p>
+    {% else %}
+        <p class="inbox-subtitle">You are all caught up!</p>
+    {% endif %}
+    
+    <div class="notifications-list">
+        {% if notifications %}
+            {# Limits the dashboard display to a maximum of 3 notifications #}
+            {% for n in notifications[:3] %}
+                <a href="/notifications" class="notif-item">
+                    <div class="notif-content-wrapper">
+                        <div class="notif-title">{{ n["title"] if n["title"] else "Notification" }}</div>
+                        <div class="notif-desc">{{ n["description"] if n["description"] else n["message"] }}</div>
+                        <div class="notif-time">{{ n["time_ago"] if n["time_ago"] else n["time"] }}</div>
+                    </div>
+                    <span class="chevron-icon">&#10095;</span>
                 </a>
+            {% endfor %}
+        {% else %}
+            <div style="text-align: center; padding: 40px 20px; color: rgba(255,255,255,0.7); font-size: 0.95rem;">
+                No new notifications
+            </div>
+        {% endif %}
+    </div>
+
+    <a href="{{ url_for('mark_all_notifications_read') }}" class="btn-mark-all">
+    Mark all as read
+</a>
+</div>
+
+        <div id="optionsModal" class="modal-backdrop">
+            <div class="options-card">
+                <button id="goToCancelFlowBtn" class="btn-modal-option btn-gray">Cancel Registration</button>
+                <button id="viewDetailsBtn" class="btn-modal-option btn-purple">Details of the Event</button>
             </div>
         </div>
 
-    <div id="optionsModal" class="modal-backdrop">
-        <div class="options-card">
-            <button id="goToCancelFlowBtn" class="btn-modal-option btn-gray">Cancel Registration</button>
-            <button id="viewDetailsBtn" class="btn-modal-option btn-purple">Details of the Event</button>
-        </div>
-    </div>
-
-    <div id="cancelConfirmationModal" class="modal-backdrop">
-        <div class="modal-card">
-            <span class="close-btn" id="closeCancelModalBtn">&times;</span>
-            <div class="modal-header-title">Registration cancellation</div>
-            
-            <div class="modal-body-wrapper">
-                <div class="modal-left-purple">
-                    <h2>We regret to see you leave</h2>
-                    <p>Your registration will be cancelled. Rest assured, you can still view and explore upcoming events on your dashboard.</p>
-                </div>
-                
-                <div class="modal-right-lavender">
-                    <div>
-                        <h3>Please note that:</h3>
-                        <ul>
-                            <li>Any paid commitment fees may be non-refundable, subject to the event's terms and conditions.</li>
-                            <li>A confirmation email regarding this cancellation will be sent to your registered email address shortly.</li>
-                        </ul>
+        <div id="cancelConfirmationModal" class="modal-backdrop">
+            <div class="modal-card">
+                <span class="close-btn" id="closeCancelModalBtn">&times;</span>
+                <div class="modal-header-title">Registration cancellation</div>
+                <div class="modal-body-wrapper">
+                    <div class="modal-left-purple">
+                        <h2>We regret to see you leave</h2>
+                        <p>Your registration will be cancelled. Rest assured, you can still view and explore upcoming events on your dashboard.</p>
                     </div>
-                    <button id="finalDeleteSubmitBtn" class="confirm-btn">Confirm Cancellation</button>
+                    <div class="modal-right-lavender">
+                        <div>
+                            <h3>Please note that:</h3>
+                            <ul>
+                                <li>Any paid commitment fees may be non-refundable, subject to the event's terms and conditions.</li>
+                            </ul>
+                        </div>
+                        <button id="finalDeleteSubmitBtn" class="confirm-btn">Confirm Cancellation</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="eventDetailsModal" class="modal-backdrop">
-        <div class="details-modal-card">
-            <span class="close-details-btn" id="closeDetailsModalBtn">&times;</span>
-            <div class="details-content">
-                <div class="details-image">
-                    <img id="detailsEventImage" src="https://via.placeholder.com/900x400" alt="Event Image">
+        <div id="eventDetailsModal" class="modal-backdrop">
+            <div class="details-modal-card">
+                <span class="close-details-btn" id="closeDetailsModalBtn">&times;</span>
+                <div class="details-content">
+                    <div class="details-image">
+                        <img id="detailsEventImage" src="https://via.placeholder.com/900x400" alt="Event Image">
+                    </div>
+                    <h2 class="details-title" id="detailsEventTitle">Event Title</h2>
+                    <div class="details-info">
+                        <p><strong>Event description :</strong> <span id="detailsEventDescription">Event description here.</span></p>
+                        <p><strong>Date :</strong> <span id="detailsEventDate">10 June 2026</span></p>
+                        <p><strong>Time :</strong> <span id="detailsEventTime">8:00 PM</span></p>
+                        <p><strong>Venue :</strong> <span id="detailsEventVenue">Main Hall</span></p>
+                    </div>
+                    <button class="details-back-btn" id="backToDashboardBtn">Back To Dashboard</button>
                 </div>
-
-                <h2 class="details-title" id="detailsEventTitle">Event Title</h2>
-
-                <div class="details-info">
-                    <p><strong>Event description :</strong> <span id="detailsEventDescription">Event description here.</span></p>
-                    <p><strong>Date :</strong> <span id="detailsEventDate">10 June 2026</span></p>
-                    <p><strong>Time :</strong> <span id="detailsEventTime">8:00 PM</span></p>
-                    <p><strong>Venue :</strong> <span id="detailsEventVenue">Main Hall</span></p>
-                </div>
-
-                <button class="details-back-btn" id="backToDashboardBtn">Back To Dashboard</button>
             </div>
         </div>
-    </div>
 
-    <form id="hiddenCancelForm" method="POST" action="" style="display: none;"></form>
+        <form id="hiddenCancelForm" method="POST" action="" style="display: none;"></form>
 
-    <script>
-        let selectedEventId = null;
-        let selectedEventData = { title: "", description: "", date: "", time: "", venue: "", image: "" };
+        <script>
+            let selectedEventId = null;
+            let selectedEventData = { title: "", description: "", date: "", time: "", venue: "", image: "" };
 
-        const optionsModal = document.getElementById('optionsModal');
-        const cancelConfirmationModal = document.getElementById('cancelConfirmationModal');
-        const eventDetailsModal = document.getElementById('eventDetailsModal');
+            const optionsModal = document.getElementById('optionsModal');
+            const cancelConfirmationModal = document.getElementById('cancelConfirmationModal');
+            const eventDetailsModal = document.getElementById('eventDetailsModal');
 
-        const goToCancelFlowBtn = document.getElementById('goToCancelFlowBtn');
-        const viewDetailsBtn = document.getElementById('viewDetailsBtn');
-        const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
-        const finalDeleteSubmitBtn = document.getElementById('finalDeleteSubmitBtn');
-        const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
-        const backToDashboardBtn = document.getElementById('backToDashboardBtn');
+            const goToCancelFlowBtn = document.getElementById('goToCancelFlowBtn');
+            const viewDetailsBtn = document.getElementById('viewDetailsBtn');
+            const closeCancelModalBtn = document.getElementById('closeCancelModalBtn');
+            const finalDeleteSubmitBtn = document.getElementById('finalDeleteSubmitBtn');
+            const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
+            const backToDashboardBtn = document.getElementById('backToDashboardBtn');
 
-        function triggerActionMenu(eventId, eventName, description, dateRange, timeRange, locationDetails, eventImage) {
-            selectedEventId = eventId;
-
-            selectedEventData.title = eventName;
-            selectedEventData.description = description;
-            selectedEventData.date = dateRange;
-            selectedEventData.time = timeRange;
-            selectedEventData.venue = locationDetails;
-            selectedEventData.image = eventImage ? eventImage : "https://via.placeholder.com/900x400";
-            optionsModal.classList.add('show');
-        }
-
-        goToCancelFlowBtn.addEventListener('click', () => {
-            optionsModal.classList.remove('show');
-            cancelConfirmationModal.classList.add('show');
-        });
-
-        viewDetailsBtn.addEventListener('click', () => {
-            optionsModal.classList.remove('show');
-            document.getElementById('detailsEventTitle').innerText = selectedEventData.title;
-            document.getElementById('detailsEventDescription').innerText = selectedEventData.description;
-            document.getElementById('detailsEventDate').innerText = selectedEventData.date;
-            document.getElementById('detailsEventTime').innerText = selectedEventData.time;
-            document.getElementById('detailsEventVenue').innerText = selectedEventData.venue;
-            document.getElementById('detailsEventImage').src = selectedEventData.image;
-            eventDetailsModal.classList.add('show');
-        });
-
-        closeCancelModalBtn.addEventListener('click', () => {
-            cancelConfirmationModal.classList.remove('show');
-            selectedEventId = null;
-        });
-
-        closeDetailsModalBtn.addEventListener('click', () => {
-            eventDetailsModal.classList.remove('show');
-        });
-
-        backToDashboardBtn.addEventListener('click', () => {
-            eventDetailsModal.classList.remove('show');
-        });
-
-        finalDeleteSubmitBtn.addEventListener('click', () => {
-            if (selectedEventId) {
-                const form = document.getElementById('hiddenCancelForm');
-                form.action = `/cancel_registration/${selectedEventId}`;
-                form.submit();
+            function triggerActionMenu(eventId, eventName, description, dateRange, timeRange, locationDetails, eventImage) {
+                selectedEventId = eventId;
+                selectedEventData.title = eventName;
+                selectedEventData.description = description;
+                selectedEventData.date = dateRange;
+                selectedEventData.time = timeRange;
+                selectedEventData.venue = locationDetails;
+                selectedEventData.image = eventImage ? eventImage : "https://via.placeholder.com/900x400";
+                optionsModal.classList.add('show');
             }
+
+            goToCancelFlowBtn.addEventListener('click', () => {
+                optionsModal.classList.remove('show');
+                cancelConfirmationModal.classList.add('show');
+            });
+
+            viewDetailsBtn.addEventListener('click', () => {
+                optionsModal.classList.remove('show');
+                document.getElementById('detailsEventTitle').innerText = selectedEventData.title;
+                document.getElementById('detailsEventDescription').innerText = selectedEventData.description;
+                document.getElementById('detailsEventDate').innerText = selectedEventData.date;
+                document.getElementById('detailsEventTime').innerText = selectedEventData.time;
+                document.getElementById('detailsEventVenue').innerText = selectedEventData.venue;
+                document.getElementById('detailsEventImage').src = selectedEventData.image;
+                eventDetailsModal.classList.add('show');
+            });
+
+            closeCancelModalBtn.addEventListener('click', () => {
+                cancelConfirmationModal.classList.remove('show');
+                selectedEventId = null;
+            });
+
+            closeDetailsModalBtn.addEventListener('click', () => {
+                eventDetailsModal.classList.remove('show');
+            });
+
+            backToDashboardBtn.addEventListener('click', () => {
+                eventDetailsModal.classList.remove('show');
+            });
+
+            finalDeleteSubmitBtn.addEventListener('click', () => {
+                if (selectedEventId) {
+                    const form = document.getElementById('hiddenCancelForm');
+                    form.action = `/cancel_registration/${selectedEventId}`;
+                    form.submit();
+                }
+            });
+
+            window.addEventListener('click', (event) => {
+                if (event.target === optionsModal) optionsModal.classList.remove('show');
+                if (event.target === cancelConfirmationModal) cancelConfirmationModal.classList.remove('show');
+                if (event.target === eventDetailsModal) eventDetailsModal.classList.remove('show');
+            });
+
+           document.addEventListener("DOMContentLoaded", () => {
+    const nextBtn = document.querySelector('.next-btn');
+    const prevBtn = document.querySelector('.prev-btn');
+    const scrollAmount = 350;
+
+    function getTargetContainer() {
+        const containers = Array.from(document.querySelectorAll('.posters-container'));
+        
+        // 1. Find the container that has posters & hasn't been fully scrolled to the right
+        const scrollableContainer = containers.find(c => {
+            const hasPosters = c.querySelector('.event-poster');
+            const canScrollMore = c.scrollLeft < (c.scrollWidth - c.clientWidth - 10);
+            return hasPosters && canScrollMore;
         });
 
-        window.addEventListener('click', (event) => {
-            if (event.target === optionsModal) optionsModal.classList.remove('show');
-            if (event.target === cancelConfirmationModal) cancelConfirmationModal.classList.remove('show');
-            if (event.target === eventDetailsModal) eventDetailsModal.classList.remove('show');
+        if (scrollableContainer) return scrollableContainer;
+
+        // 2. If all rows are fully scrolled to the right, fallback to any container with posters
+        const anyWithPosters = containers.find(c => c.querySelector('.event-poster'));
+        return anyWithPosters || containers[0];
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            getTargetContainer()?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         });
-    </script>
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            // For the 'back' (left) button, look for a container that is currently scrolled to the right (scrollLeft > 0)
+            const containers = Array.from(document.querySelectorAll('.posters-container'));
+            const scrolledContainer = containers.find(c => c.scrollLeft > 0) || containers.find(c => c.querySelector('.event-poster')) || containers[0];
+            
+            scrolledContainer?.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+    }
+});
+            </script>
 </body>
 </html>

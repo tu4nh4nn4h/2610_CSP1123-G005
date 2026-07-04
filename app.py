@@ -278,7 +278,8 @@ def register():
         print("PASSWORD VALUE:", repr(password))
 
         if password != confirm_password:
-            return "Passwords do not match"
+            flash("Passwords do not match", "register_password_error")
+            return render_template('register.html')
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -289,7 +290,8 @@ def register():
             send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
-            return "Username or email already exists"
+            flash("Username or email already exists", "register_exists_error")
+            return render_template('register.html')
 
         finally:
             conn.close()
@@ -319,7 +321,8 @@ def register_organizer():
         uploaded_file.save(os.path.join(app.config['SUPPORTING_DOCS_FOLDER'], filename))
 
         if password != confirm_password:
-            return "Passwords do not match"
+            flash("Passwords do not match", "register_password_error", "register_password_error")
+            return render_template('register_organizer.html')
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -334,7 +337,8 @@ def register_organizer():
             send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
-            return "Username or email already exists"
+            flash("Username or email already exists", "register_exists_error")
+            return render_template('register_organizer.html')
 
         finally:
             conn.close()
@@ -366,7 +370,7 @@ def signin():
               
             if check_password_hash(stored_password, password):
                 if is_verified == 0:
-                    flash("Please verify your email before logging in.")
+                    flash("Please verify your email before logging in.", "login_verification_error")
                     return redirect(url_for('signin'))
 
                 session['user'] = username  # Assuming the first column is user ID
@@ -375,10 +379,10 @@ def signin():
                 
                 return redirect(url_for('dashboard'))
             else:
-                flash("Invalid username or password")
+                flash("Invalid username or password", "login_error")
         else:
-            flash("Invalid username or password")
-        
+            flash("Invalid username or password", "login_error")
+
     return render_template('signin.html')
 
 @app.route('/verify_email/<token>')
@@ -390,9 +394,10 @@ def verify_email(token):
         cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
         conn.commit()
         conn.close()
-        return "Email verified successfully! You can now log in."
+        flash("Email verified successfully! You can now log in.", "verification_success")
+        return render_template('verify_email.html', status="success")
     except:
-        return "The verification link is invalid or has expired."
+        return render_template('verify_email.html', status="error")
 
 @app.route('/verify_keyword', methods=['POST'])
 def verify_keyword():
@@ -409,7 +414,8 @@ def verify_keyword():
         session['reset_user'] = username
         return redirect(url_for('reset_password'))
 
-    return "Invalid username or keyword"
+    flash("Invalid username or keyword", "keyword_error")
+    return redirect(url_for('edit_profile'))
 
 
 @app.route('/reset_password', methods=['GET', 'POST'])
@@ -1201,24 +1207,57 @@ def dashboard():
         conn.close()
         return "User not found"
 
-   # 2. Query only the events that THIS specific student has registered for using an INNER JOIN
-    # Fixed: Matched exactly to the schema columns found in EventRegSys.html
+    # 2. Query only UPCOMING events that THIS specific student has registered for
     cursor.execute("""
         SELECT e.event_id, e.event_name, e.event_description, 
                e.start_date, e.end_date, e.start_time, e.end_time, 
-               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link
+               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link, e.event_poster
         FROM events e
         INNER JOIN event_registrations er ON e.event_id = er.event_id
-        WHERE er.student_id = ?
+        WHERE er.student_id = ? AND e.end_date >= date('now')
     """, (user["student_id"],))
-    
     events = cursor.fetchall()
+    
+    # 2b. Query PAST events (Joined) that THIS specific student registered for
+    cursor.execute("""
+        SELECT e.event_id, e.event_name, e.event_description, 
+               e.start_date, e.end_date, e.start_time, e.end_time, 
+               e.main_location, e.faculty_wing, e.specific_location, e.event_mode, e.event_link, e.event_poster
+        FROM events e
+        INNER JOIN event_registrations er ON e.event_id = er.event_id
+        WHERE er.student_id = ? AND e.end_date < date('now')
+    """, (user["student_id"],))
+    joined_events = cursor.fetchall()
+
+    # 3. Fetch all notifications for this student
+    cursor.execute("""
+        SELECT * FROM notifications 
+        WHERE student_id = ? 
+        ORDER BY ROWID DESC
+    """, (user["student_id"],))
+    notifications = cursor.fetchall()
+
+    # 4. Count the total unread notifications
+    cursor.execute("""
+        SELECT COUNT(*) as count 
+        FROM notifications 
+        WHERE student_id = ?
+    """, (user["student_id"],))
+    unread_data = cursor.fetchone()
+    unread_notifications = unread_data["count"] if unread_data else 0
+
     conn.close()
 
-    # 3. Pass both 'user' object and 'events' list to the HTML template layout dashboard
-    return render_template('user_dashboard.html', user=user, events=events)
-
-
+    # 5. Pass everything over to your updated HTML template
+    return render_template(
+        'user_dashboard.html', 
+        user=user, 
+        events=events, 
+        joined_events=joined_events,
+        notifications=notifications, 
+        unread_notifications=unread_notifications
+    )
+    
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
     username = session.get('user')
@@ -1299,7 +1338,7 @@ def edit_profile():
 
     # UPDATE profile
     if request.method == 'POST':
-        profile_picture = None
+        profile_picture = details['profile_picture'] if details else None
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename != '' and allowed_file(file.filename):
@@ -1312,6 +1351,15 @@ def edit_profile():
         birthday = request.form['birthday']
         faculty = request.form['faculty']
         year_of_study = request.form['year_of_study']
+
+        birthday = datetime.strptime(birthday, '%Y-%m-%d').date() 
+        today = datetime.now().date()
+        age = today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
+        if age < 16:
+            flash("You must be at least 16 years old.", "age_error")
+            return redirect(url_for('edit_profile'))
+        
+        birthday = birthday.strftime('%Y-%m-%d')  # Convert back to string for database storage
 
         if details:
             cursor.execute("""
@@ -1519,23 +1567,29 @@ def verify_new_email(token):
         return "Verification link is invalid or expired."
     
 
-@app.route('/mark_notification_read/<int:notification_id>')
-def mark_notification_read(notification_id):
+@app.route('/mark_all_notifications_read')
+def mark_all_notifications_read():
+    # Get the logged-in user's ID from the session
+    user_id = session.get('user_id') 
+    
+    if not user_id:
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Update is_read to 1 for ALL unread notifications belonging to this user
     cursor.execute("""
         UPDATE notifications
         SET is_read = 1
-        WHERE id = ?
-    """, (notification_id,))
+        WHERE user_id = ? AND is_read = 0
+    """, (user_id,))
 
     conn.commit()
     conn.close()
 
+    # Redirect the user back to the notifications page or dashboard
     return redirect(url_for('notifications'))
-
 
 @app.route('/admin_dashboard')
 def admin_dashboard():

@@ -183,6 +183,14 @@
             .login-redirect a:hover {
                 text-decoration: underline;
             }
+
+            .error {
+                background: #ffebee;
+                color: #c62828;
+                padding: 12px;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
         </style>
 
     </head>
@@ -247,6 +255,22 @@
                         <label for="keyword">Security Answer:</label>
                         <input type="text" id="keyword" name="keyword"><br>
                     </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                {% if category == 'register_password_error' %}
+                                    <div class="error">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                                {% if category == 'register_exists_error' %}
+                                    <div class="error">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
 
                     <button type="submit" onclick="register()" class="button">Register</button>
                 </form>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Status - UniSphere</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Unified central layout wrapper system */
+        .auth-container {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 45px 35px;
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            width: 100%;
+        }
+
+        /* Large icon alignment wrapper */
+        .status-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+
+        .status-box h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .status-box p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Success Variations */
+        .success-state h2 {
+            color: #1a7f37;
+        }
+
+        .success-state .status-icon {
+            color: #1a7f37;
+        }
+
+        /* Error/Failure Variations */
+        .error-state h2 {
+            color: #b30000;
+        }
+
+        .error-state .status-icon {
+            color: #b30000;
+        }
+
+        /* Core Application Call-To-Action Button */
+        .btn-action {
+            display: inline-block;
+            width: 100%;
+            padding: 14px;
+            background-color: #b37cd4;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(179, 124, 212, 0.3);
+        }
+
+        .btn-action:hover {
+            background-color: #9c5ec2;
+            box-shadow: 0 6px 20px rgba(156, 94, 194, 0.4);
+        }
+
+        .btn-action:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: #e2d4ea;
+            color: #5c3576;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1badf;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        
+        {% if status == "success" %}
+            <div class="status-box success-state">
+                <div class="status-icon">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h2>Email Verified!</h2>
+                <p>Your account has been successfully verified and is ready for use. You can now access your dashboard workspace.</p>
+                <a href="{{ url_for('signin') }}" class="btn-action">Go to Login</a>
+            </div>
+        {% else %}
+            <div class="status-box error-state">
+                <div class="status-icon">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                </div>
+                <h2>Verification Failed</h2>
+                <p>The verification sequence could not be completed. The token security link is either invalid or has expired.</p>
+                <a href="{{ url_for('signin') }}" class="btn-action btn-secondary">Back to Login</a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>
