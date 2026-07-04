@@ -276,6 +276,7 @@
                 flex-direction:column;
                 overflow:hidden;
                 border-radius:30px;
+                position:relative;
             }
 
             /* Close window corner controller */
@@ -330,37 +331,46 @@
             }
 
             .document-preview{
-                width:250px;
+                width:100%;
                 height:350px;
-                position:relative;
-                margin:auto;
-                overflow:hidden;
+                background:rgba(255,255,255,.15);
                 border-radius:18px;
-                cursor:pointer;
-                background:white;
+                overflow:hidden;
             }
 
-            .document-preview iframe{
+            .document-button{
                 width:100%;
                 height:100%;
-                border:none;
-            }
-
-            .preview-overlay{
-                position:absolute;
-                bottom:0;
-                left:0;
-                width:100%;
-                background:rgba(0,0,0,.5);
+                display:flex;
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                text-decoration:none;
                 color:white;
-                text-align:center;
-                padding:12px;
-                opacity:0;
                 transition:.25s;
             }
 
-            .document-preview:hover .preview-overlay{
-                opacity:1;
+            .document-button:hover{
+                background:rgba(255,255,255,.12);
+            }
+
+            .document-icon{
+                font-size:70px;
+                margin-bottom:20px;
+            }
+
+            .document-name{
+                font-size:24px;
+                font-weight:700;
+                text-align:center;
+                word-break:break-word;
+                padding:0 25px;
+            }
+
+            .document-subtext{
+                margin-top:12px;
+                font-size:15px;
+                opacity:.85;
             }
 
             .poster-title{
@@ -587,6 +597,21 @@
             .reject-btn:hover{
                 background:#dc2626;
             }
+
+            .reject-btn:disabled {
+                background: #b5b5b5 !important;
+                color: #eeeeee !important;
+                cursor: not-allowed;
+                opacity: 0.7;
+                filter: blur(0.2px);
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+            .reject-btn:disabled:hover {
+                background: #b5b5b5 !important;
+                transform: none !important;
+            }
         </style>
     </head>
     <body>
@@ -607,7 +632,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -703,13 +728,20 @@
                 <div class="modal-header-title">Organizer Application Review</div>
 
                     <div class="modal-body-wrapper">
-
                         <div class="modal-left-purple">
                             <h2>Supporting Document</h2>
-
-                            <div class="document-preview" onclick="openDocumentPreview()">
-                                <iframe id="documentThumbnail" src=""></iframe>
-                                <div class="preview-overlay">Click to Preview</div>
+                            <div class="document-preview">
+                                <a id="documentLink" href="#" target="_blank" class="document-button">
+                                    <div class="document-icon">
+                                        📄
+                                    </div>
+                                    <div id='documentName' class="document-name">
+                                        Open Supporting Document
+                                    </div>
+                                    <div class="document-subtext">
+                                        Click to view in a new tab
+                                    </div>
+                                </a>
                             </div>
                         </div>
 
@@ -746,29 +778,19 @@
                                     <span id="orgPosition"></span>
                                 </li>
                             </ul>
-                        </div>
 
-                        <div class="action-buttons">
-                            <button class="approve-btn" onclick="approveOrganizer()">
-                                Approve
-                            </button>
+                            <div class="action-buttons">
+                                <button class="approve-btn" onclick="approveOrganizer()">
+                                    Approve
+                                </button>
 
-                            <button class="reject-btn" onclick="rejectOrganizer()">
-                                Reject
-                            </button>
+                                <button class="reject-btn" onclick="rejectOrganizer()">
+                                    Reject
+                                </button>
+                            </div>
+
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div id="documentModal" class="modal-backdrop">
-            <div class="details-modal-card">
-                <span class="close-details-btn" onclick="closeDocumentPreview()">&times;</span>
-
-                <div class="details-content">
-                    <img id="bigDocumentPreview" style="max-width:100%; border-radius:15px;">
                 </div>
             </div>
         </div>
@@ -827,11 +849,6 @@
                                 </li>
 
                                 <li>
-                                    <strong>Main Location:</strong>
-                                    <span id="eventMainLocation"></span>
-                                </li>
-
-                                <li>
                                     <strong>Venue:</strong>
                                     <span id="eventVenue"></span>
                                 </li>
@@ -841,7 +858,7 @@
                                     <span id="eventParticipation"></span>
                                 </li>
 
-                                <li>
+                                <li id="eventMaxParticipantsRow">
                                     <strong>Maximum Participants:</strong>
                                     <span id="eventMaxParticipants"></span>
                                 </li>
@@ -862,7 +879,7 @@
                                 Approve
                             </button>
 
-                            <button class="reject-btn" onclick="rejectEvent()">
+                            <button class="reject-btn" id="rejectEventBtn" onclick="rejectEvent()" disabled>
                                 Reject
                             </button>
                         </div>
@@ -901,26 +918,58 @@
                 document.getElementById("orgEmail").textContent = email;
                 document.getElementById("orgClub").textContent = clubBody;
                 document.getElementById("orgPosition").textContent = position;
-                document.getElementById("documentThumbnail").src = proofDocument ? `/static/supportingDocs/${proofDocument}` : "";
+
+                const documentLink = document.getElementById("documentLink");
+                const documentName = document.getElementById("documentName");
+
+                if (proofDocument) {
+                    documentLink.href = `/static/supportingDocs/${proofDocument}`;
+
+                    // safe filename handling
+                    let filename = proofDocument;
+                    if (filename.length > 35) {
+                        filename = filename.substring(0, 35) + "...";
+                    }
+
+                    // file type detection
+                    const extension = proofDocument.split('.').pop().toLowerCase();
+
+                    let icon = "📄";
+                    let type = "Document";
+
+                    if (["jpg", "jpeg", "png", "webp"].includes(extension)) {
+                        icon = "🖼️";
+                        type = "Image";
+                    } else if (extension === "pdf") {
+                        icon = "📄";
+                        type = "PDF Document";
+                    }
+
+                    // UI update (SAFE innerHTML only for this element)
+                    documentName.innerHTML = `
+                        <div style="font-weight:600; word-break:break-word;">
+                            ${icon} ${filename}
+                        </div>
+                        <div style="font-size:13px; opacity:0.8; margin-top:2px;">
+                            ${type}
+                        </div>`;} 
+                else {
+                    documentLink.removeAttribute("href");
+                    documentName.innerHTML = `
+                        <div style="color:#ffdddd; font-weight:600;">
+                            ❌ No Supporting Document
+                        </div>
+                        <div style="font-size:12px; opacity:0.7;">
+                            Required field missing
+                        </div>`;}
+                
                 document.getElementById("organizerModal").classList.add("show");
             }
-
-            function openDocumentPreview(){
-                const src =
-                document.getElementById("documentThumbnail").src;
-                document.getElementById("bigDocumentPreview").src = src;
-                document.getElementById("documentModal").classList.add("show");
-            }
-
-            function closeDocumentPreview(){
-                document.getElementById("bigDocumentPreview").src = "";
-                document.getElementById("documentModal").classList.remove("show");
-            }
+                
 
             function closeOrganizerModal(){
-                document.getElementById("documentThumbnail").src="";
-                document.getElementById("organizerModal")
-                    .classList.remove("show");
+                document.getElementById("documentLink").removeAttribute("href");
+                document.getElementById("organizerModal").classList.remove("show");
             }
 
             function approveOrganizer(){
@@ -959,38 +1008,63 @@
                 document.getElementById("eventPoster").src = eventPoster ? `/static/eventPoster/${eventPoster}` : "";
                 document.getElementById("eventName").textContent = eventName;
                 document.getElementById("eventDescription").textContent = description;
-                document.getElementById("eventDate").textContent = `${startDate} - ${endDate}`;
-                document.getElementById("eventTime").textContent = `${startTime} - ${endTime}`;
+
+                if (startDate === endDate) {
+                    document.getElementById("eventDate").textContent = startDate;
+                    document.getElementById("eventTime").textContent = `${startTime} - ${endTime}`;
+                } else {
+                    document.getElementById("eventDate").textContent = `${startDate} - ${endDate}`;
+                    document.getElementById("eventTime").textContent = `${startDate}, ${startTime} - ${endDate}, ${endTime}`;
+                }
+
                 document.getElementById("eventMode").textContent = eventMode;
-                document.getElementById("eventMainLocation").textContent = mainLocation;
 
                 // decide venue display
-                let venue = "";
+                let venue = "-";
                 if (mainLocation === "General") {
-                    venue = generalLocation;}
+                    venue = generalLocation || "-";} 
                 else if (mainLocation === "CLC") {
-                    venue = specificLocation;}
-                else {venue = `${facultyWing} - ${specificLocation}`;}
+                    const hall = specificLocation || "-";
+                    venue = mainLocation && hall ? `${mainLocation} - ${hall}` : hall || mainLocation || "-";}
+                else if (facultyWing || specificLocation) {
+                    const wing = facultyWing || "";
+                    const room = specificLocation || "";
+
+                    venue = wing && room ? `${wing} - ${room}`: room || wing || "-";
+                }
 
                 document.getElementById("eventVenue").textContent = venue;
                 document.getElementById("eventParticipation").textContent = participationOption;
-                document.getElementById("eventMaxParticipants").textContent = maxParticipants || "Unlimited";
 
-                const eventLinkRow = document.getElementById("eventLinkRow");
+                const maxRow = document.getElementById("eventMaxParticipantsRow");
+                const maxSpan = document.getElementById("eventMaxParticipants");
+                if (participationOption === "limited") {
+                    maxRow.style.display = "list-item";
+                    maxSpan.textContent = maxParticipants || "-";
+                } else {
+                    maxRow.style.display = "none";
+                    maxSpan.textContent = "";
+                }
+
+               const eventLinkRow = document.getElementById("eventLinkRow");
                 if (eventMode === "online" || eventMode === "hybrid") {
                     eventLinkRow.style.display = "list-item";
-                    document.getElementById("eventLink").innerHTML = eventLink ? `<a href="${eventLink}" target="_blank">${eventLink}</a>`: "-";
-                } else {
+                    document.getElementById("eventLink").innerHTML =
+                        eventLink ? `<a href="${eventLink}" target="_blank">${eventLink}</a>` : "-";}
+                else {
                     eventLinkRow.style.display = "none";
+                    document.getElementById("eventLink").textContent = ""; // clean reset
                 }
+
                 document.getElementById("adminRemark").value = "";
+                document.getElementById("rejectEventBtn").disabled = true;
                 document.getElementById("eventModal").classList.add("show");
             }
 
             function closeEventModal(){
                 document.getElementById("adminRemark").value="";
-                document.getElementById("eventModal")
-                    .classList.remove("show");
+                document.getElementById("rejectEventBtn").disabled = true;
+                document.getElementById("eventModal").classList.remove("show");
             }
 
             function approveEvent(){
@@ -1048,6 +1122,18 @@
                         );
                     });
                 });
+            });
+
+            const adminRemark = document.getElementById("adminRemark");
+            const rejectBtn = document.getElementById("rejectEventBtn");
+
+            // initial state
+            rejectBtn.disabled = true;
+
+            // listen input
+            adminRemark.addEventListener("input", function () {
+                const hasText = this.value.trim().length > 0;
+                rejectBtn.disabled = !hasText;
             });
         </script>
     </body>

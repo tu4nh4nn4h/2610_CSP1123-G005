@@ -267,7 +267,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -297,15 +297,102 @@
         <p class="desc">{{ event['event_description'] }}</p>
         
         <div class="details">
-          <ul>
-            <li><strong>Date:</strong> {{ event['start_date'] }} to {{ event['end_date'] }}</li>
-            <li><strong>Time:</strong> {{ event['start_time'] }} - {{ event['end_time'] }}</li>
-            <li><strong>Venue:</strong> {{ event['main_location'] }} ({{ event['event_mode'] }})</li>
-          </ul>
+            <ul>
+                {% if event['start_date'] == event['end_date'] %}
+                    <li>
+                        <strong>Date:</strong>
+                        {{ event['start_date'] }}
+                    </li>
+
+                    <li>
+                        <strong>Time:</strong>
+                        {{ event['start_time'] }} - {{ event['end_time'] }}
+                    </li>
+                {% else %}
+                    <li>
+                        <strong>Date:</strong>
+                        {{ event['start_date'] }} - {{ event['end_date'] }}
+                    </li>
+
+                    <li>
+                        <strong>Time:</strong>
+                        {{ event['start_date'] }} {{ event['start_time'] }}
+                        -
+                        {{ event['end_date'] }} {{ event['end_time'] }}
+                    </li>
+                {% endif %}
+
+                <li>
+                    <strong>Mode:</strong>
+                    {{ event['event_mode']|capitalize }}
+                </li>
+
+                {% if event['main_location'] == 'General' %}
+                    <li>
+                        <strong>Location:</strong>
+                        {{ event['general_location'] }}
+                    </li>
+
+                {% elif event['main_location'] == 'CLC' %}
+                    <li>
+                        <strong>Location:</strong>
+                        CLC - {{ event['specific_location'] }}
+                    </li>
+
+                {% else %}
+                    <li>
+                        <strong>Location:</strong>
+                        {{event['main_location']}}, {{ event['faculty_wing'] }} - {{ event['specific_location'] }}
+                    </li>
+                {% endif %}
+
+                <li>
+                    <strong>Participation:</strong>
+                    {{ event['participation_option']|capitalize }}
+                </li>
+
+                {% if event['participation_option'] == 'limited' %}
+                    <li>
+                        <strong>Registered:</strong>
+                        {{ participant_count }} / {{ event['limited_max_participants'] }}
+                    </li>
+                {% else %}
+                    <li>
+                        <strong>Registered Participants:</strong>
+                        {{ participant_count }}
+                    </li>
+                {% endif %}
+
+                {% if event['event_mode'] == 'online' or event['event_mode'] == 'hybrid' %}
+                    <li>
+                        <strong>Event Link:</strong>
+                        <a href="{{ event['event_link'] }}" target="_blank">
+                            {{ event['event_link'] }}
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
         </div>
 
         <div class="event-btn-wrapper">
-          <a href="{{ url_for('form', event_id=event['event_id']) }}" class="register-btn">Register for Event</a>
+            {% if is_owner %}
+                <a href="{{ url_for('my_event_manage', event_id=event['event_id']) }}" class="register-btn">
+                    Manage Event
+                </a>
+            {% elif is_full %}
+                <button class="register-btn" disabled style="background:#999;cursor:not-allowed;">
+                    Event Full
+                </button>
+            {% elif already_registered %}
+                <button class="register-btn" disabled style="background:#999;cursor:not-allowed;">
+                    Already Registered
+                </button>
+            {% else %}
+                <a href="{{ url_for('form', event_id=event['event_id']) }}" class="register-btn">
+                    Register for Event
+                </a>
+            {% endif %}
         </div>
       </div>
       {% else %}

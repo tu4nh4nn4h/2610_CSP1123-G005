@@ -26,7 +26,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -199,23 +199,37 @@
                 </p>
 
                 <button onclick="closeEventSuccessPopup()" class="popup-btn">
-                    OKAY
+                    OK
                 </button>
             </div>
         </div>
 
-        <div id="timeErrorPopup" class="popup-overlay">
+        <div id="startTimeErrorPopup" class="popup-overlay">
             <div class="popup-box">
-                <h3>Invalid Time ❌⏰</h3>
+                <h3>Invalid Start Time ❌⏰</h3>
+                <p>Start time cannot be earlier than the current time.</p>
+                <button onclick="closeStartTimeErrorPopup()" class="popup-btn">OK</button>
+            </div>
+        </div>
+
+        <div id="endTimeErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid End Time ❌⏰</h3>
 
                 <p>
                     End time must be at least 5 minutes later than start time.
                     Please select a valid end time.
                 </p>
 
-                <button onclick="closeTimeErrorPopup()" class="popup-btn">
-                    OKAY
-                </button>
+                <button onclick="closeEndTimeErrorPopup()" class="popup-btn">OK</button>
+            </div>
+        </div>
+
+        <div id="dateErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid Date ❌🗓️</h3>
+                <p>Event date cannot be earlier than today.</p>
+                <button onclick="closeDateErrorPopup()" class="popup-btn">OK</button>
             </div>
         </div>
 
@@ -240,8 +254,8 @@
             ],
 
             "FCI": {
-                "Wing A": ["Smart Lab 1", "FCI Lecture Hall 1"],
-                "Wing B": ["Meeting Room Level 3", "Computing Lab 5"],
+                "Wing A": ["Innov'8 Lab", "FCI Lecture Hall"],
+                "Wing B": ["FCI Classroom", "Computing Lab 5"],
                 "Wing C": ["Innovation Hub", "FCI Seminar Room"]
             },
 
@@ -407,13 +421,41 @@
 
         const startDate = document.getElementById("start_date");
         const endDate = document.getElementById("end_date");
+        const today = new Date().toISOString().split("T")[0];
+        startDate.min = today;
+        endDate.min = today;
 
         const startTime = document.getElementById("start_time");
         const endTime = document.getElementById("end_time");
 
         function validateDateTime() {
 
+            if (startDate.value && startDate.value < today) {
+                startDate.value = "";
+                showDateErrorPopup();
+                return;
+            }
 
+            if (endDate.value && endDate.value < today) {
+                endDate.value = "";
+                showDateErrorPopup();
+                return;
+            }
+
+            const now = new Date();
+            const currentTime =
+                String(now.getHours()).padStart(2, "0") + ":" +
+                String(now.getMinutes()).padStart(2, "0");
+
+            if (
+                startDate.value === today &&
+                startTime.value &&
+                startTime.value < currentTime
+            ) {
+                startTime.value = "";
+                showStartTimeErrorPopup();
+                return;
+            }
             // End date cannot be earlier than start date
             endDate.min = startDate.value;
             if (endDate.value < startDate.value) {
@@ -433,7 +475,7 @@
 
                  if (endTime.value && endTime.value < endTime.min) {
                     endTime.value = "";
-                    showTimeErrorPopup();
+                    showEndTimeErrorPopup();
                 }
             }
             else {
@@ -503,12 +545,27 @@
             window.location.href = "/eventbrowsing";
         }
 
-        function showTimeErrorPopup() {
-            document.getElementById("timeErrorPopup").style.display = "flex";
+        function showStartTimeErrorPopup() {
+            document.getElementById("startTimeErrorPopup").style.display = "flex";
         }
 
-        function closeTimeErrorPopup() {
-            document.getElementById("timeErrorPopup").style.display = "none";
+        function closeStartTimeErrorPopup() {
+            document.getElementById("startTimeErrorPopup").style.display = "none";
+        }
+
+        function showEndTimeErrorPopup() {
+            document.getElementById("endTimeErrorPopup").style.display = "flex";
+        }
+        function closeEndTimeErrorPopup() {
+            document.getElementById("endTimeErrorPopup").style.display = "none";
+        }
+
+        function showDateErrorPopup() {
+            document.getElementById("dateErrorPopup").style.display = "flex";
+        }
+
+        function closeDateErrorPopup() {
+            document.getElementById("dateErrorPopup").style.display = "none";
         }
 
         document.getElementById('event_poster').addEventListener('change', function() {

@@ -262,7 +262,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -300,7 +300,6 @@
         {% if notifications %}
             {% for n in notifications %}
                 <div class="notification {% if n['is_read'] == 0 %}unread{% else %}read{% endif %}">
-                    
                     <div class="notification-content">
                         <span class="msg-text">
                             {% if n['type'] == 'Confirmation' %}
@@ -334,18 +333,19 @@
                             {{ n['message'] }}
                         </span>
 
-                        {% if n['is_read'] == 0 %}
-                            <a class="mark-read" href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
-                                Mark as read
-                            </a>
-                        {% endif %}
+                        <div style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                            {% if n['is_read'] == 0 %}
+                                <a class="mark-read" href="{{ url_for('mark_notification_read', notification_id=n['id']) }}">
+                                    Mark as read
+                                </a>
+                            {% endif %}
 
-                        {% if session.get('role') == 'admin' and n['redirect'] not in [None, '', '/none'] and n['is_read'] == 0 %}
-                            <a class="notif-arrow" href="{{ n['redirect'] }}">
-                                →
-                            </a>
-
-                        {% endif %}
+                            {% if session.get('role') == 'admin' and n['redirect'] not in [None, '', '/none'] and n['is_read'] == 0 %}
+                                <a class="notif-arrow" href="{{ n['redirect'] }}">
+                                    →
+                                </a>
+                            {% endif %}
+                        </div>
                     </div>
 
                     <div class="notification-meta">
@@ -355,7 +355,6 @@
                         </svg>
                         {{ n['created_at'] }}
                     </div>
-
                 </div>
             {% endfor %}
         {% else %}
