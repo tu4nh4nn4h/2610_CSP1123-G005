@@ -687,7 +687,7 @@
                                          `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`
                                      )'
                                      title="{{ e['event_name'] }}">
-                                    <img src="{{ url_for('static', filename='uploads/posters/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
+                                <img src="{{ url_for('static', filename='eventPoster/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
                                 </div>
                             {% endfor %}
                             {% else %}
@@ -715,7 +715,7 @@
                                          `{{ e["start_date"] }} to {{ e["end_date"] }}`,
                                          `{{ e["start_time"] }} - {{ e["end_time"] }}`,
                                          `{{ location }} ({{ e["event_mode"] }})`,
-                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`
+                                         <img src="{{ url_for('static', filename='eventPoster/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
                                      )'
                                      title="{{ e['event_name'] }}">
                                     <img src="{{ url_for('static', filename='eventPoster/' + (e['event_poster'] if e['event_poster'] else 'defaultPoster.png')) }}" alt="{{ e['event_name'] }}">
