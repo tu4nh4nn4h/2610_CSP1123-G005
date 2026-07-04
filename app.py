@@ -1391,23 +1391,29 @@ def verify_new_email(token):
         return render_template('verify_email.html', status="error")
     
 
-@app.route('/mark_notification_read/<int:notification_id>')
-def mark_notification_read(notification_id):
+@app.route('/mark_all_notifications_read')
+def mark_all_notifications_read():
+    # Get the logged-in user's ID from the session
+    user_id = session.get('user_id') 
+    
+    if not user_id:
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    # Update is_read to 1 for ALL unread notifications belonging to this user
     cursor.execute("""
         UPDATE notifications
         SET is_read = 1
-        WHERE id = ?
-    """, (notification_id,))
+        WHERE user_id = ? AND is_read = 0
+    """, (user_id,))
 
     conn.commit()
     conn.close()
 
+    # Redirect the user back to the notifications page or dashboard
     return redirect(url_for('notifications'))
-
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
