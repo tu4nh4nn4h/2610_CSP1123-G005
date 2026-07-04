@@ -1509,7 +1509,8 @@ def change_email():
 
     if user[0] != current_email:
         conn.close()
-        return "Current email is incorrect"
+        flash("Current email is incorrect", "email_error")
+        return redirect(url_for('edit_profile'))
 
     # Store new email temporarily
     cursor.execute("""
@@ -1561,34 +1562,28 @@ def verify_new_email(token):
         conn.commit()
         conn.close()
 
-        return "New email verified successfully. You can now log in."
+        return render_template('verify_email.html', status="success") 
 
     except Exception:
-        return "Verification link is invalid or expired."
+        return render_template('verify_email.html', status="error")
     
 
-@app.route('/mark_all_notifications_read')
+@app.route('/mark_all_notifications_read', methods=['POST'])
 def mark_all_notifications_read():
-    # Get the logged-in user's ID from the session
     user_id = session.get('user_id') 
-    
     if not user_id:
         return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
-
-    # Update is_read to 1 for ALL unread notifications belonging to this user
     cursor.execute("""
         UPDATE notifications
         SET is_read = 1
         WHERE user_id = ? AND is_read = 0
     """, (user_id,))
-
     conn.commit()
     conn.close()
 
-    # Redirect the user back to the notifications page or dashboard
     return redirect(url_for('notifications'))
 
 @app.route('/admin_dashboard')

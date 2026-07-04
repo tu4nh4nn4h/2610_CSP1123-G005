@@ -768,8 +768,11 @@
         {% endif %}
     </div>
 
-    <a href="{{ url_for('mark_all_notifications_read') }}" class="btn-mark-all">
-    Mark all as read
+    <form action="{{ url_for('mark_all_notifications_read') }}" method="POST" style="display: inline;">
+    <button type="submit" class="btn-mark-all">
+        Mark all as read
+    </button>
+</form>
 </a>
 </div>
 
