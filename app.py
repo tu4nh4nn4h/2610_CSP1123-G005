@@ -1569,8 +1569,8 @@ def verify_new_email(token):
     
 @app.route('/mark_all_notifications_read', methods=['POST', 'GET'])
 def mark_all_notifications_read():
-    user_id = session.get('user_id') 
-    if not user_id:
+    student_id = session.get('student_id') 
+    if not student_id:
         return redirect(url_for('login'))
 
     conn = get_db_connection()
@@ -1579,11 +1579,10 @@ def mark_all_notifications_read():
         UPDATE notifications
         SET is_read = 1
         WHERE user_id = ? AND is_read = 0
-    """, (user_id,))
+    """, (student_id,))
     conn.commit()
     conn.close()
 
- 
     return redirect(request.referrer or url_for('notifications'))
 
 @app.route('/admin_dashboard')
