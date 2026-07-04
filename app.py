@@ -296,7 +296,7 @@ def register():
         finally:
             conn.close()
 
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 @app.route('/register_organizer', methods=['GET', 'POST'])
@@ -347,12 +347,12 @@ def register_organizer():
         send_admin_notification(f"{student_id} has applied to become an organizer.","Approval Pending","/admin_dashboard")
         create_notification(student_id,"Your application has been submitted successfully and is now under review by the administrator.","Approval Pending")
 
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     return render_template('register_organizer.html')
 
-@app.route('/signin', methods=['GET', 'POST'])
-def signin():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -371,7 +371,7 @@ def signin():
             if check_password_hash(stored_password, password):
                 if is_verified == 0:
                     flash("Please verify your email before logging in.", "login_verification_error")
-                    return redirect(url_for('signin'))
+                    return redirect(url_for('login'))
 
                 session['user'] = username  # Assuming the first column is user ID
                 session['role'] = role
@@ -383,7 +383,7 @@ def signin():
         else:
             flash("Invalid username or password", "login_error")
 
-    return render_template('signin.html')
+    return render_template('login.html')
 
 @app.route('/verify_email/<token>')
 def verify_email(token):
@@ -421,7 +421,7 @@ def verify_keyword():
 @app.route('/reset_password', methods=['GET', 'POST'])
 def reset_password():
     if 'reset_user' not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     if request.method == 'POST':
         new_password = request.form['NewPassword']
@@ -452,7 +452,7 @@ def reset_password():
     )
 
         session.pop('reset_user', None)
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     return render_template('ResetPassword.html')
 
@@ -754,7 +754,7 @@ def create_event():
 
     if not user:
         conn.close()
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     if user["role"] != "organizer":
         conn.close()
@@ -843,7 +843,7 @@ def be_organizer():
     cursor = conn.cursor()
 
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     # Get current user
     cursor.execute(""" SELECT student_id, role FROM users_general WHERE username = ?""", (username,))
@@ -852,7 +852,7 @@ def be_organizer():
 
     if not user:
         conn.close()
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     # Already organizer
     if user['role'] == 'organizer':
@@ -930,7 +930,7 @@ def my_event():
 
     if not user:
         conn.close()
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     # ONLY ORGANIZER CAN ACCESS
     if user['role'] != 'organizer':
@@ -1190,7 +1190,7 @@ def edit_event(event_id):
 def dashboard():
     username = session.get('user')
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1262,7 +1262,7 @@ def dashboard():
 def cancel_registration(event_id):
     username = session.get('user')
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1319,7 +1319,7 @@ def edit_profile():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1392,7 +1392,7 @@ def user_profile():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1409,14 +1409,14 @@ def user_profile():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('signin'))
+    return redirect(url_for('login'))
 
 # notification page
 @app.route('/notifications')
 def notifications():
     username = session.get('user')
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -1488,7 +1488,7 @@ def inject_notifications():
 @app.route('/change_email', methods=['POST'])
 def change_email():
     if 'user' not in session:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     current_email = request.form['current_email']
     new_email = request.form['new_email']
@@ -1592,7 +1592,7 @@ def admin_dashboard():
     username = session.get('user')
 
     if not username:
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
     
     if session.get('role') != 'admin':
         flash("Access denied.")
@@ -1605,7 +1605,7 @@ def admin_dashboard():
 
     if user is None:
         conn.close()
-        return redirect(url_for('signin'))
+        return redirect(url_for('login'))
 
     cursor.execute("""SELECT organizer_applications.*, users_general.name, users_general.username, users_general.email,
     users_general.keyword FROM organizer_applications JOIN users_general ON organizer_applications.student_id = users_general.student_id
