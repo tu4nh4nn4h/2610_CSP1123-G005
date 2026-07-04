@@ -665,64 +665,87 @@
             <div class="card event-card">
                 <div class="event-row">
                     <p class="event-label">Registered Events :</p>
-                    <div class="circles">
-                        {% if events %}
-                            {% for e in events %}
-                                {% if e["main_location"] == "General" %}
-                                    {% set location = e["specific_location"] %}
-                                {% elif e["main_location"] == "CLC" %}
-                                    {% set location = e["main_location"] ~ ", " ~ e["specific_location"] %}
-                                {% else %}
-                                    {% set location = e["main_location"] ~ ", " ~ e["faculty_wing"] ~ ", " ~ e["specific_location"] %}
-                                {% endif %}
-                                <div class="circle circle-small"
-                                     onclick='triggerActionMenu(
-                                         `{{ e["event_id"] }}`,
-                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
-                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
-                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
-                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
-                                         `{{ location }} ({{ e["event_mode"] }})`,
-                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
-                                         `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
-                                     )'
-                                     title="{{ e['event_name'] }}">
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="circle circle-small"></div>
-                            <div class="circle circle-small"></div>
-                            <div class="circle circle-small"></div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="event-row">
+
+<div class="circles">
+    {% if events %}
+        {% for e in events %}
+
+            {% if e["main_location"] == "General" %}
+                {% set location = e["specific_location"] %}
+            {% elif e["main_location"] == "CLC" %}
+                {% set location = e["main_location"] ~ ", " ~ e["specific_location"] %}
+            {% else %}
+                {% set location = e["main_location"] ~ ", " ~ e["faculty_wing"] ~ ", " ~ e["specific_location"] %}
+            {% endif %}
+
+            <div class="event-poster small"
+                 onclick='triggerActionMenu(
+                     `{{ e["event_id"] }}`,
+                     `{{ e["event_name"] | replace("`", "\\`") }}`,
+                     `{{ e["event_description"] | replace("`", "\\`") }}`,
+                     `{{ e["start_date"] }} to {{ e["end_date"] }}`,
+                     `{{ e["start_time"] }} - {{ e["end_time"] }}`,
+                     `{{ location }} ({{ e["event_mode"] }})`,
+                     `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
+                     `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
+                 )'
+                 title="{{ e['event_name'] }}">
+
+                <img src="{{ url_for('static', filename='eventPoster/' + (e['event_poster'] if e['event_poster'] else 'defaultPoster.png')) }}"
+                     alt="{{ e['event_name'] }}">
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No registered events.</p>
+
+    {% endif %}
+</div>
                     <p class="event-label">Joined Events :</p>
-                    <div class="circles">
-                        {% if joined_events %}
-                            {% for e in joined_events %}
-                                <div class="circle"
-                                     onclick='triggerActionMenu(
-                                         `{{ e["event_id"] }}`,
-                                         `{{ e["event_name"] | replace("`", "\\`") }}`,
-                                         `{{ e["event_description"] | replace("`", "\\`") }}`,
-                                         `{{ e["start_date"] }} to {{ e["end_date"] }}`,
-                                         `{{ e["start_time"] }} - {{ e["end_time"] }}`,
-                                         `{{ location }} ({{ e["event_mode"] }})`,
-                                         `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
-                                         `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
-                                     )'
-                                     title="{{ e['event_name'] }}">
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;" title="No events joined"></div>
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
-                            <div class="circle" style="opacity: 0.4; cursor: not-allowed;"></div>
-                        {% endif %}
-                    </div>
-                </div>
+
+<div class="circles">
+
+    {% if joined_events %}
+        {% for e in joined_events %}
+
+            {% if e["main_location"] == "General" %}
+                {% set location = e["specific_location"] %}
+            {% elif e["main_location"] == "CLC" %}
+                {% set location = e["main_location"] ~ ", " ~ e["specific_location"] %}
+            {% else %}
+                {% set location = e["main_location"] ~ ", " ~ e["faculty_wing"] ~ ", " ~ e["specific_location"] %}
+            {% endif %}
+
+            <div class="event-poster"
+                 onclick='triggerActionMenu(
+                     `{{ e["event_id"] }}`,
+                     `{{ e["event_name"] | replace("`", "\\`") }}`,
+                     `{{ e["event_description"] | replace("`", "\\`") }}`,
+                     `{{ e["start_date"] }} to {{ e["end_date"] }}`,
+                     `{{ e["start_time"] }} - {{ e["end_time"] }}`,
+                     `{{ location }} ({{ e["event_mode"] }})`,
+                     `{{ url_for("static", filename="eventPoster/" + e["event_poster"]) if e["event_poster"] else "" }}`,
+                     `{{ e["event_link"] if e["event_mode"] in ["online", "hybrid"] else "" }}`
+                 )'
+                 title="{{ e['event_name'] }}">
+
+                <img src="{{ url_for('static', filename='eventPoster/' + (e['event_poster'] if e['event_poster'] else 'defaultPoster.png')) }}"
+                     alt="{{ e['event_name'] }}">
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No joined events.</p>
+
+    {% endif %}
+
+</div>
 
                 <div class="scroll-bar">
                     <div class="scroll-fill"></div>
