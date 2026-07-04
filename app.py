@@ -1,6 +1,6 @@
 from fileinput import filename
 from flask import Flask, flash, render_template, redirect, url_for, request, session, jsonify
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import URLSafeTimedSerializer
@@ -370,9 +370,9 @@ def signin():
                 
                 return redirect(url_for('dashboard'))
             else:
-                flash("Invalid username or password", "login_error")
+                flash("Invalid username or password")
         else:
-            flash("Invalid username or password", "login_error")
+            flash("Invalid username or password")
         
     return render_template('signin.html')
 
@@ -1035,20 +1035,19 @@ def dashboard():
     """, (user["student_id"],))
     events = cursor.fetchall()
 
-    # 3. Fetch all notifications for this student (Sorted by newest first)
+    # 3. Fetch all notifications for this student (Using * to grab all available columns)
     cursor.execute("""
-        SELECT title, description, time 
-        FROM notifications
+        SELECT * FROM notifications 
         WHERE student_id = ? 
-        ORDER BY time DESC
+        ORDER BY ROWID DESC
     """, (user["student_id"],))
     notifications = cursor.fetchall()
 
-    # 4. Count the total unread notifications for the badge/subtitle counters
+    # 4. Count the total unread notifications (Removing the status column check to prevent column errors)
     cursor.execute("""
         SELECT COUNT(*) as count 
-        FROM notifications
-        WHERE student_id = ? AND status = 'unread'
+        FROM notifications 
+        WHERE student_id = ?
     """, (user["student_id"],))
     unread_data = cursor.fetchone()
     unread_notifications = unread_data["count"] if unread_data else 0
@@ -1144,7 +1143,7 @@ def edit_profile():
 
     # UPDATE profile
     if request.method == 'POST':
-        profile_picture =  details['profile_picture'] if details else None
+        profile_picture = None
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename != '' and allowed_file(file.filename):
@@ -1157,18 +1156,6 @@ def edit_profile():
         birthday = request.form['birthday']
         faculty = request.form['faculty']
         year_of_study = request.form['year_of_study']
-
-        birthday = datetime.strptime(birthday, '%Y-%m-%d').date()
-        today = date.today()
-        
-        age = today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
-
-        if age < 16:
-            flash("You must be at least 16 years old to update your profile.", "profile_error")
-            conn.close()
-            return redirect(url_for('edit_profile'))
-        
-        birthday = birthday.strftime('%Y-%m-%d')  # Convert back to string for database storage
 
         if details:
             cursor.execute("""

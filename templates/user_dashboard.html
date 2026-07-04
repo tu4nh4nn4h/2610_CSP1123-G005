@@ -562,6 +562,17 @@
                 .modal-right-lavender { padding: 30px; }
                 .options-card { flex-direction: column; gap: 15px; padding: 30px; }
             }
+
+            .posters-container {
+                    display: flex;
+                    gap: 15px;
+                    align-items: center;
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                    margin-bottom: 30px;
+                    /* Adds a native scroll snapping behavior if desired, or just smooths JS manual overrides */
+                    scroll-behavior: smooth; 
+                }
         </style>
     </head>
     <body>
@@ -634,8 +645,8 @@
                             My Events
                         </h2>
                         <div class="scroll-arrows">
-                            <button class="arrow-btn">&#10094;</button>
-                            <button class="arrow-btn">&#10095;</button>
+                            <button class="arrow-btn prev-btn">&#10094;</button>
+                            <button class="arrow-btn next-btn">&#10095;</button>
                         </div>
                     </div>
 
@@ -868,6 +879,45 @@
                 if (event.target === cancelConfirmationModal) cancelConfirmationModal.classList.remove('show');
                 if (event.target === eventDetailsModal) eventDetailsModal.classList.remove('show');
             });
-        </script>
-    </body>
+
+           document.addEventListener("DOMContentLoaded", () => {
+    const nextBtn = document.querySelector('.next-btn');
+    const prevBtn = document.querySelector('.prev-btn');
+    const scrollAmount = 350;
+
+    function getTargetContainer() {
+        const containers = Array.from(document.querySelectorAll('.posters-container'));
+        
+        // 1. Find the container that has posters & hasn't been fully scrolled to the right
+        const scrollableContainer = containers.find(c => {
+            const hasPosters = c.querySelector('.event-poster');
+            const canScrollMore = c.scrollLeft < (c.scrollWidth - c.clientWidth - 10);
+            return hasPosters && canScrollMore;
+        });
+
+        if (scrollableContainer) return scrollableContainer;
+
+        // 2. If all rows are fully scrolled to the right, fallback to any container with posters
+        const anyWithPosters = containers.find(c => c.querySelector('.event-poster'));
+        return anyWithPosters || containers[0];
+    }
+
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            getTargetContainer()?.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+    }
+
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            // For the 'back' (left) button, look for a container that is currently scrolled to the right (scrollLeft > 0)
+            const containers = Array.from(document.querySelectorAll('.posters-container'));
+            const scrolledContainer = containers.find(c => c.scrollLeft > 0) || containers.find(c => c.querySelector('.event-poster')) || containers[0];
+            
+            scrolledContainer?.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+    }
+});
+            </script>
+</body>
 </html>
