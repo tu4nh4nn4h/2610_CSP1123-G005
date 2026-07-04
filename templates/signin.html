@@ -254,6 +254,11 @@
                                         {{ message }}
                                     </div>
                                 {% endif %}
+                                {% if category == 'login_verification_error' %}
+                                    <div class="error">
+                                        {{ message }}
+                                    </div>
+                                {% endif %}
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
