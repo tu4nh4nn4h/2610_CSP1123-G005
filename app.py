@@ -273,7 +273,8 @@ def register():
         print("PASSWORD VALUE:", repr(password))
 
         if password != confirm_password:
-            return "Passwords do not match"
+            flash("Passwords do not match", "register_password_error")
+            return render_template('register.html')
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -284,7 +285,8 @@ def register():
             send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
-            return "Username or email already exists"
+            flash("Username or email already exists", "register_exists_error")
+            return render_template('register.html')
 
         finally:
             conn.close()
@@ -314,7 +316,8 @@ def register_organizer():
         uploaded_file.save(os.path.join(app.config['SUPPORTING_DOCS_FOLDER'], filename))
 
         if password != confirm_password:
-            return "Passwords do not match"
+            flash("Passwords do not match", "register_password_error", "register_password_error")
+            return render_template('register_organizer.html')
 
         try:
             cursor.execute("INSERT INTO users_general (student_id, name, username, email, password, security_question, keyword, role, is_verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -329,7 +332,8 @@ def register_organizer():
             send_verification_email(email, token)  # Implement this function to send the email
 
         except sqlite3.IntegrityError:
-            return "Username or email already exists"
+            flash("Username or email already exists", "register_exists_error")
+            return render_template('register_organizer.html')
 
         finally:
             conn.close()
@@ -361,7 +365,7 @@ def signin():
               
             if check_password_hash(stored_password, password):
                 if is_verified == 0:
-                    flash("Please verify your email before logging in.")
+                    flash("Please verify your email before logging in.", "login_verification_error")
                     return redirect(url_for('signin'))
 
                 session['user'] = username  # Assuming the first column is user ID
@@ -385,9 +389,10 @@ def verify_email(token):
         cursor.execute("UPDATE users_general SET is_verified = 1 WHERE email = ?", (email,))
         conn.commit()
         conn.close()
-        return "Email verified successfully! You can now log in."
+        flash("Email verified successfully! You can now log in.", "verification_success")
+        return render_template('verify_email.html', status="success")
     except:
-        return "The verification link is invalid or has expired."
+        return render_template('verify_email.html', status="error")
 
 @app.route('/verify_keyword', methods=['POST'])
 def verify_keyword():
