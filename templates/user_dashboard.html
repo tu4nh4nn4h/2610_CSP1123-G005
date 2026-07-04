@@ -690,11 +690,7 @@
                                     <img src="{{ url_for('static', filename='uploads/posters/' + e['event_poster']) }}" alt="{{ e['event_name'] }}">
                                 </div>
                             {% endfor %}
-                            <a href="/eventbrowsing" class="view-all-box">
-                                <span>+</span>
-                                View All
-                            </a>
-                        {% else %}
+                            {% else %}
                             <p style="color: rgba(255,255,255,0.7); font-size:0.95rem;">No registered events.</p>
                         {% endif %}
                     </div>
