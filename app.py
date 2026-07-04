@@ -374,10 +374,10 @@ def signin():
                 
                 return redirect(url_for('dashboard'))
             else:
-                flash("Invalid username or password")
+                flash("Invalid username or password", "login_error")
         else:
-            flash("Invalid username or password")
-        
+            flash("Invalid username or password", "login_error")
+
     return render_template('signin.html')
 
 @app.route('/verify_email/<token>')
