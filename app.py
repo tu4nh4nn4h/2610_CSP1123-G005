@@ -1149,7 +1149,7 @@ def edit_profile():
 
     # UPDATE profile
     if request.method == 'POST':
-        profile_picture = None
+        profile_picture = details['profile_picture'] if details else None
         if 'profile_picture' in request.files:
             file = request.files['profile_picture']
             if file and file.filename != '' and allowed_file(file.filename):
@@ -1162,6 +1162,15 @@ def edit_profile():
         birthday = request.form['birthday']
         faculty = request.form['faculty']
         year_of_study = request.form['year_of_study']
+
+        birthday = datetime.strptime(birthday, '%Y-%m-%d').date() 
+        today = datetime.now().date()
+        age = today.year - birthday.year - ((today.month, today.day) < (birthday.month, birthday.day))
+        if age < 16:
+            flash("You must be at least 16 years old.", "age_error")
+            return redirect(url_for('edit_profile'))
+        
+        birthday = birthday.strftime('%Y-%m-%d')  # Convert back to string for database storage
 
         if details:
             cursor.execute("""
