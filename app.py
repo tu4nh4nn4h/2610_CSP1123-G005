@@ -1029,8 +1029,7 @@ def dashboard():
         conn.close()
         return "User not found"
 
-   # 2. Query only the events that THIS specific student has registered for using an INNER JOIN
-    # Fixed: Matched exactly to the schema columns found in EventRegSys.html
+    # 2. Query only the events that THIS specific student has registered for
     cursor.execute("""
         SELECT e.event_id, e.event_name, e.event_description, 
                e.start_date, e.end_date, e.start_time, e.end_time, 
@@ -1039,14 +1038,37 @@ def dashboard():
         INNER JOIN event_registrations er ON e.event_id = er.event_id
         WHERE er.student_id = ?
     """, (user["student_id"],))
-    
     events = cursor.fetchall()
+
+    # 3. Fetch all notifications for this student (Sorted by newest first)
+    cursor.execute("""
+        SELECT title, description, time 
+        FROM notifications
+        WHERE student_id = ? 
+        ORDER BY time DESC
+    """, (user["student_id"],))
+    notifications = cursor.fetchall()
+
+    # 4. Count the total unread notifications for the badge/subtitle counters
+    cursor.execute("""
+        SELECT COUNT(*) as count 
+        FROM notifications
+        WHERE student_id = ? AND status = 'unread'
+    """, (user["student_id"],))
+    unread_data = cursor.fetchone()
+    unread_notifications = unread_data["count"] if unread_data else 0
+
     conn.close()
 
-    # 3. Pass both 'user' object and 'events' list to the HTML template layout dashboard
-    return render_template('user_dashboard.html', user=user, events=events)
-
-
+    # 5. Pass everything over to your updated HTML template
+    return render_template(
+        'user_dashboard.html', 
+        user=user, 
+        events=events, 
+        notifications=notifications, 
+        unread_notifications=unread_notifications
+    )
+    
 @app.route("/cancel_registration/<int:event_id>", methods=["POST"])
 def cancel_registration(event_id):
     username = session.get('user')
