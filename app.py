@@ -1232,7 +1232,7 @@ def dashboard():
     # 3. Fetch all notifications for this student
     cursor.execute("""
         SELECT * FROM notifications 
-        WHERE student_id = ? 
+        WHERE student_id = ? AND is_read = 0
         ORDER BY ROWID DESC
     """, (user["student_id"],))
     notifications = cursor.fetchall()
@@ -1241,7 +1241,7 @@ def dashboard():
     cursor.execute("""
         SELECT COUNT(*) as count 
         FROM notifications 
-        WHERE student_id = ?
+        WHERE student_id = ? AND is_read = 0
     """, (user["student_id"],))
     unread_data = cursor.fetchone()
     unread_notifications = unread_data["count"] if unread_data else 0
