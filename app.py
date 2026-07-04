@@ -1578,7 +1578,7 @@ def mark_all_notifications_read():
     cursor.execute("""
         UPDATE notifications
         SET is_read = 1
-        WHERE user_id = ? AND is_read = 0
+        WHERE student_id = ? AND is_read = 0
     """, (student_id,))
     conn.commit()
     conn.close()
