@@ -331,6 +331,65 @@
                 cursor:not-allowed;
             }
 
+            .popup-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            }
+
+            .popup-box {
+                background: #fff;
+                width: 450px;
+                max-width: 90%;
+                padding: 30px;
+                border-radius: 12px;
+                text-align: center;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                animation: popupFade 0.3s ease;
+            }
+
+            .popup-box h3 {
+                margin-bottom: 15px;
+                font-size: 24px;
+                color: #333;
+            }
+
+            .popup-box p {
+                margin-bottom: 20px;
+                line-height: 1.6;
+                color: #555;
+            }
+
+            .popup-btn {
+                background: #7b2cbf;
+                color: white;
+                border: none;
+                padding: 10px 25px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 16px;
+                transition: 0.3s;
+            }
+
+            .popup-btn:hover {
+                background: #7b2cbf;
+            }
+
+            @keyframes popupFade {
+                from {
+                    opacity: 0;
+                    transform: translateY(-15px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
         </style>
     </head>
 
@@ -346,7 +405,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
 
                 {% elif session.get('role') == 'admin' %}
                     <a href="/eventbrowsing">Browse Events</a>
@@ -393,22 +452,22 @@
             <div class="event-details-grid">
                 <div class="form-group">
                     <label>Start Date:</label>
-                    <input type="date" name="startDate" value="{{event['start_date']}}"required>
+                    <input type="date" id="start_date" name="startDate" value="{{event['start_date']}}"required>
                 </div>
 
                 <div class="form-group">
                     <label>End Date:</label>
-                    <input type="date" name="endDate" value="{{event['end_date']}}" required>
+                    <input type="date" id="end_date" name="endDate" value="{{event['end_date']}}" required>
                 </div>
 
                 <div class="form-group">
                     <label>Start Time:</label>
-                    <input type="time" name="startTime" value="{{event['start_time']}}" required>
+                    <input type="time" id="start_time" name="startTime" value="{{event['start_time']}}" required>
                 </div>
 
                 <div class="form-group">
                     <label>End Time:</label>
-                    <input type="time" name="endTime" value="{{event['end_time']}}" required>
+                    <input type="time" id="end_time" name="endTime" value="{{event['end_time']}}" required>
                 </div>
 
                 <div class="form-group">
@@ -501,14 +560,6 @@
                     for approval before becoming visible.
                 </p>
                 <hr>
-                <!-- Only show this if event already approved -->
-                {% if event['event_status'] == "Approved" %}
-                    <p>
-                        <strong>Edit Attempts</strong><br>
-                        Remaining:
-                        {{ 2 - event['edit_attempt'] }} / 2
-                    </p>
-                {% endif %}
                 <br>
                 <label class="checkbox-container">
                     <input type="checkbox" id="confirmDeclaration" onchange="toggleConfirmButton()">
@@ -525,6 +576,35 @@
                         Confirm Changes
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <div id="startTimeErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid Start Time ❌⏰</h3>
+                <p>Start time cannot be earlier than the current time.</p>
+                <button onclick="closeStartTimeErrorPopup()" class="popup-btn">OK</button>
+            </div>
+        </div>
+
+        <div id="endTimeErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid End Time ❌⏰</h3>
+
+                <p>
+                    End time must be at least 5 minutes later than start time.
+                    Please select a valid end time.
+                </p>
+
+                <button onclick="closeEndTimeErrorPopup()" class="popup-btn">OK</button>
+            </div>
+        </div>
+
+        <div id="dateErrorPopup" class="popup-overlay">
+            <div class="popup-box">
+                <h3>Invalid Date ❌🗓️</h3>
+                <p>Event date cannot be earlier than today.</p>
+                <button onclick="closeDateErrorPopup()" class="popup-btn">OK</button>
             </div>
         </div>
 
@@ -560,6 +640,102 @@
                     document.getElementById("file-name").textContent="No file chosen";
                 }
             });
+
+            /* =========================
+            DATE & TIME VALIDATION
+            ========================= */
+
+            const startDate = document.getElementById("start_date");
+            const endDate = document.getElementById("end_date");
+            const today = new Date().toISOString().split("T")[0];
+            startDate.min = today;
+            endDate.min = today;
+
+            const startTime = document.getElementById("start_time");
+            const endTime = document.getElementById("end_time");
+
+            function validateDateTime() {
+
+                if (startDate.value && startDate.value < today) {
+                    startDate.value = "";
+                    showDateErrorPopup();
+                    return;
+                }
+
+                if (endDate.value && endDate.value < today) {
+                    endDate.value = "";
+                    showDateErrorPopup();
+                    return;
+                }
+
+                const now = new Date();
+                const currentTime =
+                    String(now.getHours()).padStart(2, "0") + ":" +
+                    String(now.getMinutes()).padStart(2, "0");
+
+                if (
+                    startDate.value === today &&
+                    startTime.value &&
+                    startTime.value < currentTime
+                ) {
+                    startTime.value = "";
+                    showStartTimeErrorPopup();
+                    return;
+                }
+                // End date cannot be earlier than start date
+                endDate.min = startDate.value;
+                if (endDate.value < startDate.value) {
+                    endDate.value = startDate.value;
+                }
+
+                // If same day, end time cannot be earlier and cannot be the same
+                if (startDate.value === endDate.value) {
+
+                    const [hours, minutes] = startTime.value.split(':').map(Number);
+                    const minTime = new Date();
+                    minTime.setHours(hours);
+                    minTime.setMinutes(minutes + 5);
+                    const minHours = String(minTime.getHours()).padStart(2, '0');
+                    const minMinutes = String(minTime.getMinutes()).padStart(2, '0');
+                    endTime.min = `${minHours}:${minMinutes}`;
+
+                    if (endTime.value && endTime.value < endTime.min) {
+                        endTime.value = "";
+                        showEndTimeErrorPopup();
+                    }
+                }
+                else {
+                    endTime.min = "";
+                }
+            }
+
+            startDate.addEventListener("change", validateDateTime);
+            endDate.addEventListener("change", validateDateTime);
+            startTime.addEventListener("change", validateDateTime);
+            endTime.addEventListener("change", validateDateTime);
+
+            function showStartTimeErrorPopup() {
+            document.getElementById("startTimeErrorPopup").style.display = "flex";
+            }
+
+            function closeStartTimeErrorPopup() {
+                document.getElementById("startTimeErrorPopup").style.display = "none";
+            }
+
+            function showEndTimeErrorPopup() {
+                document.getElementById("endTimeErrorPopup").style.display = "flex";
+            }
+            function closeEndTimeErrorPopup() {
+                document.getElementById("endTimeErrorPopup").style.display = "none";
+            }
+
+            function showDateErrorPopup() {
+                document.getElementById("dateErrorPopup").style.display = "flex";
+            }
+
+            function closeDateErrorPopup() {
+                document.getElementById("dateErrorPopup").style.display = "none";
+            }
 
             function toggleEventLink() {
                 const mode = document.getElementById("event_mode").value;
@@ -688,8 +864,7 @@
             }
         }
 
-        document.getElementById('faculty_wing')
-        .addEventListener('change', updateSpecificLocations);
+        document.getElementById('faculty_wing').addEventListener('change', updateSpecificLocations);
 
         function updateSpecificLocations() {
             const mainLocation = document.getElementById('mainloc').value;
@@ -709,22 +884,22 @@
             }
         }
 
-            function toggleParticipation(){
-                const type = document.getElementById("participation_type").value;
-                const max = document.getElementById("max_participant_container");
-                if(type === "limited"){
-                    max.style.display = "block";
-                }
-                else{
-                    max.style.display = "none";
-                }
+        function toggleParticipation(){
+            const type = document.getElementById("participation_type").value;
+            const max = document.getElementById("max_participant_container");
+            if(type === "limited"){
+                max.style.display = "block";
             }
+            else{
+                max.style.display = "none";
+            }
+        }
 
-            window.onload=function(){
-                updateMainLocations();
-                toggleEventLink();
-                toggleParticipation();
-            }
+        window.onload=function(){
+            updateMainLocations();
+            toggleEventLink();
+            toggleParticipation();
+        }
         </script>
         
     </body>

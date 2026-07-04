@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS events (
     student_id varchar(10) NOT NULL,
     event_status TEXT DEFAULT 'Pending' CHECK(event_status IN ('Pending', 'Approved', 'Redo')),
     admin_remark TEXT,
-    edit_attempt INTEGER DEFAULT 0,
     FOREIGN KEY (student_id) REFERENCES organizer_details(student_id)
 );
 

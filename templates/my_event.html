@@ -330,7 +330,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -374,8 +374,15 @@
                             <h3>{{ event['event_name'] }}</h3>
                             
                             <div class="event-meta">
-                                <p>📅 {{ event['start_date'] }} - {{ event['end_date'] }}</p>
-                                <p>🕒 {{ event['start_time'] }} - {{ event['end_time'] }}</p>
+                                {% set same_day = (event['start_date'] == event['end_date']) %}
+
+                                {% if same_day %}
+                                    <p>📅 {{ event['start_date'] }}</p>
+                                    <p>🕒 {{ event['start_time'] }} - {{ event['end_time'] }}</p>
+                                {% else %}
+                                    <p>📅 Start: {{ event['start_date'] }}, {{ event['start_time'] }}</p>
+                                    <p>📅 End: {{ event['end_date'] }}, {{ event['end_time'] }}</p>
+                                {% endif %}
 
                                 {% if event['general_location'] %}
                                     <p>📍 {{ event['general_location'] }}</p>

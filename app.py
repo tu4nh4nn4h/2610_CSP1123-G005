@@ -13,6 +13,11 @@ from functools import wraps
 import pandas as pd
 from flask import send_file
 import io
+import openpyxl
+from openpyxl import load_workbook
+from openpyxl.worksheet.table import Table, TableStyleInfo
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -508,45 +513,128 @@ def eventregister():
 
 @app.route('/event/<int:event_id>')
 def event_detail(event_id):
-    # Fetch the specific event matching the ID from your database
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM events WHERE event_id = ? AND event_status = 'Approved'", (event_id,))
+
+    cursor.execute("""
+        SELECT * FROM events 
+        WHERE event_id = ? AND event_status = 'Approved'
+    """, (event_id,))
     event = cursor.fetchone()
-    conn.close()
-    
+
     if not event:
+        conn.close()
         return "Event not found", 404
 
-    # Renders your registration system page, passing the actual database item
-    return render_template('EventRegSys.html', event=event)
+    student_id = session.get('student_id')
+
+    already_registered = False
+    if student_id:
+        cursor.execute("""
+            SELECT 1 
+            FROM event_registrations 
+            WHERE event_id = ? AND student_id = ?
+        """, (event_id, student_id))
+
+        already_registered = cursor.fetchone() is not None
+
+    is_owner = (student_id == event["student_id"]) if student_id else False
+
+    cursor.execute("""
+        SELECT COUNT(*) AS total 
+        FROM event_registrations 
+        WHERE event_id=?
+    """, (event_id,))
+
+    participant_count = cursor.fetchone()["total"]
+
+    is_full = (
+        event["participation_option"] == "limited"
+        and participant_count >= event["limited_max_participants"]
+    )
+
+    conn.close()
+
+    return render_template(
+        "EventRegSys.html",
+        event=event,
+        is_owner=is_owner,
+        participant_count=participant_count,
+        is_full=is_full,
+        already_registered=already_registered
+    )
 
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
+
     event_id = request.args.get('event_id')
     if not event_id:
         return "Missing event tracking identifier", 400
-        
-    # Autofill logic: Get current logged-in user profile info
-    username = session.get('user')
-    user_data = None
-    
-    if username:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        
-        try:
-            # Fetch only guaranteed columns to avoid phone/faculty column mismatch crashes
-            cursor.execute("""
-                SELECT student_id, name, email 
-                FROM users_general WHERE username = ?""", (username,))
-            user_data = cursor.fetchone()
 
-        except sqlite3.OperationalError:
-            user_data = None # Fallback to empty form data if a database structure issue occurs
-        finally:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    student_id = session.get('student_id')
+
+    if not student_id:
+        conn.close()
+        flash("Please login first.")
+        return redirect(url_for("login"))
+
+    # =========================
+    # CHECK ALREADY REGISTERED (FIXED)
+    # =========================
+    cursor.execute("""
+        SELECT 1
+        FROM event_registrations
+        WHERE event_id = ? AND student_id = ?
+    """, (event_id, student_id))
+
+    if cursor.fetchone():
+        conn.close()
+        flash("You have already registered for this event.")
+        return redirect(url_for("user_dashboard"))
+
+    # =========================
+    # CHECK CAPACITY
+    # =========================
+    cursor.execute("""
+        SELECT participation_option, limited_max_participants
+        FROM events
+        WHERE event_id=?
+    """, (event_id,))
+
+    event = cursor.fetchone()
+
+    if event and event["participation_option"] == "limited":
+
+        cursor.execute("""
+            SELECT COUNT(*)
+            FROM event_registrations
+            WHERE event_id=?
+        """, (event_id,))
+
+        total = cursor.fetchone()[0]
+
+        if total >= event["limited_max_participants"]:
             conn.close()
+            flash("This event is full.")
+            return redirect(url_for("event_detail", event_id=event_id))
+
+    # =========================
+    # AUTOFILL USER
+    # =========================
+    cursor.execute("""
+        SELECT student_id, name, email
+        FROM users_general
+        WHERE student_id = ?
+    """, (student_id,))
+
+    user_data = cursor.fetchone()
+
+    conn.close()
 
     return render_template('form.html', event_id=event_id, user=user_data)
 
@@ -743,8 +831,8 @@ def create_event():
             conn.close()
         
         # 🔔 SEND NOTIFICATIONS
-        send_admin_notification(f"{user['student_id']} has created an event.","Event Pending","/admin_dashboard")
-        create_notification(user["student_id"],"Your event has been submitted successfully and is now under review by the administrator.","Event Pending")
+        send_admin_notification(f"{user['student_id']} has created an event: '{event_name}'. Go to the admin dashboard to review it.","Event Pending","/admin_dashboard")
+        create_notification(user["student_id"],f"Your event: '{event_name}' has been submitted successfully and is now under review by the administrator.","Event Pending")
 
         return jsonify({"status": "create_event_success"})
 
@@ -825,7 +913,7 @@ def be_organizer():
 
         return jsonify({"status": "become_organizer_success"})
 
-@app.route('/myevent')
+@app.route('/my_event')
 def my_event():
 
     username = session.get('user')
@@ -856,7 +944,7 @@ def my_event():
 
     return render_template('my_event.html',user=user, events=events)
 
-@app.route('/myevent/<int:event_id>')
+@app.route('/my_event/<int:event_id>')
 def my_event_manage(event_id):
     # Fetch the specific event matching the ID from your database
     conn = get_db_connection()
@@ -871,9 +959,10 @@ def my_event_manage(event_id):
     cursor.execute("""SELECT * FROM event_registrations WHERE event_id = ?""", (event_id,))
 
     participants = cursor.fetchall()
+    participant_count = len(participants)
     conn.close()
 
-    return render_template('my_event_manage.html',event=event,participants=participants)
+    return render_template('my_event_manage.html',event=event,participants=participants,participant_count=participant_count)
 
 @app.route('/export_event/<int:event_id>')
 def export_event(event_id):
@@ -881,24 +970,102 @@ def export_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT event_name FROM events WHERE event_id=?",(event_id,))
+    # =========================
+    # GET EVENT NAME
+    # =========================
+    cursor.execute("SELECT event_name FROM events WHERE event_id=?", (event_id,))
     event = cursor.fetchone()
 
     if not event:
         return "Event not found", 404
 
-    event_name = event['event_name']
+    event_name = event["event_name"]
 
-    cursor.execute("SELECT name,student_id,email,phone_number,faculty FROM event_registrations WHERE event_id = ?", (event_id,))
+    # =========================
+    # GET PARTICIPANTS
+    # =========================
+    cursor.execute("""
+        SELECT name, student_id, email, phone_number, faculty
+        FROM event_registrations
+        WHERE event_id = ?
+    """, (event_id,))
+
     participants = [dict(row) for row in cursor.fetchall()]
     conn.close()
 
-    df = pd.DataFrame(participants)
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='openpyxl') as writer: df.to_excel(writer, index=False, sheet_name='Participants Analysis')
-    output.seek(0)
+    if not participants:
+        return "No participants to export", 400
 
-    return send_file(output, as_attachment=True, download_name=f'{event_name}_participants.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    df = pd.DataFrame(participants)
+
+    # =========================
+    # ONE WORKBOOK FOR ALL EVENTS
+    # =========================
+    os.makedirs("exports", exist_ok=True)
+    file_path = "exports/all_events.xlsx"
+
+    # =========================
+    # SAFE LOAD WORKBOOK
+    # =========================
+    try:
+        book = load_workbook(file_path)
+        writer = pd.ExcelWriter(
+            file_path,
+            engine="openpyxl",
+            mode="a",
+            if_sheet_exists="replace"
+        )
+    except Exception:
+        writer = pd.ExcelWriter(file_path, engine="openpyxl")
+
+    # =========================
+    # CLEAN SHEET NAME (IMPORTANT)
+    # =========================
+    sheet_name = f"{event_name}_{event_id}"
+    sheet_name = sheet_name[:31]  # Excel limit
+
+    # =========================
+    # WRITE DATA
+    # =========================
+    df.to_excel(writer, index=False, sheet_name=sheet_name)
+
+    workbook = writer.book
+    worksheet = writer.sheets[sheet_name]
+
+    # =========================
+    # HEADER STYLE
+    # =========================
+    header_fill = PatternFill("solid", fgColor="7B2CBF")
+    header_font = Font(color="FFFFFF", bold=True)
+    alignment = Alignment(horizontal="center", vertical="center")
+
+    for col_num in range(1, df.shape[1] + 1):
+        cell = worksheet.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = alignment
+
+    # =========================
+    # AUTO COLUMN WIDTH
+    # =========================
+    for col in worksheet.columns:
+        max_length = 0
+        col_letter = get_column_letter(col[0].column)
+
+        for cell in col:
+            if cell.value:
+                max_length = max(max_length, len(str(cell.value)))
+
+        worksheet.column_dimensions[col_letter].width = max_length + 5
+
+    writer.close()
+
+    return send_file(
+        file_path,
+        as_attachment=True,
+        download_name="all_events_participants.xlsx",
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 @app.route('/deleteevent/<int:event_id>', methods=['POST'])
 def delete_event(event_id):
@@ -989,25 +1156,35 @@ def edit_event(event_id):
 
         # Decide final venue
         if mainLocation == "General":
-            finalLocation = generalLocation
+            generalLocation = generalLocation
             facultyWing = None
+            specificLocation = None
+
         elif mainLocation == "CLC":
-            finalLocation = clcHall
+            generalLocation = None
+            specificLocation = clcHall
             facultyWing = None
+
         else:
-            finalLocation = specificLocation
+            generalLocation = None
+            specificLocation = specificLocation
+            facultyWing = facultyWing
 
         # Update database
-        cursor.execute("""UPDATE events SET event_poster=?, event_name=?, event_description=?, start_date=?, end_date=?,
-        start_time=?, end_time=?, event_mode=?, main_location=?, specific_location=?, faculty_wing=?, participation_option=?,
-        limited_max_participants=?, event_link=? WHERE event_id=?""",
-        (newPoster, eventName, eventDescription, startDate, endDate, startTime, endTime, eventMode, mainLocation, finalLocation,
+        cursor.execute("""UPDATE events SET event_poster=?, event_name=?, event_description=?, start_date=?, end_date=?, start_time=?, end_time=?,
+        event_mode=?, main_location=?, general_location=?, specific_location=?, faculty_wing=?, participation_option=?,
+        limited_max_participants=?, event_link=?, event_status='Pending' WHERE event_id=?""",
+        (newPoster, eventName, eventDescription, startDate, endDate, startTime, endTime, eventMode, mainLocation, generalLocation, specificLocation,
         facultyWing, participationOption, limitedMaxParticipants, eventLink, event_id))
 
         conn.commit()
         conn.close()
 
-        return redirect('/myevent')
+        # NOTIFICATIONS
+        send_admin_notification(f"Event '{eventName}' has been edited and requires approval.","Event Pending","/admin_dashboard")
+        create_notification(session.get("student_id"),"Your edited event has been submitted and is pending admin approval.","Event Pending")
+
+        return redirect('/my_event')
 
 @app.route('/user_dashboard')
 def dashboard():
@@ -1486,12 +1663,13 @@ def approve_organizer(application_id):
             application["position_title"],
             application["proof_document"]
         ))
-        
-    #     # 🔔 SEND NOTIFICATIONS       
-    # create_notification(application["student_id"],"Congratulations! Your organizer application has been approved.", "Application Approved")
 
     conn.commit()
     conn.close()
+
+    # 🔔 SEND NOTIFICATIONS
+    send_admin_notification(f"You have approved {application['student_id']} to become an organizer.","Application Approved", None)
+    create_notification(application["student_id"],"Congratulations! Your organizer application has been approved.", "Application Approved")
 
     return redirect(url_for('admin_dashboard'))
 
@@ -1504,16 +1682,18 @@ def reject_organizer(application_id):
 
     # ambil student yang apply
     cursor.execute("SELECT student_id FROM organizer_applications WHERE application_id=?",(application_id,))
-    
+    application = cursor.fetchone()
+
     # update application status
     cursor.execute("""UPDATE organizer_applications SET application_status='Rejected', 
         rejected_date=CURRENT_DATE WHERE application_id=?""",(application_id,))
-    
-    # # 🔔 SEND NOTIFICATIONS       
-    # create_notification(application["student_id"],"Your organizer application has been rejected. You can reapply after 3 days.","Application Rejected")
 
     conn.commit()
     conn.close()
+
+    # 🔔 SEND NOTIFICATIONS   
+    send_admin_notification(f"You have rejected {application['student_id']}'s organizer application.","Application Rejected", None)
+    create_notification(application["student_id"],"Your organizer application has been rejected. You can reapply after 3 days.","Application Rejected")
 
     return redirect(url_for('admin_dashboard'))
 
@@ -1524,14 +1704,18 @@ def approve_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("UPDATE events SET event_status ='Approved' WHERE event_id=?", (event_id,))
+    cursor.execute("SELECT student_id, event_name FROM events WHERE event_id=?", (event_id,))
+    event = cursor.fetchone()
 
-    # # 🔔 SEND NOTIFICATIONS       
-    # create_notification(event["student_id"],f"Your event '{event['event_name']}' has been approved.","Event Approved")
+    cursor.execute("UPDATE events SET event_status ='Approved' WHERE event_id=?", (event_id,))
 
     conn.commit()
     conn.close()
 
+    # 🔔 SEND NOTIFICATIONS
+    send_admin_notification(f"You have approved {event['student_id']}'s event: '{event['event_name']}'.","Event Approved", None)
+    create_notification(event["student_id"],f"Your event '{event['event_name']}' has been approved.","Event Approved")
+    
     return redirect(url_for('admin_dashboard'))
 
 
@@ -1543,12 +1727,17 @@ def reject_event(event_id):
     conn = get_db_connection()
     cursor = conn.cursor()
 
+    cursor.execute("SELECT student_id, event_name FROM events WHERE event_id=?", (event_id,))
+    event = cursor.fetchone()
+    
     cursor.execute("UPDATE events SET event_status='Redo', admin_remark=? WHERE event_id=?", (admin_remark, event_id))
 
-    # # 🔔 SEND NOTIFICATIONS       
-    # create_notification(event["student_id"],f"Your event '{event['event_name']}' requires revision. Please check admin remark.","Event Redo")
     conn.commit()
     conn.close()
+
+    # 🔔 SEND NOTIFICATIONS
+    send_admin_notification(f"You have rejected {event['student_id']}'s event: '{event['event_name']}'. Revision required.","Event Redo", None)
+    create_notification(event["student_id"],f"Your event '{event['event_name']}' requires revision. Please check admin remark.","Event Redo")
 
     return redirect(url_for('admin_dashboard'))
 

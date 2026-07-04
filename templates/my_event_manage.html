@@ -318,6 +318,18 @@
                 cursor: pointer;
             }
 
+            .disabled-btn{
+                background:#bdbdbd;
+                color:#fff;
+                cursor:not-allowed;
+                opacity:.7;
+            }
+
+            .disabled-btn:hover{
+                transform:none;
+                background:#bdbdbd;
+            }
+
             .event-action-area{
                 display:flex;
                 flex-direction:column;
@@ -368,7 +380,7 @@
                 {% elif session.get('role') == 'organizer' %}
                     <a href="/eventbrowsing">Browse Events</a>
                     <a href="/createevent">Create Event</a>
-                    <a href="/myevent">My Event</a>
+                    <a href="/my_event">My Event</a>
                     <a href="/notifications" class="notification-link">
                         Notifications
                         {% if unread_notifications > 0 %}
@@ -427,8 +439,16 @@
                         </div>
                     </div>
 
-                    <p><strong>Date: </strong>{{ event['start_date'] }} - {{ event['end_date'] }}</p>
-                    <p><strong>Time: </strong>{{ event['start_time'] }} - {{ event['end_time'] }}</p>
+                    {% set same_day = (event['start_date'] == event['end_date']) %}
+
+                    {% if same_day %}
+                        <p><strong>Date: </strong>{{ event['start_date'] }}</p>
+                        <p><strong>Time: </strong>{{ event['start_time'] }} - {{ event['end_time'] }}</p>
+                    {% else %}
+                        <p><strong>Start: </strong>{{ event['start_date'] }}, {{ event['start_time'] }}</p>
+                        <p><strong>End: </strong>{{ event['end_date'] }}, {{ event['end_time'] }}</p>
+                    {% endif %}
+
                     <p><strong>Mode: </strong>{{ event['event_mode'] }}</p>
 
                     {% if event['general_location'] %}
@@ -441,7 +461,15 @@
 
                     <div class="action-buttons">
                         <button class="btn btn-edit" onclick="editEvent()">Edit Event</button>
-                        <button class="btn btn-export" onclick="exportExcel()">Export Excel</button>
+                        {% if participant_count > 0 %}
+                            <button class="btn btn-export" onclick="exportParticipants()">
+                                Export Participants
+                            </button>
+                        {% else %}
+                            <button class="btn btn-export disabled-btn" disabled>
+                                Export Participants
+                            </button>
+                        {% endif %}
                         <button class="btn btn-delete" onclick="delEvent()">Delete Event</button>
                     </div>
                 </div>
@@ -515,7 +543,7 @@
             window.location.href = "/edit_event/{{ event['event_id'] }}";
         }
 
-        function exportExcel(){
+        function exportParticipants() {
             window.location.href = "/export_event/{{ event['event_id'] }}";
         }
 

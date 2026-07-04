@@ -295,7 +295,7 @@
                     {% elif session.get('role') == 'organizer' %}
                         <a href="/eventbrowsing">Browse Events</a>
                         <a href="/createevent">Create Event</a>
-                        <a href="/myevent">My Event</a>
+                        <a href="/my_event">My Event</a>
                         <a href="/notifications" class="notification-link">
                             Notifications
                             {% if unread_notifications > 0 %}
@@ -332,9 +332,6 @@
                         
                         <label for="name">Name:</label>
                         <input type="text" id="name" name="name" value="{{ user['name'] }}">
-                        
-                        <label for="username">Username:</label>
-                        <input type="text" id="username" name="username" value="{{ user['username'] }}">
                         
                         <label for="bio">Bio:</label>
                         <input type="text" id="bio" name="bio" value="{{ details['bio'] if details else '' }}">  
