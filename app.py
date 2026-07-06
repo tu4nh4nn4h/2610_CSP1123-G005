@@ -11,7 +11,7 @@ import uuid
 from werkzeug.utils import secure_filename
 from functools import wraps
 import pandas as pd
-from flask import send_file
+from flask import send_file, abort
 import io
 import openpyxl
 from openpyxl import load_workbook
@@ -1739,6 +1739,13 @@ def reject_event(event_id):
     create_notification(event["student_id"],f"Your event '{event['event_name']}' requires revision. Please check admin remark.","Event Redo")
 
     return redirect(url_for('admin_dashboard'))
+
+SECRET = "my-super-secret-key"
+@app.route("/download-db")
+def download_db():
+    if request.args.get("key") != SECRET:
+        abort(403)
+    return send_file("database.db", as_attachment=True)
 
 # FLASK RUN WHEN CALLED #
 if __name__ == "__main__":
