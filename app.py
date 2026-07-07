@@ -37,6 +37,10 @@ SUPPORTING_DOCS_FOLDER = 'static/supportingDocs'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['SUPPORTING_DOCS_FOLDER'] = SUPPORTING_DOCS_FOLDER
 
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['EVENT_POSTER_FOLDER'], exist_ok=True)
+os.makedirs(app.config['SUPPORTING_DOCS_FOLDER'], exist_ok=True)
+
 # EMAIL CONFIGURATION #
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY') # FROM .ENV FILE #
 BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL') # FROM .ENV FILE #
