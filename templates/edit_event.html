@@ -539,7 +539,7 @@
 
                 <div class="form-group" id="event_link_container">
                     <label>Event Link:</label>
-                    <input type="url" name="eventLink" value="{{event['event_link'] or ''}}">
+                    <input type="url" name="eventLink" placeholder="e.g. https://example.com" target="_blank" rel="noopener noreferrer" pattern="https://.*" value="{{event['event_link'] or ''}}">
                 </div>
             </div>
 

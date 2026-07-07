@@ -812,6 +812,16 @@ def create_event():
             limited_max_participants = request.form.get('limitedMaxParticipants')
 
         event_link = request.form.get('eventLink')
+        if event_link:
+            event_link = event_link.strip()
+
+            # Remove leading slash if user enters one
+            if event_link.startswith("/"):
+                event_link = event_link[1:]
+
+            # Automatically add https:// if missing
+            if not event_link.startswith(("http://", "https://")):
+                event_link = "https://" + event_link
 
         try:
             cursor.execute("""
