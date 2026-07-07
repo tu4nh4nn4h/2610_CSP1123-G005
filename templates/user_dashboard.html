@@ -632,7 +632,7 @@
         </nav>
 
 <div class="dashboard">   
-    <div class="profile-banner" onclick="window.location.href='/edit_profile';" style="cursor: pointer;" title="Click to Edit Profile">
+    <div class="profile-banner" onclick="window.location.href='/user_profile';" style="cursor: pointer;" title="Click to Edit Profile">
         <div class="profile-left">
             <img src="{{ url_for('static', filename='uploads/' + (user['profile_picture'] if user['profile_picture'] else 'default.png')) }}" class="dashboard-profile-picture">
             <div class="profile-content">

@@ -1391,7 +1391,7 @@ def edit_profile():
     conn.close()
     return render_template('EditProfile.html', user=user, details=details, security_question=user['security_question'])
 
-@app.route('/UserProfile')
+@app.route('/user_profile')
 def user_profile():
     username = session.get('user')
 
