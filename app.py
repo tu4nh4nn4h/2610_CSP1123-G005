@@ -1005,8 +1005,8 @@ def export_event(event_id):
     # =========================
     # ONE WORKBOOK FOR ALL EVENTS
     # =========================
-    os.makedirs("exports", exist_ok=True)
-    file_path = "exports/all_events.xlsx"
+    os.makedirs("static/exports", exist_ok=True)
+    file_path = "static/exports/all_events.xlsx"
 
     # =========================
     # SAFE LOAD WORKBOOK
